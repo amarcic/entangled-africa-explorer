@@ -8,7 +8,7 @@ class App extends React.Component{
         return(
             <div>
                 <span>Hello World</span><br />
-                <HelloComputerButton/>
+                <HelloComputerButton />
             </div>
         )
     }

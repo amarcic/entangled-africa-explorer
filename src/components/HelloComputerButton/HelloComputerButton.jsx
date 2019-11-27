@@ -3,6 +3,6 @@ import React from 'react';
 export const HelloComputerButton = props => {
 
     return(
-        <button>Hello Computer</button>
+        <button onClick={ (ev) => alert("Hi " + ev.type) }>Hello Computer</button>
     );
 }
