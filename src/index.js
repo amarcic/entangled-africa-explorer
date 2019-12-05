@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import { HelloComputerButton } from './components/';
+import { LabelsContext, SettingsContext } from './Contexts';
+import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
 
-const INIT_LABELS = {
-    HelloWorld: {
-        de: "Hallo ganze Welt",
-        en: "Hello World"
-    },
-    HelloComputerButton: {
-        de: "Achtung, Rechenmaschine!",
-        en: "Hello Computer"
-    }
-};
-
-const INIT_SETTINGS = {
-    language: "en"
-}
-
 const App = () => {
+
     const [labels, setLabels] = useState(INIT_LABELS);
     const [settings, setSettings] = useState(INIT_SETTINGS);
 
-    return(
-        <div>
-            <span>{labels.HelloWorld[settings.language]}</span><br />
-            <HelloComputerButton />
-        </div>
-        )
+    const onSwitchLanguages = (setLang) => {
+        switch (setLang){
+            case 'en':
+                const newSettings = {...settings, language: "de"};
+                setSettings(newSettings);
+                break;
+            case 'de':
+                const newSettings1 = {...settings, language: "en"};
+                setSettings(newSettings1);
+                break;
+            default:
+                console.log("How did we even get here?");
+        }
     }
+
+    return(
+        <LabelsContext.Provider value={labels} ><SettingsContext.Provider value={settings}>
+            <div>
+                <span>{labels.HelloWorld[settings.language]}</span><br />
+                <HelloComputerButton />
+                <button type="button" onClick={() => onSwitchLanguages(settings.language)} >Switch</button>
+            </div>
+        </SettingsContext.Provider></LabelsContext.Provider>
+
+        );
+    };
 
 ReactDOM.render(<App />, document.getElementById('app' ))
