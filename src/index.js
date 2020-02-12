@@ -1,11 +1,20 @@
 import React, { useState, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import { HelloComputerButton } from './components/';
+import { Headings } from './components/';
 import { LabelsContext, SettingsContext } from './Contexts';
 import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
+import './i18n';
+import { useTranslation } from 'react-i18next';
 
 const App = () => {
+
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = lng => {
+        i18n.changeLanguage(lng);
+    };
 
     const [labels, setLabels] = useState(INIT_LABELS);
     const [settings, setSettings] = useState(INIT_SETTINGS);
@@ -23,10 +32,15 @@ const App = () => {
             default:
                 console.log("How did we even get here?");
         }
-    }
+    };
 
     return(
         <LabelsContext.Provider value={labels} ><SettingsContext.Provider value={settings}>
+            <button onClick={() => changeLanguage('de')}>Deutsch</button>
+            <button onClick={() => changeLanguage('en')}>English</button>
+            <button onClick={() => changeLanguage('fr')}>Français</button>
+            <button onClick={() => changeLanguage('ar')}>لعربية</button>
+            <Headings />
             <div>
                 <span>{labels.HelloWorld[settings.language]}</span><br />
                 <HelloComputerButton />
@@ -37,4 +51,4 @@ const App = () => {
         );
     };
 
-ReactDOM.render(<App />, document.getElementById('app' ))
+ReactDOM.render(<App />, document.getElementById('app' ));
