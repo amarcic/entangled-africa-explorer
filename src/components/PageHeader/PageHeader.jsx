@@ -40,6 +40,11 @@ export const PageHeader = () => {
         setOpen(false);
     };
 
+    function handleLanguageChange(newLang) {
+        changeLanguage(newLang);
+        setOpen(false);
+    }
+
     function handleListKeyDown(event) {
         if (event.key === 'Tab') {
             event.preventDefault();
@@ -60,8 +65,6 @@ export const PageHeader = () => {
 
     return(
         <div className={classes.root}>
-            <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
-
             <Button
                 ref={anchorRef}
                 aria-controls={open ? 'menu-list-grow' : undefined}
@@ -79,11 +82,10 @@ export const PageHeader = () => {
                         <Paper className={classes.paper}>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                    <MenuItem onClick={handleClose}>Test</MenuItem>
-                                    <MenuItem onClick={() => changeLanguage('de') && handleClose}>Deutsch</MenuItem>
-                                    <MenuItem onClick={() => changeLanguage('en')}>English</MenuItem>
-                                    <MenuItem onClick={() => changeLanguage('fr')}>Français</MenuItem>
-                                    <MenuItem onClick={() => changeLanguage('ar')}>لعربية</MenuItem>
+                                    <MenuItem onClick={() => handleLanguageChange('de')}>Deutsch</MenuItem>
+                                    <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
+                                    <MenuItem onClick={() => handleLanguageChange('fr')}>Français</MenuItem>
+                                    <MenuItem onClick={() => handleLanguageChange('ar')}>لعربية</MenuItem>
                                 </MenuList>
                             </ClickAwayListener>
                         </Paper>

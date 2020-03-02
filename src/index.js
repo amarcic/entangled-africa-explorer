@@ -35,7 +35,7 @@ const App = () => {
         <LabelsContext.Provider value={labels} ><SettingsContext.Provider value={settings}>
             <CssBaseline />
             <PageHeader />
-            <p>{t('EntangledAfrica1')}</p>
+            <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
             <div>
                 <span>{labels.HelloWorld[settings.language]}</span><br />
                 <HelloComputerButton />
