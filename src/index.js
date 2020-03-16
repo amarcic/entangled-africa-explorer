@@ -7,6 +7,7 @@ import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const App = () => {
 
@@ -32,7 +33,9 @@ const App = () => {
 
     return(
         <LabelsContext.Provider value={labels} ><SettingsContext.Provider value={settings}>
+            <CssBaseline />
             <PageHeader />
+            <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
             <div>
                 <span>{labels.HelloWorld[settings.language]}</span><br />
                 <HelloComputerButton />
