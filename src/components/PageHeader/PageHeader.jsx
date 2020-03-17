@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuList, MenuItem, Paper } from '@material-ui/core';
+import { Button, MenuList, MenuItem, Paper, Grid } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
@@ -65,33 +65,44 @@ export const PageHeader = () => {
 
     return(
         <div className={classes.root}>
-            <Button
-                ref={anchorRef}
-                aria-controls={open ? 'menu-list-grow' : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-            >
-                <TranslateIcon/> {t('current language')}
-            </Button>
-            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{ transformOrigin: placement === 'top' ? 'left top' : 'left bottom' }}
+            <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                >
+                <Grid
+                    item
                     >
-                        <Paper className={classes.paper}>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                    <MenuItem onClick={() => handleLanguageChange('de')}>Deutsch</MenuItem>
-                                    <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
-                                    <MenuItem onClick={() => handleLanguageChange('fr')}>Français</MenuItem>
-                                    <MenuItem onClick={() => handleLanguageChange('ar')}>لعربية</MenuItem>
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
-                )}
-            </Popper>
+                    <Button
+                        ref={anchorRef}
+                        aria-controls={open ? 'menu-list-grow' : undefined}
+                        aria-haspopup="true"
+                        onClick={handleToggle}
+
+                    >
+                        <TranslateIcon/> {t('current language')}
+                    </Button>
+                    <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                        {({ TransitionProps, placement }) => (
+                            <Grow
+                                {...TransitionProps}
+                                style={{ transformOrigin: placement === 'top' ? 'left top' : 'left bottom' }}
+                            >
+                                <Paper className={classes.paper}>
+                                    <ClickAwayListener onClickAway={handleClose}>
+                                        <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                                            <MenuItem onClick={() => handleLanguageChange('de')}>Deutsch</MenuItem>
+                                            <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
+                                            <MenuItem onClick={() => handleLanguageChange('fr')}>Français</MenuItem>
+                                            <MenuItem onClick={() => handleLanguageChange('ar')}>لعربية</MenuItem>
+                                        </MenuList>
+                                    </ClickAwayListener>
+                                </Paper>
+                            </Grow>
+                        )}
+                    </Popper>
+                </Grid>
+            </Grid>
         </div>
     );
 };
