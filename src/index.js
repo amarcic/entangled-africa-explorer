@@ -13,9 +13,10 @@ const App = () => {
 
     const { t, i18n } = useTranslation();
 
-    const [labels, setLabels] = useState(INIT_LABELS);
+    //const [labels, setLabels] = useState(INIT_LABELS);
     const [settings, setSettings] = useState(INIT_SETTINGS);
 
+    /*
     const onSwitchLanguages = (setLang) => {
         switch (setLang){
             case 'en':
@@ -30,18 +31,19 @@ const App = () => {
                 console.log("How did we even get here?");
         }
     };
+     */
 
     return(
-        <LabelsContext.Provider value={labels} ><SettingsContext.Provider value={settings}>
+        <SettingsContext.Provider value={settings}>
             <CssBaseline />
             <PageHeader />
             <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
-            <div>
+            {/*<div>
                 <span>{labels.HelloWorld[settings.language]}</span><br />
                 <HelloComputerButton />
                 <button type="button" onClick={() => onSwitchLanguages(settings.language)} >Switch</button>
-            </div>
-        </SettingsContext.Provider></LabelsContext.Provider>
+            </div>*/}
+        </SettingsContext.Provider>
 
         );
     };
