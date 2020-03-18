@@ -1,10 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuList, MenuItem, Paper, Grid } from '@material-ui/core';
+import { Button, MenuList, MenuItem, Paper, Grid, Grow, Popper } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Popper from '@material-ui/core/Popper';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
