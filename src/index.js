@@ -32,6 +32,7 @@ const App = () => {
         link
     })
 
+    //example to check if fetching works
     client
         .query({
             query: gql`
