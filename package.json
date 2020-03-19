@@ -32,7 +32,9 @@
   "dependencies": {
     "@material-ui/core": "^4.9.3",
     "@material-ui/icons": "^4.9.1",
+    "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",
+    "apollo-link-http": "^1.5.16",
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
     "i18next": "^19.1.0",

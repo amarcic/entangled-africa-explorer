@@ -8,6 +8,11 @@ import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import CssBaseline from '@material-ui/core/CssBaseline';
+//Apollo GraphQL related
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import gql from "graphql-tag";
 
 const App = () => {
 
@@ -16,6 +21,30 @@ const App = () => {
     //const [labels, setLabels] = useState(INIT_LABELS);
     const [settings, setSettings] = useState(INIT_SETTINGS);
 
+    //Apollo GraphQL related
+    const cache = new InMemoryCache();
+    const link = new HttpLink({
+        uri: "http://localhost:4000/"
+    });
+
+    const client = new ApolloClient({
+        cache,
+        link
+    })
+
+    client
+        .query({
+            query: gql`
+            query giveInfo {
+                entity(id: 1189042) {
+                    name 
+                    temporalArachne {
+                        begin
+                    }
+                }
+            }
+            `
+        }).then(result => console.log(result));
     /*
     const onSwitchLanguages = (setLang) => {
         switch (setLang){
