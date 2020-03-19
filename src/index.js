@@ -13,6 +13,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import gql from "graphql-tag";
+import { ApolloProvider } from "@apollo/react-hooks";
 
 const App = () => {
 
@@ -67,11 +68,9 @@ const App = () => {
             <CssBaseline />
             <PageHeader />
             <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
-            {/*<div>
-                <span>{labels.HelloWorld[settings.language]}</span><br />
-                <HelloComputerButton />
-                <button type="button" onClick={() => onSwitchLanguages(settings.language)} >Switch</button>
-            </div>*/}
+            <ApolloProvider client={client}>
+                soon you will find a map with nice controls here
+            </ApolloProvider>
         </SettingsContext.Provider>
 
         );
