@@ -19,7 +19,6 @@ const App = () => {
 
     const { t, i18n } = useTranslation();
 
-    //const [labels, setLabels] = useState(INIT_LABELS);
     const [settings, setSettings] = useState(INIT_SETTINGS);
 
     //Apollo GraphQL related
@@ -46,22 +45,6 @@ const App = () => {
             }
             `
         }).then(result => console.log(result));
-    /*
-    const onSwitchLanguages = (setLang) => {
-        switch (setLang){
-            case 'en':
-                const newSettings = {...settings, language: "de"};
-                setSettings(newSettings);
-                break;
-            case 'de':
-                const newSettings1 = {...settings, language: "en"};
-                setSettings(newSettings1);
-                break;
-            default:
-                console.log("How did we even get here?");
-        }
-    };
-     */
 
     return(
         <SettingsContext.Provider value={settings}>
@@ -69,10 +52,9 @@ const App = () => {
             <PageHeader />
             <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
             <ApolloProvider client={client}>
-                soon you will find a map with nice controls here
+                soon you will find a pretty map with nice controls here
             </ApolloProvider>
         </SettingsContext.Provider>
-
         );
     };
 
