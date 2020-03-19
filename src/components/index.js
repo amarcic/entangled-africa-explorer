@@ -3,3 +3,4 @@
 //named exports are used instead of default export; thus imports need to be destructured
 export { HelloComputerButton } from './HelloComputerButton/HelloComputerButton';
 export { PageHeader } from './PageHeader/PageHeader';
+export { OurMap } from './OurMap/OurMap';

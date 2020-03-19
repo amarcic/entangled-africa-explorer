@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import { HelloComputerButton } from './components/';
-import { PageHeader } from './components/';
+import { PageHeader, OurMap } from './components/';
 import { LabelsContext, SettingsContext } from './Contexts';
 import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
@@ -30,7 +30,7 @@ const App = () => {
     const client = new ApolloClient({
         cache,
         link
-    })
+    });
 
     //example to check if fetching works
     client
@@ -53,7 +53,8 @@ const App = () => {
             <PageHeader />
             <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
             <ApolloProvider client={client}>
-                soon you will find a pretty map with nice controls here
+                soon you will also find nice controls here
+                <OurMap/>
             </ApolloProvider>
         </SettingsContext.Provider>
         );
