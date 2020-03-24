@@ -42,6 +42,8 @@ export const OurMap = () => {
 
     const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT);
 
+    const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
+
     return(
         <div>
             <h2>{t('Map')}</h2>
@@ -54,14 +56,14 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {data.entity.related.map(related =>
+                {/*data.entity.related.map(related =>
                     <Marker
                         key={related.identifier}
                         position={related.spatial.coordinates.split(",")}
-                    />)}
+                    />)*/}
                 <Marker
-                    key="123"
-                    position={[11.5024338, 17.7578122]}
+                    key={fakeData.key}
+                    position={fakeData.coordinates}
                     //key={data.name}
                     //position={data.entity.spatial.coordinates.split(",")}
                 />
