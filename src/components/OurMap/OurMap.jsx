@@ -15,6 +15,9 @@ const GET_OBJECT_WITH_CONTEXT = gql`
     query giveInfo {
         entity(id: 1189042) {
             name
+            spatial {
+                coordinates
+            }
             temporalArachne {
                 begin
             }
@@ -50,6 +53,17 @@ export const OurMap = () => {
                 <TileLayer
                     attribution={osmAttr}
                     url={osmTiles}
+                />
+                {data.entity.related.map(related =>
+                    <Marker
+                        key={related.identifier}
+                        position={related.spatial.coordinates.split(",")}
+                    />)}
+                <Marker
+                    key="123"
+                    position={[11.5024338, 17.7578122]}
+                    //key={data.name}
+                    //position={data.entity.spatial.coordinates.split(",")}
                 />
             </Map>
         </div>

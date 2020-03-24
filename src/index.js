@@ -13,7 +13,7 @@ import Container from '@material-ui/core/Container';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
-import gql from 'graphql-tag';
+//import gql from 'graphql-tag';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 const App = () => {
@@ -34,7 +34,7 @@ const App = () => {
     });
 
     //example to check if fetching works
-    client
+    /*client
         .query({
             query: gql`
             query giveInfo {
@@ -47,6 +47,7 @@ const App = () => {
             }
             `
         }).then(result => console.log(result));
+     */
 
     return(
         <SettingsContext.Provider value={settings}>
