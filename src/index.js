@@ -8,12 +8,13 @@ import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Container from '@material-ui/core/Container';
 //Apollo GraphQL related
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { HttpLink } from "apollo-link-http";
-import gql from "graphql-tag";
-import { ApolloProvider } from "@apollo/react-hooks";
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { HttpLink } from 'apollo-link-http';
+import gql from 'graphql-tag';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 const App = () => {
 
@@ -50,12 +51,14 @@ const App = () => {
     return(
         <SettingsContext.Provider value={settings}>
             <CssBaseline />
-            <PageHeader />
-            <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
-            <ApolloProvider client={client}>
-                soon you will also find nice controls here
-                <OurMap/>
-            </ApolloProvider>
+            <Container>
+                <PageHeader />
+                <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
+                <ApolloProvider client={client}>
+                    soon you will also find nice controls here
+                    <OurMap/>
+                </ApolloProvider>
+            </Container>
         </SettingsContext.Provider>
         );
     };
