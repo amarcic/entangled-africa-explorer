@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -12,8 +12,8 @@ const mapCenter = [11.5024338, 17.7578122];
 const zoomLevel = 4;
 
 const GET_OBJECT_WITH_CONTEXT = gql`
-    query giveInfo {
-        entity(id: 1189042) {
+    query giveInfo($arachneId: ID!) {
+        entity(id: $arachneId) {
             name
             spatial {
                 coordinates
@@ -40,14 +40,25 @@ export const OurMap = () => {
         i18n.changeLanguage(lng);
     };
 
-    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT);
+    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: 1189042 }});
+
+    const [activeLocation, setActiveLocation] = useState(null);
+    //const [mapData, setMapData] = useState({entity: { name: "hallo"}});
+
+    console.log(data?.entity?.spatial?.coordinates?.split(", "))
+
+    /*
+    useEffect( () => {
+        setMapData(data);
+    })
+    */
 
     const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
 
     return(
         <div>
             <h2>{t('Map')}</h2>
-            {data? data.entity.name :  <p>no data found</p>}
+            {data? data.entity?.name :  <p>no data found</p>}
             <Map
                 center={mapCenter}
                 zoom={zoomLevel}
@@ -61,12 +72,16 @@ export const OurMap = () => {
                         key={related.identifier}
                         position={related.spatial.coordinates.split(",")}
                     />)*/}
-                <Marker
-                    key={fakeData.key}
+                {<Marker
+                    key={data?.entity?.name}
+                    //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     position={fakeData.coordinates}
-                    //key={data.name}
+                    onClick={() =>
+                        alert(data?.entity?.name)
+                    }
+                    //key={mapData.entity.name}
                     //position={data.entity.spatial.coordinates.split(",")}
-                />
+                />}
             </Map>
         </div>
     );
