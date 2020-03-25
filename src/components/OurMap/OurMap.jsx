@@ -71,9 +71,9 @@ export const OurMap = () => {
                     key={data.entity.name}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     position={data.entity.spatial.coordinates.split(", ")}
-                    onClick={() =>
-                        alert(data.entity.name)
-                    }
+                    onClick={() =>{
+                        setActiveLocation(data.entity);
+                    }}
                 />
                 }
                 {data&&data.entity
@@ -84,8 +84,8 @@ export const OurMap = () => {
                             key={relatedObj.name}
                             //position={fakeData.coordinates}
                             position={relatedObj.spatial.coordinates.split(", ")}
+                            opacity={0.5}
                             onClick={() => {
-                                console.log(relatedObj);
                                 setActiveLocation(relatedObj);
                             }}
                         />
