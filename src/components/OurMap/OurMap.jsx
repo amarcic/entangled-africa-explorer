@@ -95,9 +95,7 @@ export const OurMap = () => {
                         />
                     )}
                  )}
-                >
 
-                </Popup>}
             </Map>
         </div>
     );
