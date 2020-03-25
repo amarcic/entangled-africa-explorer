@@ -47,20 +47,21 @@ export const OurMap = () => {
 
     const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: objectId }});
 
+    //for testing
+    //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
     /*
     useEffect( () => {
- 
-    })
-     */
 
-
-    const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
+    })*/
 
     return(
         <div>
             <h2>{t('Map')}</h2>
+            <div>
+                <input defaultValue={objectId} onChange={(event) => {setObjectId(event.target.value)}}/>
+            </div>
             {data? data.entity?.name :  <p>no data found</p>}
             <Map
                 center={mapCenter}
