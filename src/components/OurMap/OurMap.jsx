@@ -44,6 +44,7 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
     const [objectId, setObjectId] = useState(1189040);
+    const [mapData, setMapData] = useState(null);
 
     const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: objectId }});
 
@@ -51,10 +52,10 @@ export const OurMap = () => {
     //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
-    /*
-    useEffect( () => {
 
-    })*/
+    useEffect( () => {
+        setMapData(data);
+    })
 
     return(
         <div>
@@ -62,7 +63,7 @@ export const OurMap = () => {
             <div>
                 <input defaultValue={objectId} onChange={(event) => {setObjectId(event.target.value)}}/>
             </div>
-            {data? data.entity?.name :  <p>no data found</p>}
+            {mapData? mapData.entity?.name :  <p>no data found</p>}
             <Map
                 center={mapCenter}
                 zoom={zoomLevel}
@@ -71,18 +72,18 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {data&&data.entity&&<Marker
-                    key={data.entity.name}
+                {mapData&&mapData.entity&&<Marker
+                    key={mapData.entity.name}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
-                    position={data.entity.spatial.coordinates.split(", ")}
+                    position={mapData.entity.spatial.coordinates.split(", ")}
                     onClick={() =>{
-                        setActiveLocation(data.entity);
+                        setActiveLocation(mapData.entity);
                     }}
                 />
                 }
-                {data&&data.entity
-                    &&data.entity.related
-                    &&data.entity.related.map( relatedObj =>
+                {mapData&&mapData.entity
+                    &&mapData.entity.related
+                    &&mapData.entity.related.map( relatedObj =>
                     {return(relatedObj.spatial
                         &&<Marker
                             key={relatedObj.name}
