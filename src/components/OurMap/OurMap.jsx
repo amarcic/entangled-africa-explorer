@@ -72,7 +72,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {mapData&&mapData.entity&&<Marker
+                {mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
                     key={mapData.entity.name}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     position={mapData.entity.spatial.coordinates.split(", ")}
