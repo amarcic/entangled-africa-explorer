@@ -14,11 +14,14 @@ const zoomLevel = 4;
 const GET_OBJECT_WITH_CONTEXT = gql`
     query giveInfo($arachneId: ID!) {
         entity(id: $arachneId) {
+            identifier
             name
             spatial {
+                name
                 coordinates
             }
             temporalArachne {
+                title
                 begin
             }
             related {
@@ -73,7 +76,7 @@ export const OurMap = () => {
                     url={osmTiles}
                 />
                 {mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
-                    key={mapData.entity.name}
+                    key={mapData.entity.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     position={mapData.entity.spatial.coordinates.split(", ")}
                     onClick={() =>{
@@ -86,7 +89,7 @@ export const OurMap = () => {
                     &&mapData.entity.related.map( relatedObj =>
                     {return(relatedObj.spatial
                         &&<Marker
-                            key={relatedObj.name}
+                            key={relatedObj.identifier}
                             //position={fakeData.coordinates}
                             position={relatedObj.spatial.coordinates.split(", ")}
                             opacity={0.5}
@@ -105,6 +108,7 @@ export const OurMap = () => {
                     <div>
                         <h2>{activeLocation.name}</h2>
                         <p>{activeLocation.spatial.name}</p>
+                        {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
                     </div>
                 </Popup>}
             </Map>
