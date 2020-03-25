@@ -45,7 +45,7 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //const [mapData, setMapData] = useState({entity: { name: "hallo"}});
 
-    console.log(data?.entity?.spatial?.coordinates?.split(", "))
+    //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
     /*
     useEffect( () => {
@@ -67,11 +67,6 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {/*data.entity.related.map(related =>
-                    <Marker
-                        key={related.identifier}
-                        position={related.spatial.coordinates.split(",")}
-                    />)*/}
                 {data&&data.entity&&<Marker
                     key={data.entity.name}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
@@ -89,13 +84,24 @@ export const OurMap = () => {
                             key={relatedObj.name}
                             //position={fakeData.coordinates}
                             position={relatedObj.spatial.coordinates.split(", ")}
-                            onClick={() =>
-                                alert(relatedObj.name)
-                            }
+                            onClick={() => {
+                                console.log(relatedObj);
+                                setActiveLocation(relatedObj);
+                            }}
                         />
                     )}
                  )}
-
+                {activeLocation&&<Popup
+                    position={activeLocation.spatial.coordinates.split(", ")}
+                    onClose={() => {
+                        setActiveLocation(null);
+                    }}
+                >
+                    <div>
+                        <h2>{activeLocation.name}</h2>
+                        <p>{activeLocation.spatial.name}</p>
+                    </div>
+                </Popup>}
             </Map>
         </div>
     );
