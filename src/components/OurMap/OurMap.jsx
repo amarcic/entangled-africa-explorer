@@ -72,15 +72,13 @@ export const OurMap = () => {
                         key={related.identifier}
                         position={related.spatial.coordinates.split(",")}
                     />)*/}
-                {<Marker
-                    key={data?.entity?.name}
+                {data&&data.entity&&<Marker
+                    key={data.entity.name}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
-                    position={fakeData.coordinates}
+                    position={data.entity.spatial.coordinates.split(", ")}
                     onClick={() =>
-                        alert(data?.entity?.name)
+                        alert(data.entity.name)
                     }
-                    //key={mapData.entity.name}
-                    //position={data.entity.spatial.coordinates.split(",")}
                 />}
             </Map>
         </div>
