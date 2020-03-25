@@ -40,18 +40,21 @@ export const OurMap = () => {
         i18n.changeLanguage(lng);
     };
 
-    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: 1189040 }});
-
+    //state
     const [activeLocation, setActiveLocation] = useState(null);
-    //const [mapData, setMapData] = useState({entity: { name: "hallo"}});
+    //if you want to use or change the Id of the displayed object use the state constants below
+    const [objectId, setObjectId] = useState(1189040);
+
+    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: objectId }});
 
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
     /*
     useEffect( () => {
-        setMapData(data);
+ 
     })
-    */
+     */
+
 
     const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
 
