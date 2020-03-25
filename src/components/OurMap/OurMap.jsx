@@ -40,7 +40,7 @@ export const OurMap = () => {
         i18n.changeLanguage(lng);
     };
 
-    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: 1189042 }});
+    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: 1189040 }});
 
     const [activeLocation, setActiveLocation] = useState(null);
     //const [mapData, setMapData] = useState({entity: { name: "hallo"}});
@@ -79,7 +79,25 @@ export const OurMap = () => {
                     onClick={() =>
                         alert(data.entity.name)
                     }
-                />}
+                />
+                }
+                {data&&data.entity
+                    &&data.entity.related
+                    &&data.entity.related.map( relatedObj =>
+                    {return(relatedObj.spatial
+                        &&<Marker
+                            key={relatedObj.name}
+                            //position={fakeData.coordinates}
+                            position={relatedObj.spatial.coordinates.split(", ")}
+                            onClick={() =>
+                                alert(relatedObj.name)
+                            }
+                        />
+                    )}
+                 )}
+                >
+
+                </Popup>}
             </Map>
         </div>
     );
