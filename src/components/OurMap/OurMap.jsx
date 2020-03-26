@@ -62,7 +62,8 @@ export const OurMap = () => {
     })
 
     useEffect( () => {
-        console.log("rerender");
+        //check if amount of re-renders is reasonable from time to time
+        //console.log("rerender!");
         setMapData(data);
     })
 
