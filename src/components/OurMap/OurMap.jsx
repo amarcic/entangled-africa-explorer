@@ -47,16 +47,22 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
     const [objectId, setObjectId] = useState(1189040);
-    const [mapData, setMapData] = useState(null);
+    const [input, setInput] = useState({objectId: 1189040});
+    const [mapData, setMapData] = useState({});
 
-    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: objectId }});
-
+    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: input.objectId }});
+    //console.log(data)
     //for testing
     //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
+    const handleInputChange = (event) => setInput({
+        ...input,
+        [event.currentTarget.name]: event.currentTarget.value
+    })
 
     useEffect( () => {
+        console.log("rerender");
         setMapData(data);
     })
 
@@ -64,7 +70,13 @@ export const OurMap = () => {
         <div>
             <h2>{t('Map')}</h2>
             <div>
-                <input defaultValue={objectId} onChange={(event) => {setObjectId(event.target.value)}}/>
+                <input
+                    type="text"
+                    name="objectId"
+                    defaultValue={input.objectId}
+                    onChange={handleInputChange}
+                    //onChange={(event) => {setObjectId(event.target.value)}}
+                />
             </div>
             {mapData? mapData.entity?.name :  <p>no data found</p>}
             <Map
