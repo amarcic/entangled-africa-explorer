@@ -46,8 +46,8 @@ export const OurMap = () => {
     //state
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
-    const [objectId, setObjectId] = useState(1189040);
-    const [input, setInput] = useState({objectId: 1189040});
+    //const [objectId, setObjectId] = useState(1189040);
+    const [input, setInput] = useState({objectId: 1189999});
     const [mapData, setMapData] = useState({});
 
     const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: input.objectId }});
