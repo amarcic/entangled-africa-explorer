@@ -60,31 +60,42 @@ export const OurMap = () => {
     const [mapDataContext, setMapDataContext] = useState({});
 
     const { data, loading, error } = useQuery(GET_OBJECT, {variables: { arachneId: input.objectId }});
+    console.log("is data defined?", data);
     const { dataContext, loadingContext, errorContext } = useQuery(GET_CONTEXT, {variables: { arachneId: input.objectId }});
+    console.log("is dataContext defined? why not? >:(", dataContext);
     //console.log(data)
     //for testing
     //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
-    const handleInputChange = (event) => setInput({
-        ...input,
-        [event.currentTarget.name]: event.currentTarget.value
-    });
+    const handleInputChange = (event) => {
+        setInput({
+            ...input,
+            [event.currentTarget.name]: event.currentTarget.value
+        });
+        console.log("handleInputChange!");
+    };
 
-
-    const handleSwitchChange = (event) => setInput({
-        ...input,
-        [event.target.name]: event.target.checked,
-    });
+    const handleSwitchChange = (event) => {
+        setInput({
+            ...input,
+            [event.target.name]: event.target.checked,
+        });
+        console.log("handleSwitchChange!");
+    };
 
     useEffect( () => {
         //check if amount of re-renders is reasonable from time to time
         console.log("rerender data!");
+        console.log("rerender data --> data: ", data);
+        console.log("rerender data --> input:", input);
         setMapData(data);
     }, [data]);
 
     useEffect( () => {
         console.log("rerender dataContext!");
+        console.log("rerender dataContext --> dataContext: ", dataContext);
+        console.log("rerender dataContext --> input:", input);
         setMapDataContext(dataContext);
     }, [dataContext]);
 
