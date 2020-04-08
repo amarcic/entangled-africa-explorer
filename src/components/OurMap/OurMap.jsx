@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FormGroup, FormControlLabel, Switch } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -11,7 +12,7 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 const mapCenter = [11.5024338, 17.7578122];
 const zoomLevel = 4;
 
-const GET_OBJECT_WITH_CONTEXT = gql`
+const GET_OBJECT = gql`
     query giveInfo($arachneId: ID!) {
         entity(id: $arachneId) {
             identifier
@@ -24,6 +25,13 @@ const GET_OBJECT_WITH_CONTEXT = gql`
                 title
                 begin
             }
+        }
+    }
+`;
+
+const GET_CONTEXT = gql`
+    query giveInfo($arachneId: ID!) {
+        entity(id: $arachneId) {
             related {
                 identifier
                 name
@@ -47,10 +55,12 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
     //const [objectId, setObjectId] = useState(1189040);
-    const [input, setInput] = useState({objectId: 1189999});
+    const [input, setInput] = useState({objectId: 1189999, showRelatedObjects: true});
     const [mapData, setMapData] = useState({});
+    const [mapDataContext, setMapDataContext] = useState({});
 
-    const { data, loading, error } = useQuery(GET_OBJECT_WITH_CONTEXT, {variables: { arachneId: input.objectId }});
+    const { data, loading, error } = useQuery(GET_OBJECT, {variables: { arachneId: input.objectId }});
+    const { dataContext, loadingContext, errorContext } = useQuery(GET_CONTEXT, {variables: { arachneId: input.objectId }});
     //console.log(data)
     //for testing
     //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
@@ -59,13 +69,24 @@ export const OurMap = () => {
     const handleInputChange = (event) => setInput({
         ...input,
         [event.currentTarget.name]: event.currentTarget.value
-    })
+    });
+
+
+    const handleSwitchChange = (event) => setInput({
+        ...input,
+        [event.target.name]: event.target.checked,
+    });
 
     useEffect( () => {
         //check if amount of re-renders is reasonable from time to time
-        console.log("rerender!");
+        console.log("rerender data!");
         setMapData(data);
-    }, [data])
+    }, [data]);
+
+    useEffect( () => {
+        console.log("rerender dataContext!");
+        setMapDataContext(dataContext);
+    }, [dataContext]);
 
     return(
         <div>
@@ -78,6 +99,19 @@ export const OurMap = () => {
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={input.showRelatedObjects}
+                                onChange={handleSwitchChange}
+                                name="showRelatedObjects"
+                                color="primary"
+                            />
+                        }
+                        label="Show/hide related objects"
+                    />
+                </FormGroup>
             </div>
             {mapData? mapData.entity?.name :  <p>no data found</p>}
             <Map
@@ -97,9 +131,7 @@ export const OurMap = () => {
                     }}
                 />
                 }
-                {mapData&&mapData.entity
-                    &&mapData.entity.related
-                    &&mapData.entity.related.map( relatedObj =>
+                {mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related&&mapDataContext.entity.related.map( relatedObj =>
                     {return(relatedObj.spatial
                         &&<Marker
                             key={relatedObj.identifier}
@@ -111,7 +143,7 @@ export const OurMap = () => {
                             }}
                         />
                     )}
-                 )}
+                )}
                 {activeLocation&&<Popup
                     position={activeLocation.spatial.coordinates.split(", ")}
                     onClose={() => {
