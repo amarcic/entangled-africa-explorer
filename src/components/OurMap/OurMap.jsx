@@ -30,7 +30,7 @@ const GET_OBJECT = gql`
 `;
 
 const GET_CONTEXT = gql`
-    query giveInfo($arachneId: ID!) {
+    query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
             related {
                 identifier
@@ -61,7 +61,8 @@ export const OurMap = () => {
 
     const { data, loading, error } = useQuery(GET_OBJECT, {variables: { arachneId: input.objectId }});
     console.log("is data defined?", data);
-    const { dataContext, loadingContext, errorContext } = useQuery(GET_CONTEXT, {variables: { arachneId: input.objectId }});
+    const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT, {variables: { arachneId: input.objectId }});
+
     console.log("is dataContext defined? why not? >:(", dataContext);
     //console.log(data)
     //for testing
@@ -69,18 +70,18 @@ export const OurMap = () => {
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
     const handleInputChange = (event) => {
-        setInput({
-            ...input,
-            [event.currentTarget.name]: event.currentTarget.value
-        });
+            setInput({
+                ...input,
+                [event.currentTarget.name]: event.currentTarget.value
+            });
         console.log("handleInputChange!");
     };
 
     const handleSwitchChange = (event) => {
-        setInput({
-            ...input,
-            [event.target.name]: event.target.checked,
-        });
+            setInput({
+                ...input,
+                [event.target.name]: event.target.checked,
+            });
         console.log("handleSwitchChange!");
     };
 
@@ -89,15 +90,19 @@ export const OurMap = () => {
         console.log("rerender data!");
         console.log("rerender data --> data: ", data);
         console.log("rerender data --> input:", input);
-        setMapData(data);
+        if(data) {
+            setMapData(data);
+        }
     }, [data]);
 
     useEffect( () => {
         console.log("rerender dataContext!");
         console.log("rerender dataContext --> dataContext: ", dataContext);
         console.log("rerender dataContext --> input:", input);
-        setMapDataContext(dataContext);
-    }, [dataContext]);
+        if(dataContext&&input.showRelatedObjects) {
+            setMapDataContext(dataContext);
+        }
+    }, [dataContext, input.showRelatedObjects]);
 
     return(
         <div>
@@ -110,6 +115,8 @@ export const OurMap = () => {
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />
+                {loading && <span>...loading</span>}
+                {error && <span>...error</span>}
                 <FormGroup>
                     <FormControlLabel
                         control={
@@ -123,6 +130,8 @@ export const OurMap = () => {
                         label="Show/hide related objects"
                     />
                 </FormGroup>
+                {loadingContext && <span>...loading</span>}
+                {errorContext && <span>...error</span>}
             </div>
             {mapData? mapData.entity?.name :  <p>no data found</p>}
             <Map
