@@ -145,7 +145,8 @@ export const OurMap = () => {
                 {mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
                     key={mapData.entity.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
-                    position={mapData.entity.spatial.coordinates.split(", ")}
+                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                    position={mapData.entity.spatial.coordinates.split(", ").reverse()}
                     onClick={() =>{
                         setActiveLocation(mapData.entity);
                     }}
@@ -156,7 +157,8 @@ export const OurMap = () => {
                         &&<Marker
                             key={relatedObj.identifier}
                             //position={fakeData.coordinates}
-                            position={relatedObj.spatial.coordinates.split(", ")}
+                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                            position={relatedObj.spatial.coordinates.split(", ").reverse()}
                             opacity={0.5}
                             onClick={() => {
                                 setActiveLocation(relatedObj);
