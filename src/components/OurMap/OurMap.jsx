@@ -151,7 +151,7 @@ export const OurMap = () => {
                     }}
                 />
                 }
-                {mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related&&mapDataContext.entity.related.map( relatedObj =>
+                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related&&mapDataContext.entity.related.map( relatedObj =>
                     {return(relatedObj.spatial
                         &&<Marker
                             key={relatedObj.identifier}
