@@ -167,7 +167,7 @@ export const OurMap = () => {
                     )}
                 )}
                 {activeLocation&&<Popup
-                    position={activeLocation.spatial.coordinates.split(", ")}
+                    position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClose={() => {
                         setActiveLocation(null);
                     }}
