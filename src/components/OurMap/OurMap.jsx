@@ -12,7 +12,7 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 const mapCenter = [11.5024338, 17.7578122];
 const zoomLevel = 4;
 
-const GET_OBJECT = gql`
+const GET_OBJECT_BY_ID = gql`
     query giveInfo($arachneId: ID!) {
         entity(id: $arachneId) {
             identifier
@@ -24,12 +24,13 @@ const GET_OBJECT = gql`
             temporalArachne {
                 title
                 begin
+                end
             }
         }
     }
 `;
 
-const GET_CONTEXT = gql`
+const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
             related {
@@ -44,6 +45,19 @@ const GET_CONTEXT = gql`
     }
 `;
 
+const GET_OBJECTS_BY_STRING = gql`
+    query searchByString ($searchTerm: String, $project: [String]) {
+        entitiesByString(searchString: $searchTerm, filters:$project) {
+            identifier
+            name
+            spatial {
+                name
+                coordinates
+            }
+        }
+    }
+`
+
 export const OurMap = () => {
     const {t, i18n} = useTranslation();
 
@@ -55,41 +69,43 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
     //const [objectId, setObjectId] = useState(1189040);
-    const [input, setInput] = useState({objectId: 1189999, showRelatedObjects: true});
+    const [input, setInput] = useState({objectId: 1189999, searchStr: "Stein", projectList: ["Syrian-Heritage-Archive-Project"], showRelatedObjects: true});
     const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
+    const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
 
-    const { data, loading, error } = useQuery(GET_OBJECT, {variables: { arachneId: input.objectId }});
-    console.log("is data defined?", data);
-    const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT, {variables: { arachneId: input.objectId }});
-
-    console.log("is dataContext defined? why not? >:(", dataContext);
+    const { data, loading, error } = useQuery(GET_OBJECT_BY_ID, {variables: { arachneId: input.objectId }});
+    //console.log("is data defined?", data);
+    const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
+    const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
+        useQuery(GET_OBJECTS_BY_STRING, {variables: { searchTerm: input.searchStr, project: input.projectList }});
+    //console.log("is dataContext defined? why not? >:(", dataContext);
     //console.log(data)
     //for testing
     //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
     //console.log(data?.entity?.spatial?.coordinates?.split(", "))
 
     const handleInputChange = (event) => {
-            setInput({
-                ...input,
-                [event.currentTarget.name]: event.currentTarget.value
-            });
+        setInput({
+            ...input,
+            [event.currentTarget.name]: event.currentTarget.value
+        });
         console.log("handleInputChange!");
     };
 
     const handleSwitchChange = (event) => {
-            setInput({
-                ...input,
-                [event.target.name]: event.target.checked,
-            });
+        setInput({
+            ...input,
+            [event.target.name]: event.target.checked,
+        });
         console.log("handleSwitchChange!");
     };
 
     useEffect( () => {
         //check if amount of re-renders is reasonable from time to time
         console.log("rerender data!");
-        console.log("rerender data --> data: ", data);
-        console.log("rerender data --> input:", input);
+        //console.log("rerender data --> data: ", data);
+        //console.log("rerender data --> input:", input);
         if(data) {
             setMapData(data);
         }
@@ -97,21 +113,44 @@ export const OurMap = () => {
 
     useEffect( () => {
         console.log("rerender dataContext!");
-        console.log("rerender dataContext --> dataContext: ", dataContext);
-        console.log("rerender dataContext --> input:", input);
+        //console.log("rerender dataContext --> dataContext: ", dataContext);
+        //console.log("rerender dataContext --> input:", input);
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
         }
     }, [dataContext, input.showRelatedObjects]);
 
+    useEffect( () => {
+        console.log("rerender dataObjectsByString!");
+        console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
+        console.log("rerender dataObjectsByString --> input:", input);
+        if(dataObjectsByString&&input.searchStr&&input.projectList) {
+            setMapDataObjectsByString(dataObjectsByString);
+        }
+    }, [dataObjectsByString, input.searchStr, input.projectList]);
+
     return(
         <div>
             <h2>{t('Map')}</h2>
             <div>
-                <input
+                {/*<input
                     type="text"
                     name="objectId"
                     defaultValue={input.objectId}
+                    onChange={handleInputChange}
+                    //onChange={(event) => {setObjectId(event.target.value)}}
+                />*/}
+                <input
+                    type="text"
+                    name="searchStr"
+                    defaultValue={input.searchStr}
+                    onChange={handleInputChange}
+                    //onChange={(event) => {setObjectId(event.target.value)}}
+                />
+                <input
+                    type="text"
+                    name="projectList"
+                    defaultValue={input.projectList}
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />
@@ -133,7 +172,7 @@ export const OurMap = () => {
                 {loadingContext && <span>...loading</span>}
                 {errorContext && <span>...error</span>}
             </div>
-            {mapData? mapData.entity?.name :  <p>no data found</p>}
+            {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
             <Map
                 center={mapCenter}
                 zoom={zoomLevel}
@@ -142,7 +181,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
+                {/*{mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
                     key={mapData.entity.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     //coordinates need to be reversed because of different standards between geojson and leaflet
@@ -176,6 +215,31 @@ export const OurMap = () => {
                         <h2>{activeLocation.name}</h2>
                         <p>{activeLocation.spatial.name}</p>
                         {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
+                    </div>
+                </Popup>}*/}
+                {mapDataObjectsByString&&input.searchStr&&input.projectList
+                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( entities =>
+                    {return(entities.spatial
+                        &&<Marker
+                            key={entities.identifier}
+                            //position={fakeData.coordinates}
+                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                            position={entities.spatial.coordinates.split(", ").reverse()}
+                            onClick={() => {
+                                setActiveLocation(entities);
+                            }}
+                        />
+                    )}
+                )}
+                {activeLocation&&<Popup
+                    position={activeLocation.spatial.coordinates.split(", ").reverse()}
+                    onClose={() => {
+                        setActiveLocation(null);
+                    }}
+                >
+                    <div>
+                        <h2>{activeLocation.name}</h2>
+                        <p>{activeLocation.spatial.name}</p>
                     </div>
                 </Popup>}
             </Map>
