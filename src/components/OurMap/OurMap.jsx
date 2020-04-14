@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Switch, Checkbox } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Switch, Checkbox, FormLabel } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -71,8 +71,8 @@ export const OurMap = () => {
     //const [objectId, setObjectId] = useState(1189040);
     const [input, setInput] = useState({
         objectId: 1189999,
-        searchStr: "Stein",
-        projectList: ["Syrian-Heritage-Archive-Project", "AAArC"],
+        searchStr: "*",
+        projectList: ["Syrian-Heritage-Archive-Project", "AAArC", "dai-rom-nara"],
         checkedProjects: [],
         showRelatedObjects: true
     });
@@ -107,10 +107,12 @@ export const OurMap = () => {
         console.log("handleSwitchChange!");
     };
 
-    const handleCheck = (event, x) => {
+    const handleCheck = (project) => {
         setInput({
             ...input,
-            checkedProjects: input.checkedProjects.includes(x) ? input.checkedProjects.filter(c => c !== x) : [...input.checkedProjects, x]
+            checkedProjects: input.checkedProjects.includes(project)
+                ? input.checkedProjects.filter(checked => checked !== project)
+                : [...input.checkedProjects, project]
         });
         console.log("handleCheck!");
     };
@@ -155,13 +157,19 @@ export const OurMap = () => {
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />*/}
-                <input
-                    type="text"
-                    name="searchStr"
-                    defaultValue={input.searchStr}
-                    onChange={handleInputChange}
-                    //onChange={(event) => {setObjectId(event.target.value)}}
-                />
+                <FormControlLabel
+                    control={
+                        <input
+                            type="text"
+                            name="searchStr"
+                            defaultValue={input.searchStr}
+                            onChange={handleInputChange}
+                            //onChange={(event) => {setObjectId(event.target.value)}}
+                        />
+                    }
+                    label="Search term"
+                    labelPlacement="start"
+                    />
                 {/*<input
                     type="text"
                     name="projectList"
@@ -170,21 +178,14 @@ export const OurMap = () => {
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />*/}
                 <FormGroup>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                defaultChecked={false}
-                            />
-                        }
-                        label="All projects"
-                    />
+                    <FormLabel component="legend">Filter by projects</FormLabel>
                     {input.projectList && input.projectList.map(project => {
                         return (project
                             && <FormControlLabel
                                 control={
                                     <Checkbox
                                         checked={input.checkedProjects.includes(project)}
-                                        onChange={event => handleCheck(event, project)}
+                                        onChange={() => handleCheck(project)}
                                         name={project}
                                         key={project}
                                     />
