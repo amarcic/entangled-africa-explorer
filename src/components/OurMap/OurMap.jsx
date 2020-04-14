@@ -71,9 +71,12 @@ export const OurMap = () => {
     //const [objectId, setObjectId] = useState(1189040);
     const [input, setInput] = useState({
         objectId: 1189999,
-        searchStr: "*",
-        projectList: ["Syrian-Heritage-Archive-Project", "AAArC", "dai-rom-nara"],
-        checkedProjects: [],
+        searchStr: "Wand",
+        //projectList: ["Syrian-Heritage-Archive-Project", "AAArC", "dai-rom-nara"],
+        projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
+            {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
+            {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
+        checkedProjects: ["Syrian-Heritage-Archive-Project"],
         showRelatedObjects: true
     });
     const [mapData, setMapData] = useState({});
@@ -110,9 +113,9 @@ export const OurMap = () => {
     const handleCheck = (project) => {
         setInput({
             ...input,
-            checkedProjects: input.checkedProjects.includes(project)
-                ? input.checkedProjects.filter(checked => checked !== project)
-                : [...input.checkedProjects, project]
+            checkedProjects: input.checkedProjects.includes(project.projectBestandsname)
+                ? input.checkedProjects.filter(checked => checked !== project.projectBestandsname)
+                : [...input.checkedProjects, project.projectBestandsname]
         });
         console.log("handleCheck!");
     };
@@ -184,13 +187,13 @@ export const OurMap = () => {
                             && <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={input.checkedProjects.includes(project)}
+                                        checked={input.checkedProjects.includes(project.projectBestandsname)}
                                         onChange={() => handleCheck(project)}
-                                        name={project}
-                                        key={project}
+                                        name={project.projectBestandsname}
+                                        key={project.projectBestandsname}
                                     />
                                 }
-                                label={project}
+                                label={project.projectLabel}
                             />
                         )
                     })}
