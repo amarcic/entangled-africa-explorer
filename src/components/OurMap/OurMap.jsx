@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Switch } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Switch, Checkbox } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -69,7 +69,13 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     //if you want to use or change the Id of the displayed object use the state constants below
     //const [objectId, setObjectId] = useState(1189040);
-    const [input, setInput] = useState({objectId: 1189999, searchStr: "Stein", projectList: ["Syrian-Heritage-Archive-Project"], showRelatedObjects: true});
+    const [input, setInput] = useState({
+        objectId: 1189999,
+        searchStr: "Stein",
+        projectList: ["Syrian-Heritage-Archive-Project", "AAArC"],
+        checkedProjects: [],
+        showRelatedObjects: true
+    });
     const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
@@ -78,7 +84,7 @@ export const OurMap = () => {
     //console.log("is data defined?", data);
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
-        useQuery(GET_OBJECTS_BY_STRING, {variables: { searchTerm: input.searchStr, project: input.projectList }});
+        useQuery(GET_OBJECTS_BY_STRING, {variables: {searchTerm: input.searchStr, project: input.checkedProjects}});
     //console.log("is dataContext defined? why not? >:(", dataContext);
     //console.log(data)
     //for testing
@@ -96,9 +102,17 @@ export const OurMap = () => {
     const handleSwitchChange = (event) => {
         setInput({
             ...input,
-            [event.target.name]: event.target.checked,
+            [event.target.name]: event.target.checked
         });
         console.log("handleSwitchChange!");
+    };
+
+    const handleCheck = (event, x) => {
+        setInput({
+            ...input,
+            checkedProjects: input.checkedProjects.includes(x) ? input.checkedProjects.filter(c => c !== x) : [...input.checkedProjects, x]
+        });
+        console.log("handleCheck!");
     };
 
     useEffect( () => {
@@ -124,10 +138,11 @@ export const OurMap = () => {
         console.log("rerender dataObjectsByString!");
         console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
         console.log("rerender dataObjectsByString --> input:", input);
-        if(dataObjectsByString&&input.searchStr&&input.projectList) {
+        if (dataObjectsByString && input.searchStr && input.checkedProjects) {
             setMapDataObjectsByString(dataObjectsByString);
         }
-    }, [dataObjectsByString, input.searchStr, input.projectList]);
+    }, [dataObjectsByString, input.searchStr, input.checkedProjects]);
+
 
     return(
         <div>
@@ -147,13 +162,38 @@ export const OurMap = () => {
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
                 />
-                <input
+                {/*<input
                     type="text"
                     name="projectList"
                     defaultValue={input.projectList}
                     onChange={handleInputChange}
                     //onChange={(event) => {setObjectId(event.target.value)}}
-                />
+                />*/}
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                defaultChecked={false}
+                            />
+                        }
+                        label="All projects"
+                    />
+                    {input.projectList && input.projectList.map(project => {
+                        return (project
+                            && <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={input.checkedProjects.includes(project)}
+                                        onChange={event => handleCheck(event, project)}
+                                        name={project}
+                                        key={project}
+                                    />
+                                }
+                                label={project}
+                            />
+                        )
+                    })}
+                </FormGroup>
                 {loading && <span>...loading</span>}
                 {error && <span>...error</span>}
                 <FormGroup>
