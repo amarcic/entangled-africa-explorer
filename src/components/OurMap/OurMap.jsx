@@ -263,9 +263,9 @@ export const OurMap = () => {
                     </div>
                 </Popup>}*/}
                 {mapDataObjectsByString&&input.searchStr&&input.projectList
-                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( entities =>
-                {return(entities.spatial
-                    && entities.spatial.map( place =>
+                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( entity =>
+                {return(entity.spatial
+                    && entity.spatial.map( place =>
                         { return( place
                             && <Marker
                                 key={place.identifier}
@@ -273,7 +273,7 @@ export const OurMap = () => {
                                 //coordinates need to be reversed because of different standards between geojson and leaflet
                                 position={place.coordinates.split(", ").reverse()}
                                 onClick={() => {
-                                    setActiveLocation(place);
+                                    setActiveLocation({...entity, spatial: place});
                                 }}
                             />
                         )}
