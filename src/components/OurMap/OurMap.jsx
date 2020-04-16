@@ -200,8 +200,6 @@ export const OurMap = () => {
                         )
                     })}
                 </FormGroup>
-                {loading && <span>...loading</span>}
-                {error && <span>...error</span>}
                 <FormGroup>
                     <FormControlLabel
                         control={
@@ -215,8 +213,12 @@ export const OurMap = () => {
                         label="Show/hide related objects"
                     />
                 </FormGroup>
-                {loadingContext && <span>...loading</span>}
-                {errorContext && <span>...error</span> && console.log(errorContext)}
+                {loading && <span>...loading</span>}
+                {error && <span>...error</span> && console.log(error)}
+                {loadingContext && <span>...loadingContext</span>}
+                {errorContext && <span>...errorContext</span> && console.log(errorContext)}
+                {loadingObjectsByString && <span>...loadingObjectsByString</span>}
+                {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString)}
             </div>
             {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
             <Map
