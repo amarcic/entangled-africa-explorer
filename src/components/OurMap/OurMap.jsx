@@ -266,12 +266,12 @@ export const OurMap = () => {
                     </div>
                 </Popup>}*/}
                 {mapDataObjectsByString&&input.searchStr&&input.projectList
-                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( entity =>
+                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( (entity, indexEntity) =>
                 {return(entity.spatial
-                    && entity.spatial.map( place =>
+                    && entity.spatial.map( (place, indexPlace) =>
                         { return( place
                             && <Marker
-                                key={place.identifier}
+                                key={`${place.identifier}-${indexPlace}-${indexEntity}`}
                                 //position={fakeData.coordinates}
                                 //coordinates need to be reversed because of different standards between geojson and leaflet
                                 position={place.coordinates.split(", ").reverse()}
