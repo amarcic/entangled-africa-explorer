@@ -51,6 +51,7 @@ const GET_OBJECTS_BY_STRING = gql`
             identifier
             name
             spatial {
+                identifier
                 name
                 coordinates
             }
@@ -214,7 +215,7 @@ export const OurMap = () => {
                     />
                 </FormGroup>
                 {loadingContext && <span>...loading</span>}
-                {errorContext && <span>...error</span>}
+                {errorContext && <span>...error</span> && console.log(errorContext)}
             </div>
             {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
             <Map
@@ -263,18 +264,21 @@ export const OurMap = () => {
                 </Popup>}*/}
                 {mapDataObjectsByString&&input.searchStr&&input.projectList
                 &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( entities =>
-                    {return(entities.spatial
-                        &&<Marker
-                            key={entities.identifier}
-                            //position={fakeData.coordinates}
-                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                            position={entities.spatial.coordinates.split(", ").reverse()}
-                            onClick={() => {
-                                setActiveLocation(entities);
-                            }}
-                        />
-                    )}
-                )}
+                {return(entities.spatial
+                    && entities.spatial.map( place =>
+                        { return( place
+                            && <Marker
+                                key={place.identifier}
+                                //position={fakeData.coordinates}
+                                //coordinates need to be reversed because of different standards between geojson and leaflet
+                                position={place.coordinates.split(", ").reverse()}
+                                onClick={() => {
+                                    setActiveLocation(place);
+                                }}
+                            />
+                        )}
+                    )
+                )})}
                 {activeLocation&&<Popup
                     position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClose={() => {
