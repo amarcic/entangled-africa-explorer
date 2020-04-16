@@ -186,6 +186,7 @@ export const OurMap = () => {
                     {input.projectList && input.projectList.map(project => {
                         return (project
                             && <FormControlLabel
+                                key={project.projectBestandsname}
                                 control={
                                     <Checkbox
                                         checked={input.checkedProjects.includes(project.projectBestandsname)}
