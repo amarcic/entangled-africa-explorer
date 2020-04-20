@@ -74,12 +74,12 @@ export const OurMap = () => {
     //const [objectId, setObjectId] = useState(1189040);
     const [input, setInput] = useState({
         objectId: 1189999,
-        searchStr: "Wand",
+        searchStr: "Gemme",
         //projectList: ["Syrian-Heritage-Archive-Project", "AAArC", "dai-rom-nara"],
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
-        checkedProjects: ["Syrian-Heritage-Archive-Project"],
+        checkedProjects: [],
         showSearchResults: true,
         showRelatedObjects: false
     });
@@ -118,9 +118,9 @@ export const OurMap = () => {
         console.log(id);
         setInput({
             ...input,
-            objectId: id,
-            showSearchResults: false,
-            showRelatedObjects: true
+            objectId: Number(id),
+            showSearchResults: !input.showSearchResults,
+            showRelatedObjects: !input.showRelatedObjects
         });
         console.log("handleRelatedObjects!");
     };
@@ -137,30 +137,30 @@ export const OurMap = () => {
 
     useEffect( () => {
         //check if amount of re-renders is reasonable from time to time
-        console.log("rerender data!");
-        //console.log("rerender data --> data: ", data);
-        //console.log("rerender data --> input:", input);
         if(data) {
             setMapData(data);
+            console.log("rerender data!");
+            console.log("rerender data --> data: ", data);
+            console.log("rerender data --> input:", input);
         }
     }, [data]);
 
     useEffect( () => {
-        console.log("rerender dataContext!");
-        //console.log("rerender dataContext --> dataContext: ", dataContext);
-        //console.log("rerender dataContext --> input:", input);
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
-            setMapDataObjectsByString(null); //is this okay?
+            setMapData(data);
+            console.log("rerender dataContext!");
+            console.log("rerender dataContext --> dataContext: ", dataContext);
+            console.log("rerender dataContext --> input:", input);
         }
     }, [dataContext, input.showRelatedObjects]);
 
     useEffect( () => {
-        console.log("rerender dataObjectsByString!");
-        console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
-        console.log("rerender dataObjectsByString --> input:", input);
         if (dataObjectsByString && input.searchStr && input.checkedProjects && input.showSearchResults) {
             setMapDataObjectsByString(dataObjectsByString);
+            console.log("rerender dataObjectsByString!");
+            console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
+            console.log("rerender dataObjectsByString --> input:", input);
         }
     }, [dataObjectsByString, input.searchStr, input.checkedProjects, input.showSearchResults]);
 
@@ -236,6 +236,13 @@ export const OurMap = () => {
                 {errorContext && <span>...errorContext</span> && console.log(errorContext)}
                 {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString)}
+                {input.showRelatedObjects && <Button
+                    onClick={() => handleRelatedObjects(activeLocation.identifier)}
+                    name="hideRelatedObjects"
+                    variant="contained"
+                    color="primary">
+                    Return to search results (hide related objects)
+                </Button>}
             </div>
             {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
             <Map
@@ -246,15 +253,15 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {/*mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
-                    key={mapData.entity.identifier}
+                {input.showRelatedObjects&&activeLocation&&<Marker
+                    key={activeLocation.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     //coordinates need to be reversed because of different standards between geojson and leaflet
-                    position={mapData.entity.spatial.coordinates.split(", ").reverse()}
+                    position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClick={() =>{
-                        setActiveLocation(mapData.entity);
+                        setActiveLocation(activeLocation);
                     }}
-                />*/}
+                />}
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
                 &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
                 {return(relatedObj.spatial
@@ -284,7 +291,7 @@ export const OurMap = () => {
                         {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
                     </div>
                 </Popup>*/}
-                {mapDataObjectsByString&&input.searchStr&&input.projectList
+                {input.showSearchResults&&input.searchStr&&input.projectList&&mapDataObjectsByString
                 &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( (entity, indexEntity) =>
                 {return(entity.spatial
                     && entity.spatial.map( (place, indexPlace) =>
@@ -314,7 +321,9 @@ export const OurMap = () => {
                             onClick={() => handleRelatedObjects(activeLocation.identifier)}
                             name="showRelatedObjects"
                             variant="contained"
-                            color="primary">
+                            color="primary"
+                            disabled={input.showRelatedObjects}
+                        >
                             Show related objects
                         </Button>
                     </div>
