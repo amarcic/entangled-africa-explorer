@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Switch, Checkbox, FormLabel } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Switch, Checkbox, FormLabel, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -18,6 +18,7 @@ const GET_OBJECT_BY_ID = gql`
             identifier
             name
             spatial {
+                identifier
                 name
                 coordinates
             }
@@ -37,6 +38,7 @@ const GET_CONTEXT_BY_ID = gql`
                 identifier
                 name
                 spatial {
+                    identifier
                     name
                     coordinates
                 }
@@ -78,7 +80,8 @@ export const OurMap = () => {
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
         checkedProjects: ["Syrian-Heritage-Archive-Project"],
-        showRelatedObjects: true
+        showSearchResults: true,
+        showRelatedObjects: false
     });
     const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
@@ -103,12 +106,23 @@ export const OurMap = () => {
         console.log("handleInputChange!");
     };
 
-    const handleSwitchChange = (event) => {
+    /*const handleSwitchChange = (event) => {
         setInput({
             ...input,
             [event.target.name]: event.target.checked
         });
         console.log("handleSwitchChange!");
+    };*/
+
+    const handleRelatedObjects = (id) => {
+        console.log(id);
+        setInput({
+            ...input,
+            objectId: id,
+            showSearchResults: false,
+            showRelatedObjects: true
+        });
+        console.log("handleRelatedObjects!");
     };
 
     const handleCheck = (project) => {
@@ -137,6 +151,7 @@ export const OurMap = () => {
         //console.log("rerender dataContext --> input:", input);
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
+            setMapDataObjectsByString(null); //is this okay?
         }
     }, [dataContext, input.showRelatedObjects]);
 
@@ -144,10 +159,10 @@ export const OurMap = () => {
         console.log("rerender dataObjectsByString!");
         console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
         console.log("rerender dataObjectsByString --> input:", input);
-        if (dataObjectsByString && input.searchStr && input.checkedProjects) {
+        if (dataObjectsByString && input.searchStr && input.checkedProjects && input.showSearchResults) {
             setMapDataObjectsByString(dataObjectsByString);
         }
-    }, [dataObjectsByString, input.searchStr, input.checkedProjects]);
+    }, [dataObjectsByString, input.searchStr, input.checkedProjects, input.showSearchResults]);
 
 
     return(
@@ -200,7 +215,7 @@ export const OurMap = () => {
                         )
                     })}
                 </FormGroup>
-                <FormGroup>
+                {/*<FormGroup>
                     <FormControlLabel
                         control={
                             <Switch
@@ -212,7 +227,9 @@ export const OurMap = () => {
                         }
                         label="Show/hide related objects"
                     />
-                </FormGroup>
+                </FormGroup>*/}
+                {input.showSearchResults && <span>Showing search results</span>}
+                {input.showRelatedObjects && <span>Showing related objects</span>}
                 {loading && <span>...loading</span>}
                 {error && <span>...error</span> && console.log(error)}
                 {loadingContext && <span>...loadingContext</span>}
@@ -229,7 +246,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {/*{mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
+                {/*mapData&&mapData.entity&&mapData.entity.spatial&&<Marker
                     key={mapData.entity.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     //coordinates need to be reversed because of different standards between geojson and leaflet
@@ -237,23 +254,25 @@ export const OurMap = () => {
                     onClick={() =>{
                         setActiveLocation(mapData.entity);
                     }}
-                />
-                }
-                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related&&mapDataContext.entity.related.map( relatedObj =>
-                    {return(relatedObj.spatial
+                />*/}
+                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
+                {return(relatedObj.spatial
+                    &&relatedObj.spatial.map( (place, indexPlace) =>
+                    {return(place
                         &&<Marker
-                            key={relatedObj.identifier}
+                            key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
                             //position={fakeData.coordinates}
                             //coordinates need to be reversed because of different standards between geojson and leaflet
-                            position={relatedObj.spatial.coordinates.split(", ").reverse()}
+                            position={place.coordinates.split(", ").reverse()}
                             opacity={0.5}
                             onClick={() => {
-                                setActiveLocation(relatedObj);
+                                setActiveLocation({...relatedObj, spatial: place});
                             }}
                         />
-                    )}
-                )}
-                {activeLocation&&<Popup
+                    )})
+                )})}
+                {/*activeLocation&&<Popup
                     position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClose={() => {
                         setActiveLocation(null);
@@ -264,7 +283,7 @@ export const OurMap = () => {
                         <p>{activeLocation.spatial.name}</p>
                         {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
                     </div>
-                </Popup>}*/}
+                </Popup>*/}
                 {mapDataObjectsByString&&input.searchStr&&input.projectList
                 &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( (entity, indexEntity) =>
                 {return(entity.spatial
@@ -291,6 +310,13 @@ export const OurMap = () => {
                     <div>
                         <h2>{activeLocation.name}</h2>
                         <p>{activeLocation.spatial.name}</p>
+                        <Button
+                            onClick={() => handleRelatedObjects(activeLocation.identifier)}
+                            name="showRelatedObjects"
+                            variant="contained"
+                            color="primary">
+                            Show related objects
+                        </Button>
                     </div>
                 </Popup>}
             </Map>
