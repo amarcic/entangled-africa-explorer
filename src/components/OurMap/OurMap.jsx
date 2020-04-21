@@ -133,6 +133,7 @@ export const OurMap = () => {
             showSearchResults: !input.showSearchResults,
             showRelatedObjects: !input.showRelatedObjects
         });
+        if (activeLocation) {setActiveLocation(null)}
         console.log("handleRelatedObjects!");
     };
 
