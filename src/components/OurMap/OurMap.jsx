@@ -34,6 +34,17 @@ const GET_OBJECT_BY_ID = gql`
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
+            name
+            spatial {
+                identifier
+                name
+                coordinates
+            }
+            temporalArachne {
+                title
+                begin
+                end
+            }
             related {
                 identifier
                 name
@@ -148,7 +159,9 @@ export const OurMap = () => {
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
-            setMapData(data);
+            //why set mapdata?
+            //setMapData(data);
+            //console.log(mapData);
             console.log("rerender dataContext!");
             console.log("rerender dataContext --> dataContext: ", dataContext);
             console.log("rerender dataContext --> input:", input);
@@ -262,6 +275,21 @@ export const OurMap = () => {
                         setActiveLocation(activeLocation);
                     }}
                 />}
+                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
+                {return(place
+                    &&<Marker
+                        key={`${place.identifier}-${indexPlace}`}
+                        //position={fakeData.coordinates}
+                        //coordinates need to be reversed because of different standards between geojson and leaflet
+                        position={place.coordinates.split(", ").reverse()}
+                        opacity={1}
+                        onClick={() => {
+                            setActiveLocation({...relatedObj, spatial: place});
+                        }}
+                    />
+                )})
+                }
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
                 &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
                 {return(relatedObj.spatial
