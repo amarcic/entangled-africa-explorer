@@ -250,7 +250,7 @@ export const OurMap = () => {
                 {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString)}
                 {input.showRelatedObjects && <Button
-                    onClick={() => handleRelatedObjects(activeLocation.identifier)}
+                    onClick={() => handleRelatedObjects(mapDataContext.identifier)}
                     name="hideRelatedObjects"
                     variant="contained"
                     color="primary">
@@ -266,7 +266,8 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {input.showRelatedObjects&&activeLocation&&<Marker
+                {/*
+                    input.showRelatedObjects&&activeLocation&&<Marker
                     key={activeLocation.identifier}
                     //position={data?.entity?.spatial?.coordinates?.split(", ")}
                     //coordinates need to be reversed because of different standards between geojson and leaflet
@@ -274,7 +275,7 @@ export const OurMap = () => {
                     onClick={() =>{
                         setActiveLocation(activeLocation);
                     }}
-                />}
+                />*/}
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
