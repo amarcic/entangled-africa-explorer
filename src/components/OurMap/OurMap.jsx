@@ -12,6 +12,7 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 const mapCenter = [11.5024338, 17.7578122];
 const zoomLevel = 4;
 
+/*
 const GET_OBJECT_BY_ID = gql`
     query giveInfo($arachneId: ID!) {
         entity(id: $arachneId) {
@@ -30,11 +31,13 @@ const GET_OBJECT_BY_ID = gql`
         }
     }
 `;
+*/
 
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
             name
+            identifier
             spatial {
                 identifier
                 name
@@ -84,7 +87,7 @@ export const OurMap = () => {
     //if you want to use or change the Id of the displayed object use the state constants below
     //const [objectId, setObjectId] = useState(1189040);
     const [input, setInput] = useState({
-        objectId: 1189999,
+        objectId: 1253343,
         searchStr: "Gemme",
         //projectList: ["Syrian-Heritage-Archive-Project", "AAArC", "dai-rom-nara"],
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
@@ -94,20 +97,18 @@ export const OurMap = () => {
         showSearchResults: true,
         showRelatedObjects: false
     });
-    const [mapData, setMapData] = useState({});
+    //const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
 
-    const { data, loading, error } = useQuery(GET_OBJECT_BY_ID, {variables: { arachneId: input.objectId }});
+    //const { data, loading, error } = useQuery(GET_OBJECT_BY_ID, {variables: { arachneId: input.objectId }});
     //console.log("is data defined?", data);
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
         useQuery(GET_OBJECTS_BY_STRING, {variables: {searchTerm: input.searchStr, project: input.checkedProjects}});
     //console.log("is dataContext defined? why not? >:(", dataContext);
     //console.log(data)
-    //for testing
-    //const fakeData = { key: "234", coordinates: [11.5024338, 17.7578122] }
-    //console.log(data?.entity?.spatial?.coordinates?.split(", "))
+
 
     const handleInputChange = (event) => {
         setInput({
@@ -129,11 +130,12 @@ export const OurMap = () => {
         console.log(id);
         setInput({
             ...input,
-            objectId: Number(id),
+            objectId: id ? Number(id) : input.objectId,
             showSearchResults: !input.showSearchResults,
             showRelatedObjects: !input.showRelatedObjects
         });
-        if (activeLocation) {setActiveLocation(null)}
+        // first failed attempt to close popup on click on handle related objects button
+        // if (activeLocation) {setActiveLocation(null)}
         console.log("handleRelatedObjects!");
     };
 
@@ -147,6 +149,7 @@ export const OurMap = () => {
         console.log("handleCheck!");
     };
 
+    /*
     useEffect( () => {
         //check if amount of re-renders is reasonable from time to time
         if(data) {
@@ -156,6 +159,7 @@ export const OurMap = () => {
             console.log("rerender data --> input:", input);
         }
     }, [data]);
+    */
 
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
@@ -244,14 +248,14 @@ export const OurMap = () => {
                 </FormGroup>*/}
                 {input.showSearchResults && <span>Showing search results</span>}
                 {input.showRelatedObjects && <span>Showing related objects</span>}
-                {loading && <span>...loading</span>}
-                {error && <span>...error</span> && console.log(error)}
+                {/*loading && <span>...loading</span>*/}
+                {/*error && <span>...error</span> && console.log(error)*/}
                 {loadingContext && <span>...loadingContext</span>}
                 {errorContext && <span>...errorContext</span> && console.log(errorContext)}
                 {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString)}
                 {input.showRelatedObjects && <Button
-                    onClick={() => handleRelatedObjects(mapDataContext.identifier)}
+                    onClick={() => handleRelatedObjects()}
                     name="hideRelatedObjects"
                     variant="contained"
                     color="primary">
@@ -277,7 +281,7 @@ export const OurMap = () => {
                         setActiveLocation(activeLocation);
                     }}
                 />*/}
-                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
                     &&<Marker
