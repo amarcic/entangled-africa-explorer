@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Switch, Checkbox, FormLabel, Button } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button } from '@material-ui/core';
+//import { Switch } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
+//import { Icon } from 'leaflet';
 
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
@@ -36,8 +37,8 @@ const GET_OBJECT_BY_ID = gql`
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
-            name
             identifier
+            name
             spatial {
                 identifier
                 name
@@ -291,7 +292,7 @@ export const OurMap = () => {
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
                         onClick={() => {
-                            setActiveLocation({...relatedObj, spatial: place});
+                            setActiveLocation({...mapDataContext.entity, spatial: place});
                         }}
                     />
                 )})
