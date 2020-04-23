@@ -52,6 +52,7 @@ const GET_CONTEXT_BY_ID = gql`
             related {
                 identifier
                 name
+                type
                 spatial {
                     identifier
                     name
@@ -343,7 +344,7 @@ export const OurMap = () => {
                             (mapDataContext.entity.related
                                 &&mapDataContext.entity.related.map( relatedObj =>
                                     <li>{relatedObj
-                                        ? relatedObj.name
+                                        ? `${relatedObj.name} (${relatedObj.type})`
                                         : "no access"
                                     }</li>
                                 ))
