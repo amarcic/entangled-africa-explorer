@@ -49,7 +49,7 @@ const GET_CONTEXT_BY_ID = gql`
                 begin
                 end
             }
-            related {
+            related(types: [Einzelobjekte]) {
                 identifier
                 name
                 type
