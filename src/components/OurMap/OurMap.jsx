@@ -98,7 +98,8 @@ export const OurMap = () => {
         timeBegin: "",
         timeEnd: "",
         chronOntologyId: "",
-        coordinatesBbox: ""
+        boundingBoxCorner1: "",
+        boundingBoxCorner2: ""
     });
     //const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
@@ -151,6 +152,14 @@ export const OurMap = () => {
         });
         console.log("handleCheck!");
     };
+
+    const createBoundingBox = (event) => {
+        setInput({
+            ...input,
+            boundingBoxCorner2: input.boundingBoxCorner1 == "" ? input.boundingBoxCorner2 : event.latlng.lat + ',' + event.latlng.lng,
+            boundingBoxCorner1: input.boundingBoxCorner1 == "" ? event.latlng.lat + ',' + event.latlng.lng : input.boundingBoxCorner1
+        })
+    }
 
     /*
     useEffect( () => {
@@ -270,17 +279,21 @@ export const OurMap = () => {
                 </FormGroup>
                 <FormGroup>
                     <FormLabel component="legend">Filter by coordinates</FormLabel>
-                    <FormControlLabel
-                        control={
-                            <input
-                                type="text"
-                                name="coordinatesBbox"
-                                //defaultValue={input.coordinatesBbox}
-                                onChange={handleInputChange}
-                            />
-                        }
-                        label="Bounding box (comma-separated coordinates)"
-                        labelPlacement="start"
+                    <input
+                        type="text"
+                        name="boundingBoxCorner1"
+                        //defaultValue={input.boundingBoxCorner1}
+                        value={input.boundingBoxCorner1}
+                        placeholder="Enter comma-separated coordinates or click on map to set first corner of bounding box"
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="text"
+                        name="boundingBoxCorner2"
+                        //defaultValue={input.boundingBoxCorner2}
+                        value={input.boundingBoxCorner2}
+                        placeholder="Enter comma-separated coordinates or click on map to set second corner of bounding box"
+                        onChange={handleInputChange}
                     />
                 </FormGroup>
                 {/*<FormGroup>
@@ -319,6 +332,7 @@ export const OurMap = () => {
             <Map
                 center={mapCenter}
                 zoom={zoomLevel}
+                onClick={createBoundingBox}
             >
                 <TileLayer
                     attribution={osmAttr}
