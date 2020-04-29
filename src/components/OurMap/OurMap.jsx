@@ -94,7 +94,11 @@ export const OurMap = () => {
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
         checkedProjects: [],
         showSearchResults: true,
-        showRelatedObjects: false
+        showRelatedObjects: false,
+        timeBegin: "",
+        timeEnd: "",
+        chronOntologyId: "",
+        coordinatesBbox: ""
     });
     //const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
@@ -224,6 +228,60 @@ export const OurMap = () => {
                             />
                         )
                     })}
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel component="legend">Filter by time</FormLabel>
+                    <FormControlLabel
+                        control={
+                            <input
+                                type="text"
+                                name="timeBegin"
+                                //defaultValue={input.timeBegin}
+                                onChange={handleInputChange}
+                            />
+                        }
+                        label="Begin"
+                        labelPlacement="start"
+                    />
+                    <FormControlLabel
+                        control={
+                            <input
+                                type="text"
+                                name="timeEnd"
+                                //defaultValue={input.timeEnd}
+                                onChange={handleInputChange}
+                            />
+                        }
+                        label="End"
+                        labelPlacement="start"
+                    />
+                    <FormControlLabel
+                        control={
+                            <input
+                                type="text"
+                                name="chronOntologyId"
+                                //defaultValue={input.chronOntologyId}
+                                onChange={handleInputChange}
+                            />
+                        }
+                        label="ChronOntology ID"
+                        labelPlacement="start"
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel component="legend">Filter by coordinates</FormLabel>
+                    <FormControlLabel
+                        control={
+                            <input
+                                type="text"
+                                name="coordinatesBbox"
+                                //defaultValue={input.coordinatesBbox}
+                                onChange={handleInputChange}
+                            />
+                        }
+                        label="Bounding box (comma-separated coordinates)"
+                        labelPlacement="start"
+                    />
                 </FormGroup>
                 {/*<FormGroup>
                     <FormControlLabel
