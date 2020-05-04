@@ -4,6 +4,7 @@ import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button } from '@mater
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 //import { Icon } from 'leaflet';
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
@@ -156,8 +157,8 @@ export const OurMap = () => {
     const createBoundingBox = (event) => {
         setInput({
             ...input,
-            boundingBoxCorner2: input.boundingBoxCorner1 == "" ? input.boundingBoxCorner2 : event.latlng.lat + ',' + event.latlng.lng,
-            boundingBoxCorner1: input.boundingBoxCorner1 == "" ? event.latlng.lat + ',' + event.latlng.lng : input.boundingBoxCorner1
+            boundingBoxCorner2: input.boundingBoxCorner1 === "" ? input.boundingBoxCorner2 : event.latlng.lat + ',' + event.latlng.lng,
+            boundingBoxCorner1: input.boundingBoxCorner1 === "" ? event.latlng.lat + ',' + event.latlng.lng : input.boundingBoxCorner1
         })
     }
 
@@ -330,6 +331,7 @@ export const OurMap = () => {
             </div>
             {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
             <Map
+                className="markercluster-map"
                 center={mapCenter}
                 zoom={zoomLevel}
                 onClick={createBoundingBox}
@@ -338,6 +340,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
+                <MarkerClusterGroup>
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
@@ -402,6 +405,7 @@ export const OurMap = () => {
                         )}
                     )
                 )})}
+                </MarkerClusterGroup>
                 {activeLocation&&<Popup
                     position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClose={() => {
