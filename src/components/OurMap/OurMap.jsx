@@ -64,9 +64,9 @@ const GET_CONTEXT_BY_ID = gql`
     }
 `;
 
-const GET_OBJECTS_BY_STRING = gql`
-    query searchByString ($searchTerm: String, $project: [String]) {
-        entitiesByString(searchString: $searchTerm, filters:$project) {
+const GET_OBJECTS = gql`
+    query search ($searchTerm: String, $project: [String], $bbox: [Float], $periodTerm: String) {
+        entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm) {
             identifier
             name
             spatial {
@@ -89,7 +89,7 @@ export const OurMap = () => {
     const [activeLocation, setActiveLocation] = useState(null);
     const [input, setInput] = useState({
         objectId: 0,
-        searchStr: "Gemme",
+        searchStr: "",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
@@ -98,9 +98,9 @@ export const OurMap = () => {
         showRelatedObjects: false,
         timeBegin: "",
         timeEnd: "",
-        chronOntologyId: "",
-        boundingBoxCorner1: "",
-        boundingBoxCorner2: ""
+        chronOntologyTerm: "",
+        boundingBoxCorner1: [],
+        boundingBoxCorner2: []
     });
     //const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
@@ -110,9 +110,7 @@ export const OurMap = () => {
     //console.log("is data defined?", data);
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
-        useQuery(GET_OBJECTS_BY_STRING, {variables: {searchTerm: input.searchStr, project: input.checkedProjects}});
-    //console.log("is dataContext defined? why not? >:(", dataContext);
-    //console.log(data)
+        useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects, bbox: (input.boundingBoxCorner1.concat(input.boundingBoxCorner2)), periodTerm: input.chronOntologyTerm}});
 
 
     const handleInputChange = (event) => {
@@ -157,9 +155,9 @@ export const OurMap = () => {
     const createBoundingBox = (event) => {
         setInput({
             ...input,
-            boundingBoxCorner2: input.boundingBoxCorner1 === "" ? input.boundingBoxCorner2 : event.latlng.lat + ',' + event.latlng.lng,
-            boundingBoxCorner1: input.boundingBoxCorner1 === "" ? event.latlng.lat + ',' + event.latlng.lng : input.boundingBoxCorner1
-        })
+            boundingBoxCorner2: input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)],
+            boundingBoxCorner1: input.boundingBoxCorner1.length===0 ? [Number(event.latlng.lat),Number(event.latlng.lng)] : input.boundingBoxCorner1
+        });
     }
 
     /*
@@ -187,13 +185,14 @@ export const OurMap = () => {
     }, [dataContext, input.showRelatedObjects]);
 
     useEffect( () => {
-        if (dataObjectsByString && input.searchStr && input.checkedProjects && input.showSearchResults) {
+        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+            ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
             setMapDataObjectsByString(dataObjectsByString);
             console.log("rerender dataObjectsByString!");
             console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
             console.log("rerender dataObjectsByString --> input:", input);
         }
-    }, [dataObjectsByString, input.searchStr, input.checkedProjects, input.showSearchResults]);
+    }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
 
     return(
@@ -269,12 +268,12 @@ export const OurMap = () => {
                         control={
                             <input
                                 type="text"
-                                name="chronOntologyId"
-                                //defaultValue={input.chronOntologyId}
+                                name="chronOntologyTerm"
+                                //defaultValue={input.chronOntologyTerm}
                                 onChange={handleInputChange}
                             />
                         }
-                        label="ChronOntology ID"
+                        label="ChronOntology term"
                         labelPlacement="start"
                     />
                 </FormGroup>
@@ -388,8 +387,9 @@ export const OurMap = () => {
                         {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
                     </div>
                 </Popup>*/}
-                {input.showSearchResults&&input.searchStr&&input.projectList&&mapDataObjectsByString
-                &&mapDataObjectsByString.entitiesByString&&mapDataObjectsByString.entitiesByString.map( (entity, indexEntity) =>
+                {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                    ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
                 {return(entity.spatial
                     && entity.spatial.map( (place, indexPlace) =>
                         { return( place
