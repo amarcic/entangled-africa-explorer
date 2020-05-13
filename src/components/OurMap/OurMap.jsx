@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField } from '@material-ui/core';
 //import { Switch } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 //import { Icon } from 'leaflet';
@@ -74,6 +75,7 @@ const GET_OBJECTS = gql`
                 name
                 coordinates
             }
+            periodName
         }
     }
 `
@@ -112,6 +114,11 @@ export const OurMap = () => {
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
         useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects, bbox: (input.boundingBoxCorner1.concat(input.boundingBoxCorner2)), periodTerm: input.chronOntologyTerm}});
 
+    const chronOntologyTerms = [
+        'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
+        'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich',  'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
+        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch'
+    ];
 
     const handleInputChange = (event) => {
         setInput({
@@ -240,41 +247,18 @@ export const OurMap = () => {
                 </FormGroup>
                 <FormGroup>
                     <FormLabel component="legend">Filter by time</FormLabel>
-                    <FormControlLabel
-                        control={
-                            <input
-                                type="text"
-                                name="timeBegin"
-                                //defaultValue={input.timeBegin}
-                                onChange={handleInputChange}
-                            />
-                        }
-                        label="Begin"
-                        labelPlacement="start"
-                    />
-                    <FormControlLabel
-                        control={
-                            <input
-                                type="text"
-                                name="timeEnd"
-                                //defaultValue={input.timeEnd}
-                                onChange={handleInputChange}
-                            />
-                        }
-                        label="End"
-                        labelPlacement="start"
-                    />
-                    <FormControlLabel
-                        control={
-                            <input
-                                type="text"
-                                name="chronOntologyTerm"
-                                //defaultValue={input.chronOntologyTerm}
-                                onChange={handleInputChange}
-                            />
-                        }
-                        label="ChronOntology term"
-                        labelPlacement="start"
+                    <Autocomplete
+                        name="chronOntologyTerm"
+                        options={chronOntologyTerms}
+                        onChange={(event, newValue) => {
+                            setInput({
+                                ...input,
+                                chronOntologyTerm: newValue
+                            });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
+                        style={{ width: 300 }}
+                        autoSelect={true}
                     />
                 </FormGroup>
                 <FormGroup>
