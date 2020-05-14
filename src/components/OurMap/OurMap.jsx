@@ -98,8 +98,6 @@ export const OurMap = () => {
         checkedProjects: [],
         showSearchResults: true,
         showRelatedObjects: false,
-        timeBegin: "",
-        timeEnd: "",
         chronOntologyTerm: "",
         boundingBoxCorner1: [],
         boundingBoxCorner2: []
@@ -336,7 +334,39 @@ export const OurMap = () => {
                         onClick={() => {
                             setActiveLocation({...mapDataContext.entity, spatial: place});
                         }}
-                    />
+                    >
+                        {<Popup
+                            position={place.coordinates.split(", ").reverse()}
+                            onClose={() => {
+                                setActiveLocation(null);
+                            }}
+                        >
+                            <div>
+                                <h2>{mapDataContext.entity.name}</h2>
+                                <p>{place.name}</p>
+                                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                &&<ul>{
+                                    (mapDataContext.entity.related
+                                        &&mapDataContext.entity.related.map( relatedObj =>
+                                            <li>{relatedObj
+                                                ? `${relatedObj.name} (${relatedObj.type})`
+                                                : "no access"
+                                            }</li>
+                                        ))
+                                }
+                                </ul>}
+                                {<Button
+                                    onClick={() => handleRelatedObjects(mapDataContext.entity.identifier)}
+                                    name="showRelatedObjects"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={input.showRelatedObjects}
+                                >
+                                    Show related objects
+                                </Button>}
+                            </div>
+                        </Popup>}
+                    </Marker>
                 )})
                 }
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
@@ -355,7 +385,39 @@ export const OurMap = () => {
                             onClick={() => {
                                 setActiveLocation({...relatedObj, spatial: place});
                             }}
-                        />
+                        >
+                            {<Popup
+                            position={place.coordinates.split(", ").reverse()}
+                            onClose={() => {
+                                setActiveLocation(null);
+                            }}
+                        >
+                            <div>
+                                <h2>{relatedObj.name}</h2>
+                                <p>{place.name}</p>
+                                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                &&<ul>{
+                                    (mapDataContext.entity.related
+                                        &&mapDataContext.entity.related.map( relatedObj =>
+                                            <li>{relatedObj
+                                                ? `${relatedObj.name} (${relatedObj.type})`
+                                                : "no access"
+                                            }</li>
+                                        ))
+                                }
+                                </ul>}
+                                {<Button
+                                    onClick={() => handleRelatedObjects(relatedObj.identifier)}
+                                    name="showRelatedObjects"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={input.showRelatedObjects}
+                                >
+                                    Show related objects
+                                </Button>}
+                            </div>
+                        </Popup>}
+                        </Marker>
                     )})
                 )
                 })}
@@ -382,15 +444,45 @@ export const OurMap = () => {
                                 //position={fakeData.coordinates}
                                 //coordinates need to be reversed because of different standards between geojson and leaflet
                                 position={place.coordinates.split(", ").reverse()}
-                                onClick={() => {
-                                    setActiveLocation({...entity, spatial: place});
-                                }}
-                            />
+                                onClick={() => {                                    setActiveLocation({...entity, spatial: place});                                }}
+                            >
+                                {<Popup
+                                    //position={place.coordinates.split(", ").reverse()}
+                                    onClose={() => {
+                                        setActiveLocation(null);
+                                    }}
+                                >
+                                    <div>
+                                        <h2>{entity.name}</h2>
+                                        <p>{place.name}</p>
+                                        {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                        &&<ul>{
+                                            (mapDataContext.entity.related
+                                                &&mapDataContext.entity.related.map( relatedObj =>
+                                                    <li>{relatedObj
+                                                        ? `${relatedObj.name} (${relatedObj.type})`
+                                                        : "no access"
+                                                    }</li>
+                                                ))
+                                        }
+                                        </ul>}
+                                        <Button
+                                            onClick={() => handleRelatedObjects(entity.identifier)}
+                                            name="showRelatedObjects"
+                                            variant="contained"
+                                            color="primary"
+                                            disabled={input.showRelatedObjects}
+                                        >
+                                            Show related objects
+                                        </Button>
+                                    </div>
+                                </Popup>}
+                            </Marker>
                         )}
                     )
                 )})}
                 </MarkerClusterGroup>
-                {activeLocation&&<Popup
+                {/*activeLocation&&<Popup
                     position={activeLocation.spatial.coordinates.split(", ").reverse()}
                     onClose={() => {
                         setActiveLocation(null);
@@ -420,7 +512,7 @@ export const OurMap = () => {
                             Show related objects
                         </Button>
                     </div>
-                </Popup>}
+                </Popup>*/}
             </Map>
         </div>
     );
