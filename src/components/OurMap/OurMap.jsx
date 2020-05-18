@@ -291,7 +291,7 @@ export const OurMap = () => {
                         label="Show/hide related objects"
                     />
                 </FormGroup>*/}
-                {console.log("mapDataContext: ", mapDataContext)}
+                {/*console.log("mapDataContext: ", mapDataContext)*/}
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
 
                 {input.showSearchResults && <span>Showing search results</span>}
@@ -315,7 +315,7 @@ export const OurMap = () => {
                 className="markercluster-map"
                 center={mapCenter}
                 zoom={zoomLevel}
-                onClick={createBoundingBox}
+                //onClick={createBoundingBox}
             >
                 <TileLayer
                     attribution={osmAttr}
@@ -331,12 +331,13 @@ export const OurMap = () => {
                         //coordinates need to be reversed because of different standards between geojson and leaflet
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
-                        onClick={() => {
-                            setActiveLocation({...mapDataContext.entity, spatial: place});
-                        }}
+                        //onClick={() => {                             setActiveLocation({...mapDataContext.entity, spatial: place});                        }}
                     >
-                        {<Popup
-                            position={place.coordinates.split(", ").reverse()}
+                        {/*<Popup>
+                            popup of place for which related places are wanted
+                        </Popup>*/}
+                        {/*<Popup
+                            //position={place.coordinates.split(", ").reverse()}
                             onClose={() => {
                                 setActiveLocation(null);
                             }}
@@ -365,7 +366,7 @@ export const OurMap = () => {
                                     Show related objects
                                 </Button>}
                             </div>
-                        </Popup>}
+                        </Popup>*/}
                     </Marker>
                 )})
                 }
@@ -382,41 +383,42 @@ export const OurMap = () => {
                             //coordinates need to be reversed because of different standards between geojson and leaflet
                             position={place.coordinates.split(", ").reverse()}
                             opacity={0.5}
-                            onClick={() => {
-                                setActiveLocation({...relatedObj, spatial: place});
-                            }}
+                            //onClick={() => {                                setActiveLocation({...relatedObj, spatial: place});                            }}
                         >
-                            {<Popup
-                            position={place.coordinates.split(", ").reverse()}
-                            onClose={() => {
-                                setActiveLocation(null);
-                            }}
-                        >
-                            <div>
-                                <h2>{relatedObj.name}</h2>
-                                <p>{place.name}</p>
-                                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                &&<ul>{
-                                    (mapDataContext.entity.related
-                                        &&mapDataContext.entity.related.map( relatedObj =>
-                                            <li>{relatedObj
-                                                ? `${relatedObj.name} (${relatedObj.type})`
-                                                : "no access"
-                                            }</li>
-                                        ))
-                                }
-                                </ul>}
-                                {<Button
-                                    onClick={() => handleRelatedObjects(relatedObj.identifier)}
-                                    name="showRelatedObjects"
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={input.showRelatedObjects}
-                                >
-                                    Show related objects
-                                </Button>}
-                            </div>
-                        </Popup>}
+                            {/*<Popup>
+                                popup of related place
+                            </Popup>*/}
+                            {/*<Popup
+                                //position={place.coordinates.split(", ").reverse()}
+                                onClose={() => {
+                                    setActiveLocation(null);
+                                }}
+                            >
+                                <div>
+                                    <h2>{relatedObj.name}</h2>
+                                    <p>{place.name}</p>
+                                    {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                    &&<ul>{
+                                        (mapDataContext.entity.related
+                                            &&mapDataContext.entity.related.map( relatedObj =>
+                                                <li>{relatedObj
+                                                    ? `${relatedObj.name} (${relatedObj.type})`
+                                                    : "no access"
+                                                }</li>
+                                            ))
+                                    }
+                                    </ul>}
+                                    {<Button
+                                        onClick={() => handleRelatedObjects(relatedObj.identifier)}
+                                        name="showRelatedObjects"
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={input.showRelatedObjects}
+                                    >
+                                        Show related objects
+                                    </Button>}
+                                </div>
+                            </Popup>*/}
                         </Marker>
                     )})
                 )
@@ -444,9 +446,17 @@ export const OurMap = () => {
                                 //position={fakeData.coordinates}
                                 //coordinates need to be reversed because of different standards between geojson and leaflet
                                 position={place.coordinates.split(", ").reverse()}
-                                onClick={() => {                                    setActiveLocation({...entity, spatial: place});                                }}
+                                onClick={(cluster) => {
+                                    cluster.spiderfy();
+                                    setActiveLocation({...entity, spatial: place});
+                                }}
                             >
                                 {<Popup
+                                    onClose={() => {setActiveLocation(null);}}
+                                >
+                                    popup of normal marker from the search results
+                                </Popup>}
+                                {/*<Popup
                                     //position={place.coordinates.split(", ").reverse()}
                                     onClose={() => {
                                         setActiveLocation(null);
@@ -476,7 +486,7 @@ export const OurMap = () => {
                                             Show related objects
                                         </Button>
                                     </div>
-                                </Popup>}
+                                </Popup>*/}
                             </Marker>
                         )}
                     )
