@@ -4,3 +4,4 @@
 export { HelloComputerButton } from './HelloComputerButton/HelloComputerButton';
 export { PageHeader } from './PageHeader/PageHeader';
 export { OurMap } from './OurMap/OurMap';
+export { ReturnPopup } from './ReturnPopup/ReturnPopup';

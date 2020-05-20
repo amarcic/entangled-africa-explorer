@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 //import { Icon } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import { ReturnPopup } from '../../components'
 
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
@@ -149,37 +150,6 @@ export const OurMap = () => {
         }
     }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
-    const returnPopup = (object, place) => {
-        return (
-            <Popup>
-                <div>
-                    <h2>{object.name}</h2>
-                    <p>{place.name}</p>
-                    {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                    &&<ul>{
-                        (mapDataContext.entity.related
-                            &&mapDataContext.entity.related.map( relatedObj =>
-                                <li>{relatedObj
-                                    ? `${relatedObj.name} (${relatedObj.type})`
-                                    : "no access"
-                                }</li>
-                            )
-                        )
-                    }</ul>}
-                    <Button
-                        onClick={() => handleRelatedObjects(object.identifier)}
-                        name="showRelatedObjects"
-                        variant="contained"
-                        color="primary"
-                        disabled={input.showRelatedObjects}
-                    >
-                        Show related objects
-                    </Button>
-                </div>
-            </Popup>
-        );
-    };
-
 
     return(
         <div>
@@ -280,7 +250,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity
+                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
                     &&<Marker
@@ -289,7 +259,7 @@ export const OurMap = () => {
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
                     >
-                        {returnPopup(mapDataContext.entity, place)}
+                        {ReturnPopup(mapDataContext.entity, place, handleRelatedObjects)}
                     </Marker>
                 )})}
                 <MarkerClusterGroup>
@@ -306,7 +276,7 @@ export const OurMap = () => {
                                     position={place.coordinates.split(", ").reverse()}
                                     opacity={0.5}
                                 >
-                                    {returnPopup(relatedObj, place)}
+                                    {ReturnPopup(relatedObj, place, handleRelatedObjects)}
                                 </Marker>
                             )})
                         )
@@ -322,7 +292,7 @@ export const OurMap = () => {
                                     //coordinates need to be reversed because of different standards between geojson and leaflet
                                     position={place.coordinates.split(", ").reverse()}
                                 >
-                                    {returnPopup(entity, place)}
+                                    {ReturnPopup(entity, place, handleRelatedObjects)}
                                 </Marker>
                             )}
                         )
