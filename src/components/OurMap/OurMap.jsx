@@ -259,7 +259,7 @@ export const OurMap = () => {
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
                     >
-                        {ReturnPopup(mapDataContext.entity, place, handleRelatedObjects)}
+                        <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
                     </Marker>
                 )})}
                 <MarkerClusterGroup>
@@ -276,7 +276,7 @@ export const OurMap = () => {
                                     position={place.coordinates.split(", ").reverse()}
                                     opacity={0.5}
                                 >
-                                    {ReturnPopup(relatedObj, place, handleRelatedObjects)}
+                                    <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
                                 </Marker>
                             )})
                         )
@@ -292,7 +292,7 @@ export const OurMap = () => {
                                     //coordinates need to be reversed because of different standards between geojson and leaflet
                                     position={place.coordinates.split(", ").reverse()}
                                 >
-                                    {ReturnPopup(entity, place, handleRelatedObjects)}
+                                    <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
                                 </Marker>
                             )}
                         )

@@ -2,7 +2,7 @@ import React from "react";
 import {Popup} from "react-leaflet";
 import {Button} from "@material-ui/core";
 
-export const ReturnPopup = (object, place, hRO) => {
+export const ReturnPopup = (object, place, handleRelatedObjects, showRelatedObjects) => {
     return (
         <Popup>
             <div>
@@ -20,11 +20,11 @@ export const ReturnPopup = (object, place, hRO) => {
                     )
                 }</ul>}*/}
                 <Button
-                    onClick={() => {hRO(place.identifier)}}
+                    onClick={() => {handleRelatedObjects(object.identifier)}}
                     name="showRelatedObjects"
                     variant="contained"
                     color="primary"
-                    disabled={false}//OurMap.input.showRelatedObjects}
+                    disabled={showRelatedObjects}
                 >
                     Show related objects
                 </Button>
