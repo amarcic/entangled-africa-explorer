@@ -88,7 +88,7 @@ export const OurMap = () => {
     };
 
     //state
-    const [activeLocation, setActiveLocation] = useState(null);
+    //const [activeLocation, setActiveLocation] = useState(null);
     const [input, setInput] = useState({
         objectId: 0,
         searchStr: "",
@@ -321,7 +321,7 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-                <MarkerClusterGroup>
+
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
@@ -336,11 +336,9 @@ export const OurMap = () => {
                         {/*<Popup>
                             popup of place for which related places are wanted
                         </Popup>*/}
-                        {/*<Popup
+                        {<Popup
                             //position={place.coordinates.split(", ").reverse()}
-                            onClose={() => {
-                                setActiveLocation(null);
-                            }}
+                            //onClose={() => {                                 setActiveLocation(null);                            }}
                         >
                             <div>
                                 <h2>{mapDataContext.entity.name}</h2>
@@ -366,10 +364,11 @@ export const OurMap = () => {
                                     Show related objects
                                 </Button>}
                             </div>
-                        </Popup>*/}
+                        </Popup>}
                     </Marker>
                 )})
                 }
+                <MarkerClusterGroup>
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
                 &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
                 {
@@ -388,11 +387,9 @@ export const OurMap = () => {
                             {/*<Popup>
                                 popup of related place
                             </Popup>*/}
-                            {/*<Popup
+                            {<Popup
                                 //position={place.coordinates.split(", ").reverse()}
-                                onClose={() => {
-                                    setActiveLocation(null);
-                                }}
+                                //onClose={() => {                                     setActiveLocation(null);                                 }}
                             >
                                 <div>
                                     <h2>{relatedObj.name}</h2>
@@ -418,7 +415,7 @@ export const OurMap = () => {
                                         Show related objects
                                     </Button>}
                                 </div>
-                            </Popup>*/}
+                            </Popup>}
                         </Marker>
                     )})
                 )
@@ -446,21 +443,16 @@ export const OurMap = () => {
                                 //position={fakeData.coordinates}
                                 //coordinates need to be reversed because of different standards between geojson and leaflet
                                 position={place.coordinates.split(", ").reverse()}
-                                onClick={(cluster) => {
-                                    cluster.spiderfy();
-                                    setActiveLocation({...entity, spatial: place});
-                                }}
+                                //onClick={(cluster) => {                                     />/cluster.spiderfy();                                     //setActiveLocation({...entity, spatial: place});                                }}
                             >
-                                {<Popup
-                                    onClose={() => {setActiveLocation(null);}}
+                                {/*<Popup
+                                    //onClose={() => {setActiveLocation(null);}}
                                 >
                                     popup of normal marker from the search results
-                                </Popup>}
-                                {/*<Popup
+                                </Popup>*/}
+                                {<Popup
                                     //position={place.coordinates.split(", ").reverse()}
-                                    onClose={() => {
-                                        setActiveLocation(null);
-                                    }}
+                                    //onClose={() => {                                        setActiveLocation(null);                                    }}
                                 >
                                     <div>
                                         <h2>{entity.name}</h2>
@@ -486,7 +478,7 @@ export const OurMap = () => {
                                             Show related objects
                                         </Button>
                                     </div>
-                                </Popup>*/}
+                                </Popup>}
                             </Marker>
                         )}
                     )
