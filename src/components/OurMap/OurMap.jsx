@@ -322,7 +322,7 @@ export const OurMap = () => {
                                     //coordinates need to be reversed because of different standards between geojson and leaflet
                                     position={place.coordinates.split(", ").reverse()}
                                 >
-                                    {returnPopup(obj, place)}
+                                    {returnPopup(entity, place)}
                                 </Marker>
                             )}
                         )
