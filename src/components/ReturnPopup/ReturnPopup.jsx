@@ -2,12 +2,12 @@ import React from "react";
 import {Popup} from "react-leaflet";
 import {Button} from "@material-ui/core";
 
-export const ReturnPopup = (object, place, handleRelatedObjects, showRelatedObjects) => {
+export const ReturnPopup = (props) => {
     return (
         <Popup>
             <div>
-                <h2>{object.name}</h2>
-                <p>{place.name}</p>
+                <h2>{props.object.name}</h2>
+                <p>{props.place.name}</p>
                 {/*{input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
                 &&<ul>{
                     (mapDataContext.entity.related
@@ -20,11 +20,11 @@ export const ReturnPopup = (object, place, handleRelatedObjects, showRelatedObje
                     )
                 }</ul>}*/}
                 <Button
-                    onClick={() => {handleRelatedObjects(object.identifier)}}
+                    onClick={() => {props.handleRelatedObjects(props.object.identifier)}}
                     name="showRelatedObjects"
                     variant="contained"
                     color="primary"
-                    disabled={showRelatedObjects}
+                    disabled={props.showRelatedObjects}
                 >
                     Show related objects
                 </Button>
