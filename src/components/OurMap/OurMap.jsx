@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField } from '@material-ui/core';
-//import { Switch } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useTranslation } from 'react-i18next';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -14,27 +13,6 @@ const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const mapCenter = [11.5024338, 17.7578122];
 const zoomLevel = 4;
-
-/*
-const GET_OBJECT_BY_ID = gql`
-    query giveInfo($arachneId: ID!) {
-        entity(id: $arachneId) {
-            identifier
-            name
-            spatial {
-                identifier
-                name
-                coordinates
-            }
-            temporalArachne {
-                title
-                begin
-                end
-            }
-        }
-    }
-`;
-*/
 
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
@@ -67,7 +45,7 @@ const GET_CONTEXT_BY_ID = gql`
 
 const GET_OBJECTS = gql`
     query search ($searchTerm: String, $project: [String], $bbox: [Float], $periodTerm: String) {
-        entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm) {
+        entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm, entityTypes: [Einzelobjekte]) {
             identifier
             name
             spatial {
@@ -88,7 +66,6 @@ export const OurMap = () => {
     };
 
     //state
-    //const [activeLocation, setActiveLocation] = useState(null);
     const [input, setInput] = useState({
         objectId: 0,
         searchStr: "",
@@ -102,12 +79,10 @@ export const OurMap = () => {
         boundingBoxCorner1: [],
         boundingBoxCorner2: []
     });
-    //const [mapData, setMapData] = useState({});
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
 
-    //const { data, loading, error } = useQuery(GET_OBJECT_BY_ID, {variables: { arachneId: input.objectId }});
-    //console.log("is data defined?", data);
+    //queries
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
         useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects, bbox: (input.boundingBoxCorner1.concat(input.boundingBoxCorner2)), periodTerm: input.chronOntologyTerm}});
@@ -126,14 +101,6 @@ export const OurMap = () => {
         console.log("handleInputChange!");
     };
 
-    /*const handleSwitchChange = (event) => {
-        setInput({
-            ...input,
-            [event.target.name]: event.target.checked
-        });
-        console.log("handleSwitchChange!");
-    };*/
-
     const handleRelatedObjects = (id) => {
         console.log(id);
         setInput({
@@ -142,8 +109,6 @@ export const OurMap = () => {
             showSearchResults: !input.showSearchResults,
             showRelatedObjects: !input.showRelatedObjects
         });
-        // first failed attempt to close popup on click on handle related objects button
-        // if (activeLocation) {setActiveLocation(null)}
         console.log("handleRelatedObjects!");
     };
 
@@ -165,24 +130,9 @@ export const OurMap = () => {
         });
     }
 
-    /*
-    useEffect( () => {
-        //check if amount of re-renders is reasonable from time to time
-        if(data) {
-            setMapData(data);
-            console.log("rerender data!");
-            console.log("rerender data --> data: ", data);
-            console.log("rerender data --> input:", input);
-        }
-    }, [data]);
-    */
-
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
-            //why set mapdata?
-            //setMapData(data);
-            //console.log(mapData);
             console.log("rerender dataContext!");
             console.log("rerender dataContext --> dataContext: ", dataContext);
             console.log("rerender dataContext --> input:", input);
@@ -204,13 +154,6 @@ export const OurMap = () => {
         <div>
             <h2>{t('Map')}</h2>
             <div>
-                {/*<input
-                    type="text"
-                    name="objectId"
-                    defaultValue={input.objectId}
-                    onChange={handleInputChange}
-                    //onChange={(event) => {setObjectId(event.target.value)}}
-                />*/}
                 <FormControlLabel
                     control={
                         <input
@@ -218,12 +161,11 @@ export const OurMap = () => {
                             name="searchStr"
                             defaultValue={input.searchStr}
                             onChange={handleInputChange}
-                            //onChange={(event) => {setObjectId(event.target.value)}}
                         />
                     }
                     label="Search term"
                     labelPlacement="start"
-                    />
+                />
                 <FormGroup>
                     <FormLabel component="legend">Filter by projects</FormLabel>
                     {input.projectList && input.projectList.map(project => {
@@ -278,30 +220,16 @@ export const OurMap = () => {
                         onChange={handleInputChange}
                     />
                 </FormGroup>
-                {/*<FormGroup>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={input.showRelatedObjects}
-                                onChange={handleSwitchChange}
-                                name="showRelatedObjects"
-                                color="primary"
-                            />
-                        }
-                        label="Show/hide related objects"
-                    />
-                </FormGroup>*/}
-                {/*console.log("mapDataContext: ", mapDataContext)*/}
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
 
                 {input.showSearchResults && <span>Showing search results</span>}
                 {input.showRelatedObjects && <span>Showing related objects</span>}
-                {/*loading && <span>...loading</span>*/}
-                {/*error && <span>...error</span> && console.log(error)*/}
+
                 {loadingContext && <span>...loadingContext</span>}
                 {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}
                 {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString.message)}
+
                 {input.showRelatedObjects && <Button
                     onClick={() => handleRelatedObjects()}
                     name="hideRelatedObjects"
@@ -310,36 +238,27 @@ export const OurMap = () => {
                     Return to search results (hide related objects)
                 </Button>}
             </div>
-            {/*mapData? mapData.entity?.name :  <p>no data found</p>*/}
+
             <Map
                 className="markercluster-map"
                 center={mapCenter}
                 zoom={zoomLevel}
-                //onClick={createBoundingBox}
+                onClick={createBoundingBox}
             >
                 <TileLayer
                     attribution={osmAttr}
                     url={osmTiles}
                 />
-
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
                     &&<Marker
                         key={`${place.identifier}-${indexPlace}`}
-                        //position={fakeData.coordinates}
                         //coordinates need to be reversed because of different standards between geojson and leaflet
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
-                        //onClick={() => {                             setActiveLocation({...mapDataContext.entity, spatial: place});                        }}
                     >
-                        {/*<Popup>
-                            popup of place for which related places are wanted
-                        </Popup>*/}
-                        {<Popup
-                            //position={place.coordinates.split(", ").reverse()}
-                            //onClose={() => {                                 setActiveLocation(null);                            }}
-                        >
+                        {<Popup>
                             <div>
                                 <h2>{mapDataContext.entity.name}</h2>
                                 <p>{place.name}</p>
@@ -351,9 +270,9 @@ export const OurMap = () => {
                                                 ? `${relatedObj.name} (${relatedObj.type})`
                                                 : "no access"
                                             }</li>
-                                        ))
-                                }
-                                </ul>}
+                                        )
+                                    )
+                                }</ul>}
                                 {<Button
                                     onClick={() => handleRelatedObjects(mapDataContext.entity.identifier)}
                                     name="showRelatedObjects"
@@ -366,155 +285,93 @@ export const OurMap = () => {
                             </div>
                         </Popup>}
                     </Marker>
-                )})
-                }
-                <MarkerClusterGroup>
-                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
-                &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
-                {
-                    if(relatedObj===null) return;
-                    return(relatedObj.spatial
-                    &&relatedObj.spatial.map( (place, indexPlace) =>
-                    {return(place
-                        &&<Marker
-                            key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
-                            //position={fakeData.coordinates}
-                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                            position={place.coordinates.split(", ").reverse()}
-                            opacity={0.5}
-                            //onClick={() => {                                setActiveLocation({...relatedObj, spatial: place});                            }}
-                        >
-                            {/*<Popup>
-                                popup of related place
-                            </Popup>*/}
-                            {<Popup
-                                //position={place.coordinates.split(", ").reverse()}
-                                //onClose={() => {                                     setActiveLocation(null);                                 }}
-                            >
-                                <div>
-                                    <h2>{relatedObj.name}</h2>
-                                    <p>{place.name}</p>
-                                    {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                    &&<ul>{
-                                        (mapDataContext.entity.related
-                                            &&mapDataContext.entity.related.map( relatedObj =>
-                                                <li>{relatedObj
-                                                    ? `${relatedObj.name} (${relatedObj.type})`
-                                                    : "no access"
-                                                }</li>
-                                            ))
-                                    }
-                                    </ul>}
-                                    {<Button
-                                        onClick={() => handleRelatedObjects(relatedObj.identifier)}
-                                        name="showRelatedObjects"
-                                        variant="contained"
-                                        color="primary"
-                                        disabled={input.showRelatedObjects}
-                                    >
-                                        Show related objects
-                                    </Button>}
-                                </div>
-                            </Popup>}
-                        </Marker>
-                    )})
-                )
-                })}
-                {/*activeLocation&&<Popup
-                    position={activeLocation.spatial.coordinates.split(", ").reverse()}
-                    onClose={() => {
-                        setActiveLocation(null);
-                    }}
-                >
-                    <div>
-                        <h2>{activeLocation.name}</h2>
-                        <p>{activeLocation.spatial.name}</p>
-                        {activeLocation.temporalArachne&&<p>{activeLocation.temporalArachne.title}</p>}
-                    </div>
-                </Popup>*/}
-                {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                    ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
-                {return(entity.spatial
-                    && entity.spatial.map( (place, indexPlace) =>
-                        { return( place
-                            && <Marker
-                                key={`${place.identifier}-${indexPlace}-${indexEntity}`}
-                                //position={fakeData.coordinates}
-                                //coordinates need to be reversed because of different standards between geojson and leaflet
-                                position={place.coordinates.split(", ").reverse()}
-                                //onClick={(cluster) => {                                     />/cluster.spiderfy();                                     //setActiveLocation({...entity, spatial: place});                                }}
-                            >
-                                {/*<Popup
-                                    //onClose={() => {setActiveLocation(null);}}
-                                >
-                                    popup of normal marker from the search results
-                                </Popup>*/}
-                                {<Popup
-                                    //position={place.coordinates.split(", ").reverse()}
-                                    //onClose={() => {                                        setActiveLocation(null);                                    }}
-                                >
-                                    <div>
-                                        <h2>{entity.name}</h2>
-                                        <p>{place.name}</p>
-                                        {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                        &&<ul>{
-                                            (mapDataContext.entity.related
-                                                &&mapDataContext.entity.related.map( relatedObj =>
-                                                    <li>{relatedObj
-                                                        ? `${relatedObj.name} (${relatedObj.type})`
-                                                        : "no access"
-                                                    }</li>
-                                                ))
-                                        }
-                                        </ul>}
-                                        <Button
-                                            onClick={() => handleRelatedObjects(entity.identifier)}
-                                            name="showRelatedObjects"
-                                            variant="contained"
-                                            color="primary"
-                                            disabled={input.showRelatedObjects}
-                                        >
-                                            Show related objects
-                                        </Button>
-                                    </div>
-                                </Popup>}
-                            </Marker>
-                        )}
-                    )
                 )})}
+                <MarkerClusterGroup>
+                    {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                    &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
+                    {
+                        if(relatedObj===null) return;
+                        return(relatedObj.spatial
+                            &&relatedObj.spatial.map( (place, indexPlace) =>
+                            {return(place
+                                &&<Marker
+                                    key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
+                                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                                    position={place.coordinates.split(", ").reverse()}
+                                    opacity={0.5}
+                                >
+                                    {<Popup>
+                                        <div>
+                                            <h2>{relatedObj.name}</h2>
+                                            <p>{place.name}</p>
+                                            {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                            &&<ul>{
+                                                (mapDataContext.entity.related
+                                                    &&mapDataContext.entity.related.map( relatedObj =>
+                                                        <li>{relatedObj
+                                                            ? `${relatedObj.name} (${relatedObj.type})`
+                                                            : "no access"
+                                                        }</li>
+                                                    )
+                                                )
+                                            }</ul>}
+                                            {<Button
+                                                onClick={() => handleRelatedObjects(relatedObj.identifier)}
+                                                name="showRelatedObjects"
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={input.showRelatedObjects}
+                                            >
+                                                Show related objects
+                                            </Button>}
+                                        </div>
+                                    </Popup>}
+                                </Marker>
+                            )})
+                        )
+                    })}
+                    {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                        ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                    &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                    {return(entity.spatial
+                        && entity.spatial.map( (place, indexPlace) =>
+                            { return( place
+                                && <Marker
+                                    key={`${place.identifier}-${indexPlace}-${indexEntity}`}
+                                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                                    position={place.coordinates.split(", ").reverse()}
+                                >
+                                    {<Popup>
+                                        <div>
+                                            <h2>{entity.name}</h2>
+                                            <p>{place.name}</p>
+                                            {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                                            &&<ul>{
+                                                (mapDataContext.entity.related
+                                                    &&mapDataContext.entity.related.map( relatedObj =>
+                                                        <li>{relatedObj
+                                                            ? `${relatedObj.name} (${relatedObj.type})`
+                                                            : "no access"
+                                                        }</li>
+                                                    )
+                                                )
+                                            }</ul>}
+                                            <Button
+                                                onClick={() => handleRelatedObjects(entity.identifier)}
+                                                name="showRelatedObjects"
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={input.showRelatedObjects}
+                                            >
+                                                Show related objects
+                                            </Button>
+                                        </div>
+                                    </Popup>}
+                                </Marker>
+                            )}
+                        )
+                    )})}
                 </MarkerClusterGroup>
-                {/*activeLocation&&<Popup
-                    position={activeLocation.spatial.coordinates.split(", ").reverse()}
-                    onClose={() => {
-                        setActiveLocation(null);
-                    }}
-                >
-                    <div>
-                        <h2>{activeLocation.name}</h2>
-                        <p>{activeLocation.spatial.name}</p>
-                        {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                        &&<ul>{
-                            (mapDataContext.entity.related
-                                &&mapDataContext.entity.related.map( relatedObj =>
-                                    <li>{relatedObj
-                                        ? `${relatedObj.name} (${relatedObj.type})`
-                                        : "no access"
-                                    }</li>
-                                ))
-                        }
-                        </ul>}
-                        <Button
-                            onClick={() => handleRelatedObjects(activeLocation.identifier)}
-                            name="showRelatedObjects"
-                            variant="contained"
-                            color="primary"
-                            disabled={input.showRelatedObjects}
-                        >
-                            Show related objects
-                        </Button>
-                    </div>
-                </Popup>*/}
             </Map>
         </div>
     );
