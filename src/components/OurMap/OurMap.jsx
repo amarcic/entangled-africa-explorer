@@ -149,6 +149,37 @@ export const OurMap = () => {
         }
     }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
+    const returnPopup = (object, place) => {
+        return (
+            <Popup>
+                <div>
+                    <h2>{object.name}</h2>
+                    <p>{place.name}</p>
+                    {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                    &&<ul>{
+                        (mapDataContext.entity.related
+                            &&mapDataContext.entity.related.map( relatedObj =>
+                                <li>{relatedObj
+                                    ? `${relatedObj.name} (${relatedObj.type})`
+                                    : "no access"
+                                }</li>
+                            )
+                        )
+                    }</ul>}
+                    <Button
+                        onClick={() => handleRelatedObjects(object.identifier)}
+                        name="showRelatedObjects"
+                        variant="contained"
+                        color="primary"
+                        disabled={input.showRelatedObjects}
+                    >
+                        Show related objects
+                    </Button>
+                </div>
+            </Popup>
+        );
+    };
+
 
     return(
         <div>
@@ -258,32 +289,7 @@ export const OurMap = () => {
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
                     >
-                        {<Popup>
-                            <div>
-                                <h2>{mapDataContext.entity.name}</h2>
-                                <p>{place.name}</p>
-                                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                &&<ul>{
-                                    (mapDataContext.entity.related
-                                        &&mapDataContext.entity.related.map( relatedObj =>
-                                            <li>{relatedObj
-                                                ? `${relatedObj.name} (${relatedObj.type})`
-                                                : "no access"
-                                            }</li>
-                                        )
-                                    )
-                                }</ul>}
-                                {<Button
-                                    onClick={() => handleRelatedObjects(mapDataContext.entity.identifier)}
-                                    name="showRelatedObjects"
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={input.showRelatedObjects}
-                                >
-                                    Show related objects
-                                </Button>}
-                            </div>
-                        </Popup>}
+                        {returnPopup(mapDataContext.entity, place)}
                     </Marker>
                 )})}
                 <MarkerClusterGroup>
@@ -300,32 +306,7 @@ export const OurMap = () => {
                                     position={place.coordinates.split(", ").reverse()}
                                     opacity={0.5}
                                 >
-                                    {<Popup>
-                                        <div>
-                                            <h2>{relatedObj.name}</h2>
-                                            <p>{place.name}</p>
-                                            {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                            &&<ul>{
-                                                (mapDataContext.entity.related
-                                                    &&mapDataContext.entity.related.map( relatedObj =>
-                                                        <li>{relatedObj
-                                                            ? `${relatedObj.name} (${relatedObj.type})`
-                                                            : "no access"
-                                                        }</li>
-                                                    )
-                                                )
-                                            }</ul>}
-                                            {<Button
-                                                onClick={() => handleRelatedObjects(relatedObj.identifier)}
-                                                name="showRelatedObjects"
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={input.showRelatedObjects}
-                                            >
-                                                Show related objects
-                                            </Button>}
-                                        </div>
-                                    </Popup>}
+                                    {returnPopup(relatedObj, place)}
                                 </Marker>
                             )})
                         )
@@ -341,32 +322,7 @@ export const OurMap = () => {
                                     //coordinates need to be reversed because of different standards between geojson and leaflet
                                     position={place.coordinates.split(", ").reverse()}
                                 >
-                                    {<Popup>
-                                        <div>
-                                            <h2>{entity.name}</h2>
-                                            <p>{place.name}</p>
-                                            {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
-                                            &&<ul>{
-                                                (mapDataContext.entity.related
-                                                    &&mapDataContext.entity.related.map( relatedObj =>
-                                                        <li>{relatedObj
-                                                            ? `${relatedObj.name} (${relatedObj.type})`
-                                                            : "no access"
-                                                        }</li>
-                                                    )
-                                                )
-                                            }</ul>}
-                                            <Button
-                                                onClick={() => handleRelatedObjects(entity.identifier)}
-                                                name="showRelatedObjects"
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={input.showRelatedObjects}
-                                            >
-                                                Show related objects
-                                            </Button>
-                                        </div>
-                                    </Popup>}
+                                    {returnPopup(obj, place)}
                                 </Marker>
                             )}
                         )
