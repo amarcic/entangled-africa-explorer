@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useTranslation } from 'react-i18next';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import {Map, TileLayer, Marker} from 'react-leaflet';
 //import { Icon } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { ReturnPopup } from '../../components'
@@ -78,7 +78,8 @@ export const OurMap = () => {
         showRelatedObjects: false,
         chronOntologyTerm: "",
         boundingBoxCorner1: [],
-        boundingBoxCorner2: []
+        boundingBoxCorner2: [],
+        drawBBox: false
     });
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
@@ -129,7 +130,7 @@ export const OurMap = () => {
             boundingBoxCorner2: input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)],
             boundingBoxCorner1: input.boundingBoxCorner1.length===0 ? [Number(event.latlng.lat),Number(event.latlng.lng)] : input.boundingBoxCorner1
         });
-    }
+    };
 
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
@@ -198,28 +199,45 @@ export const OurMap = () => {
                             });
                         }}
                         renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
-                        style={{ width: 300 }}
+                        style={{ width: 500 }}
                         autoSelect={true}
                     />
                 </FormGroup>
                 <FormGroup>
                     <FormLabel component="legend">Filter by coordinates</FormLabel>
-                    <input
-                        type="text"
-                        name="boundingBoxCorner1"
-                        //defaultValue={input.boundingBoxCorner1}
-                        value={input.boundingBoxCorner1}
-                        placeholder="Enter comma-separated coordinates or click on map to set first corner of bounding box"
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="text"
-                        name="boundingBoxCorner2"
-                        //defaultValue={input.boundingBoxCorner2}
-                        value={input.boundingBoxCorner2}
-                        placeholder="Enter comma-separated coordinates or click on map to set second corner of bounding box"
-                        onChange={handleInputChange}
-                    />
+                    <FormGroup
+                        style={{ width: 500 }}
+                    >
+                        {<input
+                            type="text"
+                            name="boundingBoxCorner1"
+                            //defaultValue={input.boundingBoxCorner1}
+                            value={input.boundingBoxCorner1}
+                            placeholder="North-east corner of bounding box (comma-separated coordinates)"
+                            onChange={handleInputChange}
+                        />}
+                        {<input
+                            type="text"
+                            name="boundingBoxCorner2"
+                            //defaultValue={input.boundingBoxCorner2}
+                            value={input.boundingBoxCorner2}
+                            placeholder="South-west corner of bounding box (comma-separated coordinates)"
+                            onChange={handleInputChange}
+                        />}
+                        {<FormControlLabel control={
+                            <Switch
+                                name="drawBBox"
+                                color="primary"
+                                onChange={() => {setInput({
+                                    ...input,
+                                    drawBBox: !input.drawBBox}
+                                )}}
+                            />
+                        }
+                            label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
+                            labelPlacement="start"
+                            />}
+                    </FormGroup>
                 </FormGroup>
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
 
@@ -244,7 +262,7 @@ export const OurMap = () => {
                 className="markercluster-map"
                 center={mapCenter}
                 zoom={zoomLevel}
-                onClick={createBoundingBox}
+                onClick={(event) => {if(input.drawBBox){createBoundingBox(event)}}}
             >
                 <TileLayer
                     attribution={osmAttr}
