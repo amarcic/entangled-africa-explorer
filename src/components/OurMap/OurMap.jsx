@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
 //import { Icon } from 'leaflet';
@@ -208,28 +209,56 @@ export const OurMap = () => {
                     <Grid item xs={12} lg={6}>
                         <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
                         <FormGroup>
-                            <input
+                            <TextField
                                 type="text"
+                                variant="outlined"
                                 name="boundingBoxCorner1"
                                 value={input.boundingBoxCorner1}
                                 placeholder="North, East decimal degrees"
+                                label="North, East decimal degrees"
                                 onChange={handleInputChange}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setInput({
+                                                ...input,
+                                                boundingBoxCorner1: []}
+                                            )}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    )
+                                }}
                             />
-                            <input
+                            <TextField
                                 type="text"
+                                variant="outlined"
                                 name="boundingBoxCorner2"
                                 value={input.boundingBoxCorner2}
                                 placeholder="South, West decimal degrees"
+                                label="South, West decimal degrees"
                                 onChange={handleInputChange}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setInput({
+                                                ...input,
+                                                boundingBoxCorner2: []}
+                                            )}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    )
+                                }}
                             />
                             <FormControlLabel control={
                                 <Switch
                                     name="drawBBox"
                                     color="primary"
-                                    onChange={() => {setInput({
+                                    onChange={() => setInput({
                                         ...input,
                                         drawBBox: !input.drawBBox}
-                                    )}}
+                                    )}
                                 />
                             }
                                               label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
