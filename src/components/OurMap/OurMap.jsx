@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useTranslation } from 'react-i18next';
-import {Map, TileLayer, Marker} from 'react-leaflet';
+import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
 //import { Icon } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { ReturnPopup } from '../../components'
@@ -268,6 +268,23 @@ export const OurMap = () => {
                     attribution={osmAttr}
                     url={osmTiles}
                 />
+                {input.drawBBox&&input.boundingBoxCorner1.length!==0
+                &&<Circle
+                    center={input.boundingBoxCorner1}
+                    opacity={0.5}
+                />}
+                {input.drawBBox&&input.boundingBoxCorner2.length!==0
+                &&<Circle
+                    center={input.boundingBoxCorner2}
+                    opacity={0.5}
+                />}
+                {input.drawBBox&&input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0
+                &&<Rectangle
+                    bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
+                    weight={2}
+                    opacity={0.25}
+                    fillOpacity={0.05}
+                />}
                 {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
                 &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
                 {return(place
