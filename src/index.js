@@ -56,7 +56,6 @@ const App = () => {
                 <PageHeader />
                 <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
                 <ApolloProvider client={client}>
-                    soon you will also find nice controls here
                     <OurMap/>
                 </ApolloProvider>
             </Container>

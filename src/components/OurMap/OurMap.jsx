@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
@@ -156,89 +156,89 @@ export const OurMap = () => {
         <div>
             <h2>{t('Map')}</h2>
             <div>
-                <FormControlLabel
-                    control={
-                        <input
-                            type="text"
-                            name="searchStr"
-                            defaultValue={input.searchStr}
-                            onChange={handleInputChange}
-                        />
-                    }
-                    label="Search term"
-                    labelPlacement="start"
-                />
-                <FormGroup>
-                    <FormLabel component="legend">Filter by projects</FormLabel>
-                    {input.projectList && input.projectList.map(project => {
-                        return (project
-                            && <FormControlLabel
-                                key={project.projectBestandsname}
-                                control={
-                                    <Checkbox
-                                        checked={input.checkedProjects.includes(project.projectBestandsname)}
-                                        onChange={() => handleCheck(project)}
-                                        name={project.projectBestandsname}
+                <Grid container spacing={3}>
+                    <Grid item xs={12} lg={6}>
+                        <FormGroup>
+                            <FormLabel component="legend">Filter by search term</FormLabel>
+                            <input
+                                type="text"
+                                name="searchStr"
+                                defaultValue={input.searchStr}
+                                placeholder="*"
+                                onChange={handleInputChange}
+                            />
+                        </FormGroup>
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <FormGroup>
+                            <FormLabel component="legend">Filter by projects</FormLabel>
+                            {input.projectList && input.projectList.map(project => {
+                                return (project
+                                    && <FormControlLabel
                                         key={project.projectBestandsname}
+                                        control={
+                                            <Checkbox
+                                                checked={input.checkedProjects.includes(project.projectBestandsname)}
+                                                onChange={() => handleCheck(project)}
+                                                name={project.projectBestandsname}
+                                                key={project.projectBestandsname}
+                                            />
+                                        }
+                                        label={project.projectLabel}
                                     />
-                                }
-                                label={project.projectLabel}
-                            />
-                        )
-                    })}
-                </FormGroup>
-                <FormGroup>
-                    <FormLabel component="legend">Filter by time</FormLabel>
-                    <Autocomplete
-                        name="chronOntologyTerm"
-                        options={chronOntologyTerms}
-                        onChange={(event, newValue) => {
-                            setInput({
-                                ...input,
-                                chronOntologyTerm: newValue
-                            });
-                        }}
-                        renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
-                        style={{ width: 500 }}
-                        autoSelect={true}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <FormLabel component="legend">Filter by coordinates</FormLabel>
-                    <FormGroup
-                        style={{ width: 500 }}
-                    >
-                        {<input
-                            type="text"
-                            name="boundingBoxCorner1"
-                            //defaultValue={input.boundingBoxCorner1}
-                            value={input.boundingBoxCorner1}
-                            placeholder="North-east corner of bounding box (comma-separated coordinates)"
-                            onChange={handleInputChange}
-                        />}
-                        {<input
-                            type="text"
-                            name="boundingBoxCorner2"
-                            //defaultValue={input.boundingBoxCorner2}
-                            value={input.boundingBoxCorner2}
-                            placeholder="South-west corner of bounding box (comma-separated coordinates)"
-                            onChange={handleInputChange}
-                        />}
-                        {<FormControlLabel control={
-                            <Switch
-                                name="drawBBox"
-                                color="primary"
-                                onChange={() => {setInput({
+                                )
+                            })}
+                        </FormGroup>
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <FormLabel component="legend">Filter by time</FormLabel>
+                        <Autocomplete
+                            name="chronOntologyTerm"
+                            options={chronOntologyTerms}
+                            onChange={(event, newValue) => {
+                                setInput({
                                     ...input,
-                                    drawBBox: !input.drawBBox}
-                                )}}
+                                    chronOntologyTerm: newValue
+                                });
+                            }}
+                            renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
+                            autoSelect={true}
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
+                        <FormGroup>
+                            <input
+                                type="text"
+                                name="boundingBoxCorner1"
+                                value={input.boundingBoxCorner1}
+                                placeholder="North, East decimal degrees"
+                                onChange={handleInputChange}
                             />
-                        }
-                            label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
-                            labelPlacement="start"
-                            />}
-                    </FormGroup>
-                </FormGroup>
+                            <input
+                                type="text"
+                                name="boundingBoxCorner2"
+                                value={input.boundingBoxCorner2}
+                                placeholder="South, West decimal degrees"
+                                onChange={handleInputChange}
+                            />
+                            <FormControlLabel control={
+                                <Switch
+                                    name="drawBBox"
+                                    color="primary"
+                                    onChange={() => {setInput({
+                                        ...input,
+                                        drawBBox: !input.drawBBox}
+                                    )}}
+                                />
+                            }
+                                              label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
+                                              labelPlacement="start"
+                            />
+                        </FormGroup>
+                    </Grid>
+                </Grid>
+
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
 
                 {input.showSearchResults && <span>Showing search results</span>}
