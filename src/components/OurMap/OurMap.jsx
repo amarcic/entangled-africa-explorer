@@ -262,11 +262,14 @@ export const OurMap = () => {
                 className="markercluster-map"
                 center={mapCenter}
                 zoom={zoomLevel}
+                minZoom={3}
+                maxBounds={[[-90, -180], [90, 180]]}
                 onClick={(event) => {if(input.drawBBox){createBoundingBox(event)}}}
             >
                 <TileLayer
                     attribution={osmAttr}
                     url={osmTiles}
+                    noWrap={true}
                 />
                 {input.drawBBox&&input.boundingBoxCorner1.length!==0
                 &&<Circle
