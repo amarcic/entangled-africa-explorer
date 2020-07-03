@@ -137,7 +137,7 @@ export const OurMap = () => {
         console.log("handleCoordinates!");
     };
 
-    const createBoundingBox = (event) => {
+    const drawBoundingBox = (event) => {
         setInput({
             ...input,
             boundingBoxCorner2: input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)],
@@ -230,12 +230,12 @@ export const OurMap = () => {
                                 label="North, East decimal degrees"
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
-                                    if((/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/).test(event.currentTarget.value)) {handleCoordinateChange(event)}
+                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
                                     else {handleInputChange(event)}
                                 }}
                                 InputProps={{
                                     endAdornment: (
-                                        (/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner1))
+                                        (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                                         &&<IconButton
                                             onClick={() => setInput({
                                                 ...input,
@@ -256,12 +256,12 @@ export const OurMap = () => {
                                 label="South, West decimal degrees"
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
-                                    if((/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/).test(event.currentTarget.value)) {handleCoordinateChange(event)}
+                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
                                     else {handleInputChange(event)}
                                 }}
                                 InputProps={{
                                     endAdornment: (
-                                        (/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner2))
+                                        (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                                         &&<IconButton
                                             onClick={() => setInput({
                                                 ...input,
@@ -315,24 +315,28 @@ export const OurMap = () => {
                 zoom={zoomLevel}
                 minZoom={3}
                 maxBounds={[[-90, -180], [90, 180]]}
-                onClick={(event) => {if(input.drawBBox){createBoundingBox(event)}}}
+                onClick={(event) => {
+                    if(input.drawBBox) {
+                        drawBoundingBox(event)
+                    }
+                }}
             >
                 <TileLayer
                     attribution={osmAttr}
                     url={osmTiles}
                     noWrap={true}
                 />
-                {input.drawBBox&&(/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner1))
+                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                 &&<Circle
                     center={input.boundingBoxCorner1}
                     opacity={0.5}
                 />}
-                {input.drawBBox&&(/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner2))
+                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                 &&<Circle
                     center={input.boundingBoxCorner2}
                     opacity={0.5}
                 />}
-                {input.drawBBox&&(/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner1))&&(/-*\d{1,2}\.*\d*,-*\d{1,3}\.*\d*/.test(input.boundingBoxCorner2))
+                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                 &&<Rectangle
                     bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
                     weight={2}
