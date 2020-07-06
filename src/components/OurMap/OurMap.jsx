@@ -58,7 +58,7 @@ const GET_OBJECTS = gql`
             periodName
         }
     }
-`
+`;
 
 export const OurMap = () => {
     const {t, i18n} = useTranslation();
@@ -68,9 +68,32 @@ export const OurMap = () => {
     };
 
     //state
-    function reducer(state, action) {
+    function inputReducer(state, action) {
         const { type, payload } = action;
-        return { ...state, [type]: payload };
+        switch(type) {
+            case 'UPDATE_INPUT':
+                return {
+                    ...state,
+                    [payload.field]: payload.value
+                };
+            case 'CHECK_ITEM':
+                return {
+                    ...state,
+                    [payload.field]: [...state[payload.field], payload.toggledItem]
+                };
+            case 'UNCHECK_ITEM':
+                return {
+                    ...state,
+                    [payload.field]: state[payload.field].filter(checked => checked !== payload.toggledItem)
+                };
+            case 'TOGGLE_STATE':
+                return {
+                    ...state,
+                    [payload.toggledField]: !state[payload.toggledField]
+                }
+            default:
+                return { ...state, [type]: payload };
+        }
     }
 
     const initialInput = {
@@ -88,7 +111,7 @@ export const OurMap = () => {
         drawBBox: false
     };
 
-    const [input, dispatch] = useReducer(reducer, initialInput);
+    const [input, dispatch] = useReducer(inputReducer, initialInput);
 
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
@@ -104,25 +127,12 @@ export const OurMap = () => {
         'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch'
     ];
 
-    const handleInputChange = (event) => {
-        dispatch({type: event.currentTarget.name, payload: event.currentTarget.value});
-        console.log("handleInputChange!");
-    };
-
     const handleRelatedObjects = (id) => {
         console.log(id);
         dispatch({type: "objectId", payload: id ? Number(id) : input.objectId});
-        dispatch({type: "showSearchResults", payload: !input.showSearchResults});
-        dispatch({type: "showRelatedObjects", payload: !input.showRelatedObjects});
+        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
+        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
         console.log("handleRelatedObjects!");
-    };
-
-    const handleCheck = (project) => {
-        dispatch({type: "checkedProjects", payload: input.checkedProjects.includes(project.projectBestandsname)
-                ? input.checkedProjects.filter(checked => checked !== project.projectBestandsname)
-                : [...input.checkedProjects, project.projectBestandsname]
-        });
-        console.log("handleCheck!");
     };
 
     const handleCoordinateChange = (event) => {
@@ -175,7 +185,7 @@ export const OurMap = () => {
                                 name="searchStr"
                                 defaultValue={input.searchStr}
                                 placeholder="*"
-                                onChange={handleInputChange}
+                                onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
                             />
                         </FormGroup>
                     </Grid>
@@ -189,7 +199,12 @@ export const OurMap = () => {
                                         control={
                                             <Checkbox
                                                 checked={input.checkedProjects.includes(project.projectBestandsname)}
-                                                onChange={() => handleCheck(project)}
+                                                onChange={() => {
+                                                    dispatch({
+                                                        type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM": "CHECK_ITEM",
+                                                        payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
+                                                    })
+                                                }}
                                                 name={project.projectBestandsname}
                                                 key={project.projectBestandsname}
                                             />
@@ -206,7 +221,6 @@ export const OurMap = () => {
                             name="chronOntologyTerm"
                             options={chronOntologyTerms}
                             onChange={(event, newValue) => {dispatch({type: "chronOntologyTerm", payload: newValue})}}
-
                             renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
                             autoSelect={true}
                         />
@@ -224,7 +238,7 @@ export const OurMap = () => {
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
-                                    else {handleInputChange(event)}
+                                    else {dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
                                 }}
                                 InputProps={{
                                     endAdornment: (
@@ -247,7 +261,7 @@ export const OurMap = () => {
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
-                                    else {handleInputChange(event)}
+                                    else {dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
                                 }}
                                 InputProps={{
                                     endAdornment: (
@@ -264,7 +278,7 @@ export const OurMap = () => {
                                 <Switch
                                     name="drawBBox"
                                     color="primary"
-                                    onChange={() => dispatch({type: "drawBBox", payload: !input.drawBBox})}
+                                    onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
                                 />
                             }
                                               label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
