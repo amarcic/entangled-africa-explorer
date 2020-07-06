@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useReducer} from 'react';
 import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
@@ -68,7 +68,12 @@ export const OurMap = () => {
     };
 
     //state
-    const [input, setInput] = useState({
+    function reducer(state, action) {
+        const { type, payload } = action;
+        return { ...state, [type]: payload };
+    }
+
+    const initialInput = {
         objectId: 0,
         searchStr: "",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
@@ -81,7 +86,10 @@ export const OurMap = () => {
         boundingBoxCorner1: [],
         boundingBoxCorner2: [],
         drawBBox: false
-    });
+    };
+
+    const [input, dispatch] = useReducer(reducer, initialInput);
+
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
 
@@ -97,28 +105,20 @@ export const OurMap = () => {
     ];
 
     const handleInputChange = (event) => {
-        setInput({
-            ...input,
-            [event.currentTarget.name]: event.currentTarget.value
-        });
+        dispatch({type: event.currentTarget.name, payload: event.currentTarget.value});
         console.log("handleInputChange!");
     };
 
     const handleRelatedObjects = (id) => {
         console.log(id);
-        setInput({
-            ...input,
-            objectId: id ? Number(id) : input.objectId,
-            showSearchResults: !input.showSearchResults,
-            showRelatedObjects: !input.showRelatedObjects
-        });
+        dispatch({type: "objectId", payload: id ? Number(id) : input.objectId});
+        dispatch({type: "showSearchResults", payload: !input.showSearchResults});
+        dispatch({type: "showRelatedObjects", payload: !input.showRelatedObjects});
         console.log("handleRelatedObjects!");
     };
 
     const handleCheck = (project) => {
-        setInput({
-            ...input,
-            checkedProjects: input.checkedProjects.includes(project.projectBestandsname)
+        dispatch({type: "checkedProjects", payload: input.checkedProjects.includes(project.projectBestandsname)
                 ? input.checkedProjects.filter(checked => checked !== project.projectBestandsname)
                 : [...input.checkedProjects, project.projectBestandsname]
         });
@@ -129,20 +129,17 @@ export const OurMap = () => {
         const targetName = event.currentTarget.name;
         const targetValue = event.currentTarget.value;
         const returnValue = targetValue.split(",").map( coordinateString => parseFloat(coordinateString));
-
-        setInput({
-            ...input,
-            [targetName]: returnValue
-        });
+        // toFixed() returns a string...
+        /*const returnValue = targetValue.split(",").map( coordinateString => {
+            return parseFloat(coordinateString).toFixed(coordinateString.split(".")[1].length);
+        });*/
+        dispatch({type: targetName, payload: returnValue});
         console.log("handleCoordinates!");
     };
 
     const drawBoundingBox = (event) => {
-        setInput({
-            ...input,
-            boundingBoxCorner2: input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)],
-            boundingBoxCorner1: input.boundingBoxCorner1.length===0 ? [Number(event.latlng.lat),Number(event.latlng.lng)] : input.boundingBoxCorner1
-        });
+        dispatch({type: "boundingBoxCorner2", payload: (input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)])});
+        dispatch({type: "boundingBoxCorner1", payload: (input.boundingBoxCorner1.length===0 ? [Number(event.latlng.lat),Number(event.latlng.lng)] : input.boundingBoxCorner1)});
     };
 
     useEffect( () => {
@@ -208,12 +205,8 @@ export const OurMap = () => {
                         <Autocomplete
                             name="chronOntologyTerm"
                             options={chronOntologyTerms}
-                            onChange={(event, newValue) => {
-                                setInput({
-                                    ...input,
-                                    chronOntologyTerm: newValue
-                                });
-                            }}
+                            onChange={(event, newValue) => {dispatch({type: "chronOntologyTerm", payload: newValue})}}
+
                             renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
                             autoSelect={true}
                         />
@@ -237,10 +230,7 @@ export const OurMap = () => {
                                     endAdornment: (
                                         (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                                         &&<IconButton
-                                            onClick={() => setInput({
-                                                ...input,
-                                                boundingBoxCorner1: []}
-                                            )}
+                                            onClick={() => dispatch({type: "boundingBoxCorner1", payload: []})}
                                         >
                                             <ClearIcon />
                                         </IconButton>
@@ -263,10 +253,7 @@ export const OurMap = () => {
                                     endAdornment: (
                                         (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                                         &&<IconButton
-                                            onClick={() => setInput({
-                                                ...input,
-                                                boundingBoxCorner2: []}
-                                            )}
+                                            onClick={() => dispatch({type: "boundingBoxCorner1", payload: []})}
                                         >
                                             <ClearIcon />
                                         </IconButton>
@@ -277,10 +264,7 @@ export const OurMap = () => {
                                 <Switch
                                     name="drawBBox"
                                     color="primary"
-                                    onChange={() => setInput({
-                                        ...input,
-                                        drawBBox: !input.drawBBox}
-                                    )}
+                                    onChange={() => dispatch({type: "drawBBox", payload: !input.drawBBox})}
                                 />
                             }
                                               label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
