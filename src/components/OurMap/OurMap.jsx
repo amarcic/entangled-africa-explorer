@@ -46,7 +46,7 @@ const GET_CONTEXT_BY_ID = gql`
 `;
 
 const GET_OBJECTS = gql`
-    query search ($searchTerm: String, $project: [String], $bbox: [Float], $periodTerm: String) {
+    query search ($searchTerm: String, $project: [String], $bbox: [String], $periodTerm: String) {
         entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm, entityTypes: [Einzelobjekte]) {
             identifier
             name
@@ -119,8 +119,11 @@ export const OurMap = () => {
     //queries
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
-        useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects, bbox: (input.boundingBoxCorner1.concat(input.boundingBoxCorner2)), periodTerm: input.chronOntologyTerm}});
-
+        useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects,
+                bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                        ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                        : [],
+                periodTerm: input.chronOntologyTerm}});
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich',  'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
@@ -138,18 +141,16 @@ export const OurMap = () => {
     const handleCoordinateChange = (event) => {
         const targetName = event.currentTarget.name;
         const targetValue = event.currentTarget.value;
-        const returnValue = targetValue.split(",").map( coordinateString => parseFloat(coordinateString));
-        // toFixed() returns a string...
-        /*const returnValue = targetValue.split(",").map( coordinateString => {
+        const returnValue = targetValue.split(",").map( coordinateString => {
             return parseFloat(coordinateString).toFixed(coordinateString.split(".")[1].length);
-        });*/
+        });
         dispatch({type: targetName, payload: returnValue});
         console.log("handleCoordinates!");
     };
 
     const drawBoundingBox = (event) => {
-        dispatch({type: "boundingBoxCorner2", payload: (input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [Number(event.latlng.lat),Number(event.latlng.lng)])});
-        dispatch({type: "boundingBoxCorner1", payload: (input.boundingBoxCorner1.length===0 ? [Number(event.latlng.lat),Number(event.latlng.lng)] : input.boundingBoxCorner1)});
+        dispatch({type: "boundingBoxCorner2", payload: (input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [String(event.latlng.lat),String(event.latlng.lng)])});
+        dispatch({type: "boundingBoxCorner1", payload: (input.boundingBoxCorner1.length===0 ? [String(event.latlng.lat),String(event.latlng.lng)] : input.boundingBoxCorner1)});
     };
 
     useEffect( () => {
@@ -267,7 +268,7 @@ export const OurMap = () => {
                                     endAdornment: (
                                         (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                                         &&<IconButton
-                                            onClick={() => dispatch({type: "boundingBoxCorner1", payload: []})}
+                                            onClick={() => dispatch({type: "boundingBoxCorner2", payload: []})}
                                         >
                                             <ClearIcon />
                                         </IconButton>
