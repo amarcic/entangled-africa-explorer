@@ -90,7 +90,21 @@ export const OurMap = () => {
                 return {
                     ...state,
                     [payload.toggledField]: !state[payload.toggledField]
-                }
+                };
+            case 'DRAW_BBOX':
+                return {
+                    ...state,
+                    boundingBoxCorner1: state.boundingBoxCorner1.length===0 ? [String(payload.lat),String(payload.lng)] : state.boundingBoxCorner1,
+                    boundingBoxCorner2: state.boundingBoxCorner1.length===0 ? state.boundingBoxCorner2 : [String(payload.lat),String(payload.lng)]
+                };
+            case 'MANUAL_BBOX':
+                payload.value = payload.valueString.split(",").map( coordinateString => {
+                    return parseFloat(coordinateString).toFixed(coordinateString.split(".")[1].length)
+                });
+                return {
+                    ...state,
+                    [payload.field]: payload.value
+                };
             default:
                 return { ...state, [type]: payload };
         }
@@ -121,8 +135,8 @@ export const OurMap = () => {
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
         useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects,
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                        ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
-                        : [],
+                    ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                    : [],
                 periodTerm: input.chronOntologyTerm}});
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
@@ -136,21 +150,6 @@ export const OurMap = () => {
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
         console.log("handleRelatedObjects!");
-    };
-
-    const handleCoordinateChange = (event) => {
-        const targetName = event.currentTarget.name;
-        const targetValue = event.currentTarget.value;
-        const returnValue = targetValue.split(",").map( coordinateString => {
-            return parseFloat(coordinateString).toFixed(coordinateString.split(".")[1].length);
-        });
-        dispatch({type: targetName, payload: returnValue});
-        console.log("handleCoordinates!");
-    };
-
-    const drawBoundingBox = (event) => {
-        dispatch({type: "boundingBoxCorner2", payload: (input.boundingBoxCorner1.length===0 ? input.boundingBoxCorner2 : [String(event.latlng.lat),String(event.latlng.lng)])});
-        dispatch({type: "boundingBoxCorner1", payload: (input.boundingBoxCorner1.length===0 ? [String(event.latlng.lat),String(event.latlng.lng)] : input.boundingBoxCorner1)});
     };
 
     useEffect( () => {
@@ -238,12 +237,16 @@ export const OurMap = () => {
                                 label="North, East decimal degrees"
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
-                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
-                                    else {dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
+                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
+                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
+                                    }
+                                    else {
+                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
+                                    }
                                 }}
                                 InputProps={{
                                     endAdornment: (
-                                        (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
+                                        input.boundingBoxCorner1.length!==0
                                         &&<IconButton
                                             onClick={() => dispatch({type: "boundingBoxCorner1", payload: []})}
                                         >
@@ -261,12 +264,17 @@ export const OurMap = () => {
                                 label="South, West decimal degrees"
                                 onChange={(event) => {
                                     // check whether the entered value is in the valid format "float,float"
-                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {handleCoordinateChange(event)}
-                                    else {dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
+                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
+                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
+                                    }
+                                    else {
+                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
+
+                                    }
                                 }}
                                 InputProps={{
                                     endAdornment: (
-                                        (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                                        input.boundingBoxCorner2.length!==0
                                         &&<IconButton
                                             onClick={() => dispatch({type: "boundingBoxCorner2", payload: []})}
                                         >
@@ -278,6 +286,7 @@ export const OurMap = () => {
                             <FormControlLabel control={
                                 <Switch
                                     name="drawBBox"
+                                    checked={input.drawBBox}
                                     color="primary"
                                     onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
                                 />
@@ -315,8 +324,8 @@ export const OurMap = () => {
                 minZoom={3}
                 maxBounds={[[-90, -180], [90, 180]]}
                 onClick={(event) => {
-                    if(input.drawBBox) {
-                        drawBoundingBox(event)
+                    if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
+                        dispatch({type: "DRAW_BBOX", payload: event.latlng});
                     }
                 }}
             >
@@ -325,17 +334,17 @@ export const OurMap = () => {
                     url={osmTiles}
                     noWrap={true}
                 />
-                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
+                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                 &&<Circle
                     center={input.boundingBoxCorner1}
                     opacity={0.5}
                 />}
-                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                 &&<Circle
                     center={input.boundingBoxCorner2}
                     opacity={0.5}
                 />}
-                {input.drawBBox&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                 &&<Rectangle
                     bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
                     weight={2}
