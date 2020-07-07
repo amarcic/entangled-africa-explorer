@@ -106,7 +106,7 @@ export const OurMap = () => {
                     [payload.field]: payload.value
                 };
             default:
-                return { ...state, [type]: payload };
+                //return { ...state, [type]: payload };
         }
     }
 
@@ -146,7 +146,7 @@ export const OurMap = () => {
 
     const handleRelatedObjects = (id) => {
         console.log(id);
-        dispatch({type: "objectId", payload: id ? Number(id) : input.objectId});
+        dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
         console.log("handleRelatedObjects!");
@@ -220,7 +220,7 @@ export const OurMap = () => {
                         <Autocomplete
                             name="chronOntologyTerm"
                             options={chronOntologyTerms}
-                            onChange={(event, newValue) => {dispatch({type: "chronOntologyTerm", payload: newValue})}}
+                            onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
                             renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
                             autoSelect={true}
                         />
@@ -248,7 +248,7 @@ export const OurMap = () => {
                                     endAdornment: (
                                         input.boundingBoxCorner1.length!==0
                                         &&<IconButton
-                                            onClick={() => dispatch({type: "boundingBoxCorner1", payload: []})}
+                                            onClick={() => dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1" ,value: []}})}
                                         >
                                             <ClearIcon />
                                         </IconButton>
@@ -276,7 +276,7 @@ export const OurMap = () => {
                                     endAdornment: (
                                         input.boundingBoxCorner2.length!==0
                                         &&<IconButton
-                                            onClick={() => dispatch({type: "boundingBoxCorner2", payload: []})}
+                                            onClick={() => dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2" ,value: []}})}
                                         >
                                             <ClearIcon />
                                         </IconButton>
