@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useReducer} from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from 'react-i18next';
@@ -143,6 +143,7 @@ export const OurMap = () => {
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
         checkedProjects: [],
+        mode: "archaeoSites",
         showSearchResults: false,
         showArchaeoSites: true,
         showRelatedObjects: false,
@@ -222,6 +223,32 @@ export const OurMap = () => {
             <h2>{t('Map')}</h2>
             <div>
                 <Grid container spacing={3}>
+                    <Grid item xs={7}>
+                        <FormLabel component="legend">Search mode</FormLabel>
+                        <Tabs
+                            name="mapMode"
+                            value={input.mode}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            centered
+                            onChange={(event, newValue) => {
+                                dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: newValue}})
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showArchaeoSites"}})
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
+                            }}
+                        >
+                            <Tab
+                                value="archaeoSites"
+                                label="Search for Archaeological Sites"
+                                wrapped
+                            />
+                            <Tab
+                                value="objects"
+                                label="Search for Objects"
+                                wrapped
+                            />
+                        </Tabs>
+                    </Grid>
                     <Grid item xs={12} lg={6}>
                         <FormGroup>
                             <FormLabel component="legend">Filter by search term</FormLabel>
@@ -236,7 +263,7 @@ export const OurMap = () => {
                     </Grid>
                     <Grid item xs={12} lg={6}>
                         <FormGroup>
-                            <FormLabel component="legend">Filter by projects</FormLabel>
+                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
                             {input.projectList && input.projectList.map(project => {
                                 return (project
                                     && <FormControlLabel
@@ -252,6 +279,7 @@ export const OurMap = () => {
                                                 }}
                                                 name={project.projectBestandsname}
                                                 key={project.projectBestandsname}
+                                                disabled={input.showArchaeoSites}
                                             />
                                         }
                                         label={project.projectLabel}
@@ -261,13 +289,14 @@ export const OurMap = () => {
                         </FormGroup>
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <FormLabel component="legend">Filter by time</FormLabel>
+                        <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
                         <Autocomplete
                             name="chronOntologyTerm"
                             options={chronOntologyTerms}
                             onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
                             renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
                             autoSelect={true}
+                            disabled={input.showArchaeoSites}
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
@@ -343,10 +372,10 @@ export const OurMap = () => {
                     </Grid>
                 </Grid>
 
-                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
-
                 {input.showSearchResults && <span>Showing search results</span>}
-                {input.showRelatedObjects && <span>Showing related objects</span>}
+                {input.showRelatedObjects && <span>Showing related objects of </span>}
+                {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
+                {input.showArchaeoSites && <span>Showing archaeological sites</span>}
 
                 {loadingContext && <span>...loadingContext</span>}
                 {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}

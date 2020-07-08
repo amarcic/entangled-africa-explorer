@@ -19,7 +19,7 @@ export const ReturnPopup = (props) => {
                         )
                     )
                 }</ul>}*/}
-                <Button
+                {props.showRelatedObjects&&props.handleRelatedObjects&&<Button
                     onClick={() => {props.handleRelatedObjects(props.object.identifier)}}
                     name="showRelatedObjects"
                     variant="contained"
@@ -27,7 +27,7 @@ export const ReturnPopup = (props) => {
                     disabled={props.showRelatedObjects}
                 >
                     Show related objects
-                </Button>
+                </Button>}
             </div>
         </Popup>
     );
