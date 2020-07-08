@@ -60,6 +60,32 @@ const GET_OBJECTS = gql`
     }
 `;
 
+const GET_ARCHAEOLOGICAL_SITES = gql`
+    query searchArchaeoSites($searchTerm: String, $bbox: [String]) {
+        archaeologicalSites(searchString: $searchTerm, coordinates: $bbox) {
+            identifier
+            name
+            coordinates
+            locatedIn {
+                identifier
+            }
+            containedSites {
+                identifier
+            }
+            locatedInPlaces {
+                identifier
+            }
+            types
+            #discoveryContext {
+            #  identifier
+            #}
+            #linkedObjects(types: [Topographien]) {
+            #  identifier
+            #}
+        }
+    }
+`;
+
 export const OurMap = () => {
     const {t, i18n} = useTranslation();
 
@@ -106,18 +132,19 @@ export const OurMap = () => {
                     [payload.field]: payload.value
                 };
             default:
-                //return { ...state, [type]: payload };
+            //return { ...state, [type]: payload };
         }
     }
 
     const initialInput = {
         objectId: 0,
-        searchStr: "",
+        searchStr: "jerusalem",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
         checkedProjects: [],
-        showSearchResults: true,
+        showSearchResults: false,
+        showArchaeoSites: true,
         showRelatedObjects: false,
         chronOntologyTerm: "",
         boundingBoxCorner1: [],
@@ -129,15 +156,25 @@ export const OurMap = () => {
 
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
+    const [mapDataArchaeoSites, setMapDataArchaeoSites] = useState({});
 
     //queries
     const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
     const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
         useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects,
+                // only send coordinates if entered values have valid format (floats with at least one decimal place)
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                     ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                     : [],
                 periodTerm: input.chronOntologyTerm}});
+    const { data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites } =
+        useQuery(GET_ARCHAEOLOGICAL_SITES, {variables: {searchTerm: input.searchStr,
+                // only send coordinates if entered values have valid format (floats with at least one decimal place)
+                bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                    ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                    : []
+            }});
+
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich',  'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
@@ -145,7 +182,6 @@ export const OurMap = () => {
     ];
 
     const handleRelatedObjects = (id) => {
-        console.log(id);
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
@@ -170,6 +206,15 @@ export const OurMap = () => {
             console.log("rerender dataObjectsByString --> input:", input);
         }
     }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
+
+    useEffect( () => {
+        if (dataArchaeoSites && input.showArchaeoSites && (input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+            setMapDataArchaeoSites(dataArchaeoSites);
+            console.log("rerender dataArchaeoSites!");
+            console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
+            console.log("rerender dataArchaeoSites --> input:", input);
+        }
+    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
 
     return(
@@ -201,7 +246,7 @@ export const OurMap = () => {
                                                 checked={input.checkedProjects.includes(project.projectBestandsname)}
                                                 onChange={() => {
                                                     dispatch({
-                                                        type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM": "CHECK_ITEM",
+                                                        type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM" : "CHECK_ITEM",
                                                         payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
                                                     })
                                                 }}
@@ -236,7 +281,7 @@ export const OurMap = () => {
                                 placeholder="North, East decimal degrees"
                                 label="North, East decimal degrees"
                                 onChange={(event) => {
-                                    // check whether the entered value is in the valid format "float,float"
+                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
                                         dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
                                     }
@@ -263,7 +308,7 @@ export const OurMap = () => {
                                 placeholder="South, West decimal degrees"
                                 label="South, West decimal degrees"
                                 onChange={(event) => {
-                                    // check whether the entered value is in the valid format "float,float"
+                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
                                         dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
                                     }
@@ -307,6 +352,8 @@ export const OurMap = () => {
                 {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}
                 {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString.message)}
+                {loadingArchaeoSites && <span>...loadingArchaeoSites</span>}
+                {errorArchaeoSites && <span>...errorArchaeoSites</span> && console.log(errorArchaeoSites.message)}
 
                 {input.showRelatedObjects && <Button
                     onClick={() => handleRelatedObjects()}
@@ -398,6 +445,18 @@ export const OurMap = () => {
                             )}
                         )
                     )})}
+                    {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                    &&mapDataArchaeoSites.archaeologicalSites&&mapDataArchaeoSites.archaeologicalSites.map( (site, indexSite) =>
+                        {return(site
+                            && <Marker
+                                key={`${site.identifier}-${indexSite}`}
+                                //coordinates need to be reversed because of different standards between geojson and leaflet
+                                position={site.coordinates.split(", ").reverse()}
+                            >
+                                <ReturnPopup object={site} /*place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}*//>
+                            </Marker>
+                        )}
+                    )}
                 </MarkerClusterGroup>
             </Map>
         </div>

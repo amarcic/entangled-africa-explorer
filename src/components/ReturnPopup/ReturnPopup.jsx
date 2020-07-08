@@ -7,7 +7,7 @@ export const ReturnPopup = (props) => {
         <Popup>
             <div>
                 <h2>{props.object.name}</h2>
-                <p>{props.place.name}</p>
+                {props.place&&<p>{props.place.name}</p>}
                 {/*{input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
                 &&<ul>{
                     (mapDataContext.entity.related
