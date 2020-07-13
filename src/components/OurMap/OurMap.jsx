@@ -252,8 +252,9 @@ export const OurMap = () => {
                     <Grid item xs={12} lg={6}>
                         <FormGroup>
                             <FormLabel component="legend">Filter by search term</FormLabel>
-                            <input
+                            <TextField
                                 type="text"
+                                variant="outlined"
                                 name="searchStr"
                                 defaultValue={input.searchStr}
                                 placeholder="*"
@@ -261,7 +262,7 @@ export const OurMap = () => {
                             />
                         </FormGroup>
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
                         <FormGroup>
                             <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
                             {input.projectList && input.projectList.map(project => {
@@ -287,8 +288,9 @@ export const OurMap = () => {
                                 )
                             })}
                         </FormGroup>
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
+                    </Grid>}
+                    {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
+                        <FormGroup>
                         <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
                         <Autocomplete
                             name="chronOntologyTerm"
@@ -298,10 +300,11 @@ export const OurMap = () => {
                             autoSelect={true}
                             disabled={input.showArchaeoSites}
                         />
-                    </Grid>
+                        </FormGroup>
+                    </Grid>}
                     <Grid item xs={12} lg={6}>
-                        <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
                         <FormGroup>
+                            <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
                             <TextField
                                 type="text"
                                 variant="outlined"
