@@ -303,9 +303,22 @@ export const OurMap = () => {
                                 type="text"
                                 variant="outlined"
                                 name="searchStr"
-                                defaultValue={input.searchStr}
+                                value={input.searchStr}
                                 placeholder="*"
                                 onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
+                                InputProps={{
+                                    endAdornment: (
+                                        input.searchStr!==""
+                                        &&<IconButton
+                                            onClick={() => {
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "searchStr", value: ""}});
+                                            }}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    )
+                                }}
+                            />
                         </FormGroup>
                     </Grid>
                     {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
