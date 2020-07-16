@@ -211,7 +211,12 @@ export const OurMap = () => {
 
     const regions = [
         {title: 'Africa', id: 2042601},
-        {title: 'Egypt', id: 2042786}
+        {title: 'Egypt', id: 2042786},
+        {title: 'Meroe', id: 2293921},
+        {title: 'Republic of Namibia', id: 2293917},
+        {title: 'Sudan', id: 2042707},
+        {title: 'Tschad', id: 2128989},
+        {title: 'Wadi Howar Region Sudan', id: 2042736},
     ];
 
     const handleRelatedObjects = (id) => {
@@ -247,7 +252,7 @@ export const OurMap = () => {
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
             console.log("rerender dataArchaeoSites --> input:", input);
         }
-    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2]);
+    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode]);
 
     useEffect( () => {
         if (dataSitesByRegion && input.showArchaeoSites && (input.searchStr!==""||(input.regionId!==0))) {
@@ -256,7 +261,7 @@ export const OurMap = () => {
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId]);
+    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
 
 
     return(
@@ -355,9 +360,9 @@ export const OurMap = () => {
                                 }}
                                 onChange={(event, newValue) => {
                                     dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}})
-                                    dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
-                                    console.log(newValue.id);
-                                    console.log(input);
+                                    newValue===null
+                                        ? (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}), dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}))
+                                        : dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
                                 }}
                                 renderInput={(params) => <TextField {...params} label="" variant="outlined" />}
                                 autoSelect={true}
@@ -391,7 +396,7 @@ export const OurMap = () => {
                                         &&<IconButton
                                             onClick={() => {
                                                 dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1" ,value: []}})}
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1", value: []}})}
                                             }
                                         >
                                             <ClearIcon />
