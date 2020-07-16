@@ -242,7 +242,7 @@ export const OurMap = () => {
     }, [dataContext, input.showRelatedObjects]);
 
     useEffect( () => {
-        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.checkedProjects.length!==0||input.chronOntologyTerm!==""
             ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
             setMapDataObjectsByString(dataObjectsByString);
             console.log("rerender dataObjectsByString!");
