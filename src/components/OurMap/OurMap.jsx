@@ -200,8 +200,9 @@ export const OurMap = () => {
                 : []
         }
     });
-    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, {
-        variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}});
+    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode==="region"
+        ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
+        : {variables: {searchTerm: "", idOfRegion: 0}});
 
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
@@ -255,7 +256,7 @@ export const OurMap = () => {
     }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && (input.searchStr!==""||(input.regionId!==0))) {
+        if (dataSitesByRegion && input.showArchaeoSites && input.sitesMode==="region" && (input.searchStr!==""||(input.regionId!==0))) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
@@ -305,7 +306,6 @@ export const OurMap = () => {
                                 defaultValue={input.searchStr}
                                 placeholder="*"
                                 onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
-                            />
                         </FormGroup>
                     </Grid>
                     {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
