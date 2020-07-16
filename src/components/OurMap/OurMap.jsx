@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useReducer} from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from 'react-i18next';
@@ -66,22 +66,35 @@ const GET_ARCHAEOLOGICAL_SITES = gql`
             identifier
             name
             coordinates
-            locatedIn {
-                identifier
-            }
-            containedSites {
-                identifier
-            }
-            locatedInPlaces {
-                identifier
-            }
-            types
+            #locatedIn {
+            #    identifier
+            #    name
+            #}
+            #containedSites {
+            #    identifier
+            #    name
+            #}
+            #locatedInPlaces {
+            #    identifier
+            #    name
+            #}
+            #types
             #discoveryContext {
             #  identifier
             #}
             #linkedObjects(types: [Topographien]) {
             #  identifier
             #}
+        }
+    }
+`;
+
+const GET_SITES_BY_REGION = gql`
+    query byRegion($searchTerm: String, $idOfRegion: ID!) {
+        sitesByRegion(searchString: $searchTerm, id: $idOfRegion) {
+            identifier
+            name
+            coordinates
         }
     }
 `;
@@ -95,8 +108,8 @@ export const OurMap = () => {
 
     //state
     function inputReducer(state, action) {
-        const { type, payload } = action;
-        switch(type) {
+        const {type, payload} = action;
+        switch (type) {
             case 'UPDATE_INPUT':
                 return {
                     ...state,
@@ -120,11 +133,11 @@ export const OurMap = () => {
             case 'DRAW_BBOX':
                 return {
                     ...state,
-                    boundingBoxCorner1: state.boundingBoxCorner1.length===0 ? [String(payload.lat),String(payload.lng)] : state.boundingBoxCorner1,
-                    boundingBoxCorner2: state.boundingBoxCorner1.length===0 ? state.boundingBoxCorner2 : [String(payload.lat),String(payload.lng)]
+                    boundingBoxCorner1: state.boundingBoxCorner1.length === 0 ? [String(payload.lat), String(payload.lng)] : state.boundingBoxCorner1,
+                    boundingBoxCorner2: state.boundingBoxCorner1.length === 0 ? state.boundingBoxCorner2 : [String(payload.lat), String(payload.lng)]
                 };
             case 'MANUAL_BBOX':
-                payload.value = payload.valueString.split(",").map( coordinateString => {
+                payload.value = payload.valueString.split(",").map(coordinateString => {
                     return parseFloat(coordinateString).toFixed(coordinateString.split(".")[1].length)
                 });
                 return {
@@ -138,12 +151,17 @@ export const OurMap = () => {
 
     const initialInput = {
         objectId: 0,
-        searchStr: "jerusalem",
+        regionId: 0,
+        searchStr: "",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
-            {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"},
+            {
+                "projectLabel": "Syrian Heritage Archive Project",
+                "projectBestandsname": "Syrian-Heritage-Archive-Project"
+            },
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
         checkedProjects: [],
         mode: "archaeoSites",
+        sitesMode: "",
         showSearchResults: false,
         showArchaeoSites: true,
         showRelatedObjects: false,
@@ -158,28 +176,42 @@ export const OurMap = () => {
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjectsByString, setMapDataObjectsByString] = useState({});
     const [mapDataArchaeoSites, setMapDataArchaeoSites] = useState({});
+    const [mapDataSitesByRegion, setMapDataSitesByRegion] = useState({});
 
     //queries
-    const { data: dataContext, loading: loadingContext, error: errorContext } = useQuery(GET_CONTEXT_BY_ID, {variables: { arachneId: input.objectId }});
-    const { data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString } =
-        useQuery(GET_OBJECTS, {variables: {searchTerm: input.searchStr, project: input.checkedProjects,
+    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, {variables: {arachneId: input.objectId}});
+    const {data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString} =
+        useQuery(GET_OBJECTS, {
+            variables: {
+                searchTerm: input.searchStr, project: input.checkedProjects,
                 // only send coordinates if entered values have valid format (floats with at least one decimal place)
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                     ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                     : [],
-                periodTerm: input.chronOntologyTerm}});
-    const { data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites } =
-        useQuery(GET_ARCHAEOLOGICAL_SITES, {variables: {searchTerm: input.searchStr,
-                // only send coordinates if entered values have valid format (floats with at least one decimal place)
-                bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                    ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
-                    : []
-            }});
+                periodTerm: input.chronOntologyTerm
+            }
+        });
+    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, {
+        variables: {
+            searchTerm: input.searchStr,
+            // only send coordinates if entered values have valid format (floats with at least one decimal place)
+            bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                : []
+        }
+    });
+    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, {
+        variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}});
 
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich',  'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
         'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch'
+    ];
+
+    const regions = [
+        {title: 'Africa', id: 2042601},
+        {title: 'Egypt', id: 2042786}
     ];
 
     const handleRelatedObjects = (id) => {
@@ -216,6 +248,15 @@ export const OurMap = () => {
             console.log("rerender dataArchaeoSites --> input:", input);
         }
     }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2]);
+
+    useEffect( () => {
+        if (dataSitesByRegion && input.showArchaeoSites && (input.searchStr!==""||(input.regionId!==0))) {
+            setMapDataSitesByRegion(dataSitesByRegion);
+            console.log("rerender dataSitesByRegion!");
+            console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
+            console.log("rerender dataSitesByRegion --> input:", input);
+        }
+    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId]);
 
 
     return(
@@ -291,18 +332,40 @@ export const OurMap = () => {
                     </Grid>}
                     {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
                         <FormGroup>
-                        <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
-                        <Autocomplete
-                            name="chronOntologyTerm"
-                            options={chronOntologyTerms}
-                            onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
-                            renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
-                            autoSelect={true}
-                            disabled={input.showArchaeoSites}
-                        />
+                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
+                            <Autocomplete
+                                name="chronOntologyTerm"
+                                options={chronOntologyTerms}
+                                onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
+                                renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
+                                autoSelect={true}
+                                disabled={input.showArchaeoSites}
+                            />
                         </FormGroup>
                     </Grid>}
-                    <Grid item xs={12} lg={6}>
+                    {!input.showSearchResults && <Grid item xs={12} lg={6}>
+                        <FormGroup>
+                            <FormLabel component="legend">Filter by region</FormLabel>
+                            <Autocomplete
+                                name="regionId"
+                                options={regions}
+                                getOptionLabel={(option) => option.title}
+                                getOptionSelected={(option, value) => {
+                                    return (option.id === value.id)
+                                }}
+                                onChange={(event, newValue) => {
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}})
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
+                                    console.log(newValue.id);
+                                    console.log(input);
+                                }}
+                                renderInput={(params) => <TextField {...params} label="" variant="outlined" />}
+                                autoSelect={true}
+                                disabled={input.sitesMode==="bbox"}
+                            />
+                        </FormGroup>
+                    </Grid>}
+                    {<Grid item xs={12} lg={6}>
                         <FormGroup>
                             <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
                             <TextField
@@ -313,6 +376,7 @@ export const OurMap = () => {
                                 placeholder="North, East decimal degrees"
                                 label="North, East decimal degrees"
                                 onChange={(event) => {
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
                                     // only create bbox if entered values have valid format (floats with at least one decimal place)
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
                                         dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
@@ -325,12 +389,16 @@ export const OurMap = () => {
                                     endAdornment: (
                                         input.boundingBoxCorner1.length!==0
                                         &&<IconButton
-                                            onClick={() => dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1" ,value: []}})}
+                                            onClick={() => {
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1" ,value: []}})}
+                                            }
                                         >
                                             <ClearIcon />
                                         </IconButton>
                                     )
                                 }}
+                                disabled={input.sitesMode==="region"}
                             />
                             <TextField
                                 type="text"
@@ -340,6 +408,8 @@ export const OurMap = () => {
                                 placeholder="South, West decimal degrees"
                                 label="South, West decimal degrees"
                                 onChange={(event) => {
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
+
                                     // only create bbox if entered values have valid format (floats with at least one decimal place)
                                     if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
                                         dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
@@ -353,12 +423,16 @@ export const OurMap = () => {
                                     endAdornment: (
                                         input.boundingBoxCorner2.length!==0
                                         &&<IconButton
-                                            onClick={() => dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2" ,value: []}})}
+                                            onClick={() => {
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2", value: []}})
+                                            }}
                                         >
                                             <ClearIcon />
                                         </IconButton>
                                     )
                                 }}
+                                disabled={input.sitesMode==="region"}
                             />
                             <FormControlLabel control={
                                 <Switch
@@ -366,26 +440,30 @@ export const OurMap = () => {
                                     checked={input.drawBBox}
                                     color="primary"
                                     onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
+                                    disabled={input.sitesMode==="region"}
                                 />
                             }
                                               label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
                                               labelPlacement="start"
                             />
                         </FormGroup>
-                    </Grid>
+                    </Grid>}
                 </Grid>
 
                 {input.showSearchResults && <span>Showing search results</span>}
                 {input.showRelatedObjects && <span>Showing related objects of </span>}
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
                 {input.showArchaeoSites && <span>Showing archaeological sites</span>}
+                {input.showArchaeoSites && mapDataSitesByRegion&& mapDataSitesByRegion.sitesByRegion&&mapDataSitesByRegion.sitesByRegion.length!==0 && <span> (by region)</span>}
 
-                {loadingContext && <span>...loadingContext</span>}
+                {loadingContext && <span>...loadingContext</span> && <LinearProgress />}
                 {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}
-                {loadingObjectsByString && <span>...loadingObjectsByString</span>}
+                {loadingObjectsByString && <span>...loadingObjectsByString</span> && <LinearProgress />}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString.message)}
-                {loadingArchaeoSites && <span>...loadingArchaeoSites</span>}
+                {loadingArchaeoSites && <span>...loadingArchaeoSites</span> && <LinearProgress />}
                 {errorArchaeoSites && <span>...errorArchaeoSites</span> && console.log(errorArchaeoSites.message)}
+                {loadingSitesByRegion && <span>...loadingSitesByRegion</span> && <LinearProgress />}
+                {errorSitesByRegion && <span>...errorSitesByRegion</span> && console.log(errorSitesByRegion.message)}
 
                 {input.showRelatedObjects && <Button
                     onClick={() => handleRelatedObjects()}
@@ -395,7 +473,6 @@ export const OurMap = () => {
                     Return to search results (hide related objects)
                 </Button>}
             </div>
-
             <Map
                 className="markercluster-map"
                 center={mapCenter}
@@ -477,18 +554,34 @@ export const OurMap = () => {
                             )}
                         )
                     )})}
+                    {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                    && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
+                            return (site
+                                && <Marker
+                                    key={`${site.identifier}-${indexSite}`}
+                                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                                    position={site.coordinates.split(", ").reverse()}
+                                >
+                                    <ReturnPopup object={site}/>
+                                </Marker>
+                            )
+                        }
+                    )
+                    }
                     {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                    &&mapDataArchaeoSites.archaeologicalSites&&mapDataArchaeoSites.archaeologicalSites.map( (site, indexSite) =>
-                        {return(site
-                            && <Marker
-                                key={`${site.identifier}-${indexSite}`}
-                                //coordinates need to be reversed because of different standards between geojson and leaflet
-                                position={site.coordinates.split(", ").reverse()}
-                            >
-                                <ReturnPopup object={site} /*place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}*//>
-                            </Marker>
-                        )}
-                    )}
+                    && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                            return (site
+                                && <Marker
+                                    key={`${site.identifier}-${indexSite}`}
+                                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                                    position={site.coordinates.split(", ").reverse()}
+                                >
+                                    <ReturnPopup object={site}/>
+                                </Marker>
+                            )
+                        }
+                    )
+                    }
                 </MarkerClusterGroup>
             </Map>
         </div>
