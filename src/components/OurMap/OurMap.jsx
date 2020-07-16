@@ -179,27 +179,32 @@ export const OurMap = () => {
     const [mapDataSitesByRegion, setMapDataSitesByRegion] = useState({});
 
     //queries
-    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, {variables: {arachneId: input.objectId}});
+    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode==="objects"
+    ? {variables: {arachneId: input.objectId}}
+    : {variables: {arachneId: 0}});
+
     const {data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString} =
-        useQuery(GET_OBJECTS, {
-            variables: {
+        useQuery(GET_OBJECTS, input.mode==="objects"
+            ? {variables: {
                 searchTerm: input.searchStr, project: input.checkedProjects,
                 // only send coordinates if entered values have valid format (floats with at least one decimal place)
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                     ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                     : [],
                 periodTerm: input.chronOntologyTerm
-            }
-        });
-    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, {
-        variables: {
-            searchTerm: input.searchStr,
-            // only send coordinates if entered values have valid format (floats with at least one decimal place)
-            bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
-                : []
-        }
-    });
+            }}
+            : {variables: {searchTerm: "", project: [], bbox: [], periodTerm: ""}});
+
+    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode==="archaeoSites"
+        ? {variables: {
+                searchTerm: input.searchStr,
+                // only send coordinates if entered values have valid format (floats with at least one decimal place)
+                bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                    ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                    : []
+            }}
+        : {variables: {searchTerm: "", bbox: []}});
+
     const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode==="region"
         ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
@@ -247,7 +252,7 @@ export const OurMap = () => {
     }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && (input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+        if (dataArchaeoSites && input.showArchaeoSites && input.sitesMode!=="region" && (input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
