@@ -479,14 +479,15 @@ export const OurMap = () => {
                 {input.showArchaeoSites && <span>Showing archaeological sites</span>}
                 {input.showArchaeoSites && mapDataSitesByRegion&& mapDataSitesByRegion.sitesByRegion&&mapDataSitesByRegion.sitesByRegion.length!==0 && <span> (by region)</span>}
 
-                {loadingContext && <span>...loadingContext</span> && <LinearProgress />}
+                {loadingContext && <span>...loadingContext</span>}
                 {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}
-                {loadingObjectsByString && <span>...loadingObjectsByString</span> && <LinearProgress />}
+                {loadingObjectsByString && <span>...loadingObjectsByString</span>}
                 {errorObjectsByString && <span>...errorObjectsByString</span> && console.log(errorObjectsByString.message)}
-                {loadingArchaeoSites && <span>...loadingArchaeoSites</span> && <LinearProgress />}
+                {loadingArchaeoSites && <span>...loadingArchaeoSites</span>}
                 {errorArchaeoSites && <span>...errorArchaeoSites</span> && console.log(errorArchaeoSites.message)}
-                {loadingSitesByRegion && <span>...loadingSitesByRegion</span> && <LinearProgress />}
+                {loadingSitesByRegion && <span>...loadingSitesByRegion</span>}
                 {errorSitesByRegion && <span>...errorSitesByRegion</span> && console.log(errorSitesByRegion.message)}
+                {(loadingContext||loadingObjectsByString||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
 
                 {input.showRelatedObjects && <Button
                     onClick={() => handleRelatedObjects()}
