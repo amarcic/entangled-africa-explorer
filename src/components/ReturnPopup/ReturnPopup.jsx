@@ -8,18 +8,18 @@ export const ReturnPopup = (props) => {
             <div>
                 <h2>{props.object.name}</h2>
                 {props.place&&<p>{props.place.name}</p>}
-                {/*{input.showRelatedObjects&&mapDataContext&&mapDataContext.entity
+                {props.showRelatedObjects&&props.mapDataContextEntity
                 &&<ul>{
-                    (mapDataContext.entity.related
-                        &&mapDataContext.entity.related.map( relatedObj =>
+                    (props.mapDataContextEntity.related
+                        &&props.mapDataContextEntity.related.map( relatedObj =>
                             <li>{relatedObj
                                 ? `${relatedObj.name} (${relatedObj.type})`
                                 : "no access"
                             }</li>
                         )
                     )
-                }</ul>}*/}
-                {props.showRelatedObjects&&props.handleRelatedObjects&&<Button
+                }</ul>}
+                {props.handleRelatedObjects&&<Button
                     onClick={() => {props.handleRelatedObjects(props.object.identifier)}}
                     name="showRelatedObjects"
                     variant="contained"

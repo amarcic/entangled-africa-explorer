@@ -78,7 +78,7 @@ const GET_ARCHAEOLOGICAL_SITES = gql`
             #    identifier
             #    name
             #}
-            #types
+            types
             #discoveryContext {
             #  identifier
             #}
@@ -154,11 +154,8 @@ export const OurMap = () => {
         regionId: 0,
         searchStr: "",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
-            {
-                "projectLabel": "Syrian Heritage Archive Project",
-                "projectBestandsname": "Syrian-Heritage-Archive-Project"
-            },
-            {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"}],
+            {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"},
+            {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"}],
         checkedProjects: [],
         mode: "archaeoSites",
         sitesMode: "",
@@ -540,7 +537,7 @@ export const OurMap = () => {
                         position={place.coordinates.split(", ").reverse()}
                         opacity={1}
                     >
-                        <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
+                        <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
                     </Marker>
                 )})}
                 <MarkerClusterGroup>
@@ -557,7 +554,7 @@ export const OurMap = () => {
                                     position={place.coordinates.split(", ").reverse()}
                                     opacity={0.5}
                                 >
-                                    <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
+                                    <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
                                 </Marker>
                             )})
                         )
@@ -573,7 +570,7 @@ export const OurMap = () => {
                                     //coordinates need to be reversed because of different standards between geojson and leaflet
                                     position={place.coordinates.split(", ").reverse()}
                                 >
-                                    <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects}/>
+                                    <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
                                 </Marker>
                             )}
                         )
