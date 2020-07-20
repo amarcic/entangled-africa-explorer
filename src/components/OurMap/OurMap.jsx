@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useReducer} from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress, Container, Divider, RadioGroup, Radio, Chip, Paper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from 'react-i18next';
@@ -165,7 +165,8 @@ export const OurMap = () => {
         chronOntologyTerm: "",
         boundingBoxCorner1: [],
         boundingBoxCorner2: [],
-        drawBBox: false
+        drawBBox: false,
+        showMapControls: true
     };
 
     const [input, dispatch] = useReducer(inputReducer, initialInput);
@@ -177,19 +178,19 @@ export const OurMap = () => {
 
     //queries
     const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode==="objects"
-    ? {variables: {arachneId: input.objectId}}
-    : {variables: {arachneId: 0}});
+        ? {variables: {arachneId: input.objectId}}
+        : {variables: {arachneId: 0}});
 
     const {data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString} =
         useQuery(GET_OBJECTS, input.mode==="objects"
             ? {variables: {
-                searchTerm: input.searchStr, project: input.checkedProjects,
-                // only send coordinates if entered values have valid format (floats with at least one decimal place)
-                bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                    ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
-                    : [],
-                periodTerm: input.chronOntologyTerm
-            }}
+                    searchTerm: input.searchStr, project: input.checkedProjects,
+                    // only send coordinates if entered values have valid format (floats with at least one decimal place)
+                    bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                        ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
+                        : [],
+                    periodTerm: input.chronOntologyTerm
+                }}
             : {variables: {searchTerm: "", project: [], bbox: [], periodTerm: ""}});
 
     const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode==="archaeoSites"
@@ -271,205 +272,6 @@ export const OurMap = () => {
         <div>
             <h2>{t('Map')}</h2>
             <div>
-                <Grid container spacing={3}>
-                    <Grid item xs={7}>
-                        <FormLabel component="legend">Search mode</FormLabel>
-                        <Tabs
-                            name="mapMode"
-                            value={input.mode}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            centered
-                            onChange={(event, newValue) => {
-                                dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: newValue}})
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showArchaeoSites"}})
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
-                            }}
-                        >
-                            <Tab
-                                value="archaeoSites"
-                                label="Search for Archaeological Sites"
-                                wrapped
-                            />
-                            <Tab
-                                value="objects"
-                                label="Search for Objects"
-                                wrapped
-                            />
-                        </Tabs>
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <FormGroup>
-                            <FormLabel component="legend">Filter by search term</FormLabel>
-                            <TextField
-                                type="text"
-                                variant="outlined"
-                                name="searchStr"
-                                value={input.searchStr}
-                                placeholder="*"
-                                onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
-                                InputProps={{
-                                    endAdornment: (
-                                        input.searchStr!==""
-                                        &&<IconButton
-                                            onClick={() => {
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "searchStr", value: ""}});
-                                            }}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    )
-                                }}
-                            />
-                        </FormGroup>
-                    </Grid>
-                    {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
-                        <FormGroup>
-                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
-                            {input.projectList && input.projectList.map(project => {
-                                return (project
-                                    && <FormControlLabel
-                                        key={project.projectBestandsname}
-                                        control={
-                                            <Checkbox
-                                                checked={input.checkedProjects.includes(project.projectBestandsname)}
-                                                onChange={() => {
-                                                    dispatch({
-                                                        type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM" : "CHECK_ITEM",
-                                                        payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
-                                                    })
-                                                }}
-                                                name={project.projectBestandsname}
-                                                key={project.projectBestandsname}
-                                                disabled={input.showArchaeoSites}
-                                            />
-                                        }
-                                        label={project.projectLabel}
-                                    />
-                                )
-                            })}
-                        </FormGroup>
-                    </Grid>}
-                    {!input.showArchaeoSites&&<Grid item xs={12} lg={6}>
-                        <FormGroup>
-                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
-                            <Autocomplete
-                                name="chronOntologyTerm"
-                                options={chronOntologyTerms}
-                                onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
-                                renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
-                                autoSelect={true}
-                                disabled={input.showArchaeoSites}
-                            />
-                        </FormGroup>
-                    </Grid>}
-                    {!input.showSearchResults && <Grid item xs={12} lg={6}>
-                        <FormGroup>
-                            <FormLabel component="legend">Filter by region</FormLabel>
-                            <Autocomplete
-                                name="regionId"
-                                options={regions}
-                                getOptionLabel={(option) => option.title}
-                                getOptionSelected={(option, value) => {
-                                    return (option.id === value.id)
-                                }}
-                                onChange={(event, newValue) => {
-                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}})
-                                    newValue===null
-                                        ? (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}), dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}))
-                                        : dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
-                                }}
-                                renderInput={(params) => <TextField {...params} label="" variant="outlined" />}
-                                autoSelect={true}
-                                disabled={input.sitesMode==="bbox"}
-                            />
-                        </FormGroup>
-                    </Grid>}
-                    {<Grid item xs={12} lg={6}>
-                        <FormGroup>
-                            <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
-                            <TextField
-                                type="text"
-                                variant="outlined"
-                                name="boundingBoxCorner1"
-                                value={input.boundingBoxCorner1}
-                                placeholder="North, East decimal degrees"
-                                label="North, East decimal degrees"
-                                onChange={(event) => {
-                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
-                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
-                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
-                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
-                                    }
-                                    else {
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        input.boundingBoxCorner1.length!==0
-                                        &&<IconButton
-                                            onClick={() => {
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1", value: []}})}
-                                            }
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    )
-                                }}
-                                disabled={input.sitesMode==="region"}
-                            />
-                            <TextField
-                                type="text"
-                                variant="outlined"
-                                name="boundingBoxCorner2"
-                                value={input.boundingBoxCorner2}
-                                placeholder="South, West decimal degrees"
-                                label="South, West decimal degrees"
-                                onChange={(event) => {
-                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
-
-                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
-                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
-                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
-                                    }
-                                    else {
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
-
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        input.boundingBoxCorner2.length!==0
-                                        &&<IconButton
-                                            onClick={() => {
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2", value: []}})
-                                            }}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    )
-                                }}
-                                disabled={input.sitesMode==="region"}
-                            />
-                            <FormControlLabel control={
-                                <Switch
-                                    name="drawBBox"
-                                    checked={input.drawBBox}
-                                    color="primary"
-                                    onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
-                                    disabled={input.sitesMode==="region"}
-                                />
-                            }
-                                              label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
-                                              labelPlacement="start"
-                            />
-                        </FormGroup>
-                    </Grid>}
-                </Grid>
-
                 {input.showSearchResults && <span>Showing search results</span>}
                 {input.showRelatedObjects && <span>Showing related objects of </span>}
                 {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
@@ -494,117 +296,349 @@ export const OurMap = () => {
                     Return to search results (hide related objects)
                 </Button>}
             </div>
-            <Map
-                className="markercluster-map"
-                center={mapCenter}
-                zoom={zoomLevel}
-                minZoom={3}
-                maxBounds={[[-90, -180], [90, 180]]}
-                onClick={(event) => {
-                    if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
-                        dispatch({type: "DRAW_BBOX", payload: event.latlng});
-                    }
-                }}
-            >
-                <TileLayer
-                    attribution={osmAttr}
-                    url={osmTiles}
-                    noWrap={true}
-                />
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
-                &&<Circle
-                    center={input.boundingBoxCorner1}
-                    opacity={0.5}
-                />}
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                &&<Circle
-                    center={input.boundingBoxCorner2}
-                    opacity={0.5}
-                />}
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                &&<Rectangle
-                    bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
-                    weight={2}
-                    opacity={0.25}
-                    fillOpacity={0.05}
-                />}
-                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
-                &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
-                {return(place
-                    &&<Marker
-                        key={`${place.identifier}-${indexPlace}`}
-                        //coordinates need to be reversed because of different standards between geojson and leaflet
-                        position={place.coordinates.split(", ").reverse()}
-                        opacity={1}
+            <Grid container direction="row" spacing={2}>
+                <Grid item xs={11} lg={input.showMapControls ? 9 : 11}>
+                    <Map
+                        className="markercluster-map"
+                        center={mapCenter}
+                        zoom={zoomLevel}
+                        minZoom={3}
+                        maxBounds={[[-90, -180], [90, 180]]}
+                        onClick={(event) => {
+                            if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
+                                dispatch({type: "DRAW_BBOX", payload: event.latlng});
+                            }
+                        }}
                     >
-                        <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                    </Marker>
-                )})}
-                <MarkerClusterGroup>
-                    {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
-                    &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
-                    {
-                        if(relatedObj===null) return;
-                        return(relatedObj.spatial
-                            &&relatedObj.spatial.map( (place, indexPlace) =>
-                            {return(place
-                                &&<Marker
-                                    key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
-                                    //coordinates need to be reversed because of different standards between geojson and leaflet
-                                    position={place.coordinates.split(", ").reverse()}
-                                    opacity={0.5}
-                                >
-                                    <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                </Marker>
-                            )})
-                        )
-                    })}
-                    {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                        ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                    &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
-                    {return(entity.spatial
-                        && entity.spatial.map( (place, indexPlace) =>
-                            { return( place
-                                && <Marker
-                                    key={`${place.identifier}-${indexPlace}-${indexEntity}`}
-                                    //coordinates need to be reversed because of different standards between geojson and leaflet
-                                    position={place.coordinates.split(", ").reverse()}
-                                >
-                                    <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                </Marker>
-                            )}
-                        )
-                    )})}
-                    {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                    && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
-                            return (site
-                                && <Marker
-                                    key={`${site.identifier}-${indexSite}`}
-                                    //coordinates need to be reversed because of different standards between geojson and leaflet
-                                    position={site.coordinates.split(", ").reverse()}
-                                >
-                                    <ReturnPopup object={site}/>
-                                </Marker>
+                        <TileLayer
+                            className="map-tiles"
+                            attribution={osmAttr}
+                            url={osmTiles}
+                            noWrap={true}
+                        />
+                        {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
+                        &&<Circle
+                            center={input.boundingBoxCorner1}
+                            opacity={0.5}
+                        />}
+                        {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                        &&<Circle
+                            center={input.boundingBoxCorner2}
+                            opacity={0.5}
+                        />}
+                        {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                        &&<Rectangle
+                            bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
+                            weight={2}
+                            opacity={0.25}
+                            fillOpacity={0.05}
+                        />}
+                        {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
+                        &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
+                        {return(place
+                            &&<Marker
+                                key={`${place.identifier}-${indexPlace}`}
+                                //coordinates need to be reversed because of different standards between geojson and leaflet
+                                position={place.coordinates.split(", ").reverse()}
+                                opacity={1}
+                            >
+                                <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                            </Marker>
+                        )})}
+                        <MarkerClusterGroup>
+                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                            &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
+                            {
+                                if(relatedObj===null) return;
+                                return(relatedObj.spatial
+                                    &&relatedObj.spatial.map( (place, indexPlace) =>
+                                    {return(place
+                                        &&<Marker
+                                            key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
+                                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                                            position={place.coordinates.split(", ").reverse()}
+                                            opacity={0.5}
+                                        >
+                                            <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                                        </Marker>
+                                    )})
+                                )
+                            })}
+                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                            &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                            {return(entity.spatial
+                                && entity.spatial.map( (place, indexPlace) =>
+                                    { return( place
+                                        && <Marker
+                                            key={`${place.identifier}-${indexPlace}-${indexEntity}`}
+                                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                                            position={place.coordinates.split(", ").reverse()}
+                                        >
+                                            <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                                        </Marker>
+                                    )}
+                                )
+                            )})}
+                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
+                                    return (site
+                                        && <Marker
+                                            key={`${site.identifier}-${indexSite}`}
+                                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                                            position={site.coordinates.split(", ").reverse()}
+                                        >
+                                            <ReturnPopup object={site}/>
+                                        </Marker>
+                                    )
+                                }
                             )
-                        }
-                    )
-                    }
-                    {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                    && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                            return (site
-                                && <Marker
-                                    key={`${site.identifier}-${indexSite}`}
-                                    //coordinates need to be reversed because of different standards between geojson and leaflet
-                                    position={site.coordinates.split(", ").reverse()}
-                                >
-                                    <ReturnPopup object={site}/>
-                                </Marker>
+                            }
+                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                    return (site
+                                        && <Marker
+                                            key={`${site.identifier}-${indexSite}`}
+                                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                                            position={site.coordinates.split(", ").reverse()}
+                                        >
+                                            <ReturnPopup object={site}/>
+                                        </Marker>
+                                    )
+                                }
                             )
-                        }
-                    )
-                    }
-                </MarkerClusterGroup>
-            </Map>
+                            }
+                        </MarkerClusterGroup>
+                    </Map>
+                </Grid>
+                {input.showMapControls
+                    ?
+                    (
+                        <Grid item xs={12} lg={3}>
+                            <Paper>
+                                <Button
+                                    onClick={() => {
+                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showMapControls"}})
+                                    }}
+                                >
+                                    Minimize filters &gt;
+                                </Button>
+                                <h3>Search filters</h3>
+                                <Divider/>
+                                <Grid container direction="column">
+                                    <Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend">Search mode</FormLabel>
+                                            <RadioGroup
+                                                name="mapMode"
+                                                value={input.mode}
+                                                onChange={(event, newValue) => {
+                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: newValue}})
+                                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showArchaeoSites"}})
+                                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
+                                                }}
+                                            >
+                                                <FormControlLabel value="archaeoSites" control={<Radio />} label="Archaeological Sites"/>
+                                                <FormControlLabel value="objects" control={<Radio />} label="Objects"/>
+                                            </RadioGroup>
+                                        </FormGroup>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend">Filter by search term</FormLabel>
+                                            <TextField
+                                                type="text"
+                                                variant="outlined"
+                                                name="searchStr"
+                                                value={input.searchStr}
+                                                placeholder="*"
+                                                onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        input.searchStr!==""
+                                                        &&<IconButton
+                                                            onClick={() => {
+                                                                dispatch({type: "UPDATE_INPUT", payload: {field: "searchStr", value: ""}});
+                                                            }}
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    )
+                                                }}
+                                            />
+                                        </FormGroup>
+                                    </Grid>
+                                    {!input.showArchaeoSites && <Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
+                                            {input.projectList && input.projectList.map(project => {
+                                                return (project
+                                                    && <FormControlLabel
+                                                        key={project.projectBestandsname}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={input.checkedProjects.includes(project.projectBestandsname)}
+                                                                onChange={() => {
+                                                                    dispatch({
+                                                                        type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM" : "CHECK_ITEM",
+                                                                        payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
+                                                                    })
+                                                                }}
+                                                                name={project.projectBestandsname}
+                                                                key={project.projectBestandsname}
+                                                                disabled={input.showArchaeoSites}
+                                                            />
+                                                        }
+                                                        label={project.projectLabel}
+                                                    />
+                                                )
+                                            })}
+                                        </FormGroup>
+                                    </Grid>}
+                                    {!input.showArchaeoSites && <Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
+                                            <Autocomplete
+                                                name="chronOntologyTerm"
+                                                options={chronOntologyTerms}
+                                                onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
+                                                renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
+                                                autoSelect={true}
+                                                disabled={input.showArchaeoSites}
+                                            />
+                                        </FormGroup>
+                                    </Grid>}
+                                    {!input.showSearchResults && <Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend">Filter by region</FormLabel>
+                                            <Autocomplete
+                                                name="regionId"
+                                                options={regions}
+                                                getOptionLabel={(option) => option.title}
+                                                getOptionSelected={(option, value) => {
+                                                    return (option.id === value.id)
+                                                }}
+                                                onChange={(event, newValue) => {
+                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}})
+                                                    newValue===null
+                                                        ? (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}), dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}))
+                                                        : dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
+                                                }}
+                                                renderInput={(params) => <TextField {...params} label="" variant="outlined" />}
+                                                autoSelect={true}
+                                                disabled={input.sitesMode==="bbox"}
+                                            />
+                                        </FormGroup>
+                                    </Grid>}
+                                    {<Grid item xs={12}>
+                                        <FormGroup>
+                                            <FormLabel component="legend">Filter by coordinates (bounding box)</FormLabel>
+                                            <TextField
+                                                type="text"
+                                                variant="outlined"
+                                                name="boundingBoxCorner1"
+                                                value={input.boundingBoxCorner1}
+                                                placeholder="North, East decimal degrees"
+                                                label="North, East decimal degrees"
+                                                onChange={(event) => {
+                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
+                                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
+                                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
+                                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
+                                                    }
+                                                    else {
+                                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
+                                                    }
+                                                }}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        input.boundingBoxCorner1.length!==0
+                                                        &&<IconButton
+                                                            onClick={() => {
+                                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
+                                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1", value: []}})}
+                                                            }
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    )
+                                                }}
+                                                disabled={input.sitesMode==="region"}
+                                            />
+                                            <TextField
+                                                type="text"
+                                                variant="outlined"
+                                                name="boundingBoxCorner2"
+                                                value={input.boundingBoxCorner2}
+                                                placeholder="South, West decimal degrees"
+                                                label="South, West decimal degrees"
+                                                onChange={(event) => {
+                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
+
+                                                    // only create bbox if entered values have valid format (floats with at least one decimal place)
+                                                    if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
+                                                        dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
+                                                    }
+                                                    else {
+                                                        dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
+
+                                                    }
+                                                }}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        input.boundingBoxCorner2.length!==0
+                                                        &&<IconButton
+                                                            onClick={() => {
+                                                                dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
+                                                                dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2", value: []}})
+                                                            }}
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    )
+                                                }}
+                                                disabled={input.sitesMode==="region"}
+                                            />
+                                            <FormControlLabel control={
+                                                <Switch
+                                                    name="drawBBox"
+                                                    checked={input.drawBBox}
+                                                    color="primary"
+                                                    onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
+                                                    disabled={input.sitesMode==="region"}
+                                                />
+                                            }
+                                                              label="Activate switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner."
+                                                              labelPlacement="start"
+                                            />
+                                        </FormGroup>
+                                    </Grid>}
+                                </Grid>
+                            </Paper>
+                        </Grid>)
+                    : (
+                        <Grid item xs={1}>
+                            <Paper>
+                                <Button
+                                    onClick={() => {
+                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showMapControls"}})
+                                    }}
+                                >
+                                    Maximize filters &lt;
+                                </Button>
+                                <h3>Search filters</h3>
+                                <Divider/>
+                                <h4>Selection:</h4>
+                                <Chip label={input.mode === "archaeoSites" ? "Archaeological Sites" : "Objects"}/>
+                                {input.searchStr !== "" ? <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/> : ""}
+                                {input.checkedProjects.length !== 0 ? <Chip variant="outlined" label={`Project: ${input.checkedProjects}`}/> : ""}
+                                {input.chronOntologyTerm !== "" ? <Chip variant="outlined" label={`Chronontology term: ${input.chronOntologyTerm}`}/> : ""}
+                                {input.sitesMode==="region" ? <Chip variant="outlined" label={`Region: ${regions[0].title}`}/> : ""/* TODO: replace with actually selected region title */}
+                                {input.sitesMode==="bbox" ? <Chip variant="outlined" label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}\`]`}/> : ""}
+                            </Paper>
+                        </Grid>
+                    )}
+            </Grid>
         </div>
     );
 };
