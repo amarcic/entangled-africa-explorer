@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useReducer} from 'react';
-import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress, Container, Divider, RadioGroup, Radio, Chip, Paper } from '@material-ui/core';
+import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress, Container, Divider, RadioGroup, Radio, Chip, Paper, Tooltip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import RoomIcon from '@material-ui/icons/Room';
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
 //import { Icon } from 'leaflet';
@@ -15,8 +16,8 @@ import gql from 'graphql-tag';
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const mapCenter = [11.5024338, 17.7578122];
-const zoomLevel = 4;
+//const mapCenter = [11.5024338, 17.7578122];
+//const zoomLevel = 4;
 
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
@@ -152,6 +153,8 @@ export const OurMap = () => {
     }
 
     const initialInput = {
+        mapCenter: [11.5024338, 17.7578122],
+        zoomLevel: 4,
         objectId: 0,
         regionId: 0,
         searchStr: "",
@@ -233,6 +236,13 @@ export const OurMap = () => {
         console.log("handleRelatedObjects!");
     };
 
+    const panToMarker = (id) => {
+        const marker = mapDataArchaeoSites.archaeologicalSites.filter((site, indexSite) => `${site.identifier}-${indexSite}` === id)[0];
+        const markerPosition = marker.coordinates.split(", ").reverse();
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: markerPosition}});
+        //markerPosition.openPopup();
+    }
+
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
@@ -303,8 +313,8 @@ export const OurMap = () => {
                 <Grid className="grid-map" item xs={12} lg={9}>
                     <Map
                         className="markercluster-map"
-                        center={mapCenter}
-                        zoom={zoomLevel}
+                        center={input.mapCenter}
+                        zoom={input.zoomLevel}
                         minZoom={3}
                         maxBounds={[[-90, -180], [90, 180]]}
                         onClick={(event) => {
@@ -675,15 +685,18 @@ export const OurMap = () => {
                                             }
                                             {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
                                             && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                                                    return (site
-                                                        && <li
-                                                            key={`${site.identifier}-${indexSite}`}
-                                                            id={`${site.identifier}-${indexSite}`}
-                                                        >
-                                                            {site.name}
+                                                return (site
+                                                    && <li
+                                                        key={`${site.identifier}-${indexSite}`}
+                                                        id={`${site.identifier}-${indexSite}`}
+                                                    >
+                                                        {site.name}
+                                                        <Tooltip title="Show on map" arrow placement="right">
+                                                            <RoomIcon fontSize="small" onClick={() => panToMarker(`${site.identifier}-${indexSite}`)}/>
+                                                        </Tooltip>
                                                     </li>
-                                                    )
-                                                }
+                                                )
+                                            }
                                             )
                                             }
                                         </ul>)
