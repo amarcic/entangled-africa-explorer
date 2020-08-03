@@ -638,10 +638,64 @@ export const OurMap = () => {
                             </Button>
                             {input.resultsListExpanded
                                 ? (<Grid className="grid-results-list-expanded" item>
-                                    Here will be the list of results
+                                    { ((input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related)||(input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                                        ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                                        && mapDataObjectsByString.entitiesMultiFilter)||(input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                                        && mapDataSitesByRegion.sitesByRegion)||(input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                                        && mapDataArchaeoSites.archaeologicalSites))
+                                        ? (<ul>
+                                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                                            &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
+                                            {
+                                                if(relatedObj===null) return;
+                                                return(relatedObj.spatial
+                                                    &&relatedObj.spatial.map( (place, indexPlace) =>
+                                                    {return(place
+                                                        && <li key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}>{relatedObj.name}, {place.name}</li>
+                                                    )})
+                                                )
+                                            })}
+                                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                                            && mapDataObjectsByString.entitiesMultiFilter && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                                            {return(entity.spatial
+                                                && entity.spatial.map( (place, indexPlace) =>
+                                                    { return( place
+                                                        && <li key={`${place.identifier}-${indexPlace}-${indexEntity}`}>{entity.name}, {place.name}</li>
+                                                    )}
+                                                )
+                                            )})}
+                                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
+                                                    return (site
+                                                        && <li key={`${site.identifier}-${indexSite}`}>{site.name}</li>
+                                                    )
+                                                }
+                                            )
+                                            }
+                                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                                    return (site
+                                                        && <li
+                                                            key={`${site.identifier}-${indexSite}`}
+                                                            id={`${site.identifier}-${indexSite}`}
+                                                        >
+                                                            {site.name}
+                                                    </li>
+                                                    )
+                                                }
+                                            )
+                                            }
+                                        </ul>)
+                                        : ("No results, try changing the filters")
+                                    }
+
                                 </Grid>)
                                 : (<Grid className="grid-results-list-collapsed" item>
-                                    Number of results: X
+                                    {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
+                                    {input.showSearchResults && mapDataObjectsByString.entitiesMultiFilter && `${mapDataObjectsByString.entitiesMultiFilter.length} results (objects)`}
+                                    {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                                    {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
                                 </Grid>)
                             }
                         </Grid>
