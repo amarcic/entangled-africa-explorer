@@ -416,16 +416,16 @@ export const OurMap = () => {
                 </Grid>
                 {<Grid className="grid-next-to-map" item xs={12} lg={3} container direction="column">
                     <Paper>
-                        <Divider/>
-                        <Button
-                            onClick={() => {
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
-                            }}
-                        >
-                            <h3>Filters</h3>
-                            {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                        </Button>
                         <Grid className="grid-map-controls" item container direction="column">
+                            <Divider/>
+                            <Button
+                                onClick={() => {
+                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
+                                }}
+                            >
+                                <h3>Filters</h3>
+                                {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                            </Button>
                             {input.mapControlsExpanded
                                 ? (<Grid className="grid-map-controls-expanded" item>
                                     <Grid item xs={12}>
@@ -626,16 +626,16 @@ export const OurMap = () => {
                                 </Grid>)
                             }
                         </Grid>
-                        <Divider/>
-                        <Button
-                            onClick={() => {
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
-                            }}
-                        >
-                            <h3>Search Results</h3>
-                            {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                        </Button>
                         <Grid className="grid-results-list" item container direction="column">
+                            <Divider/>
+                            <Button
+                                onClick={() => {
+                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
+                                }}
+                            >
+                                <h3>Search Results</h3>
+                                {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                            </Button>
                             {input.resultsListExpanded
                                 ? (<Grid className="grid-results-list-expanded" item>
                                     Here will be the list of results
