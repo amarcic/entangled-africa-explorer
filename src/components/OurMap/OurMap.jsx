@@ -2,6 +2,8 @@ import React, {useState, useEffect, useReducer} from 'react';
 import { FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, Tabs, Tab, LinearProgress, Container, Divider, RadioGroup, Radio, Chip, Paper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
 //import { Icon } from 'leaflet';
@@ -166,7 +168,8 @@ export const OurMap = () => {
         boundingBoxCorner1: [],
         boundingBoxCorner2: [],
         drawBBox: false,
-        showMapControls: true
+        mapControlsExpanded: true,
+        resultsListExpanded: true
     };
 
     const [input, dispatch] = useReducer(inputReducer, initialInput);
@@ -296,8 +299,8 @@ export const OurMap = () => {
                     Return to search results (hide related objects)
                 </Button>}
             </div>
-            <Grid container direction="row" spacing={2}>
-                <Grid item xs={11} lg={input.showMapControls ? 9 : 11}>
+            <Grid className="grid-outer" container direction="row" spacing={2}>
+                <Grid className="grid-map" item xs={12} lg={9}>
                     <Map
                         className="markercluster-map"
                         center={mapCenter}
@@ -411,21 +414,20 @@ export const OurMap = () => {
                         </MarkerClusterGroup>
                     </Map>
                 </Grid>
-                {input.showMapControls
-                    ?
-                    (
-                        <Grid item xs={12} lg={3}>
-                            <Paper>
-                                <Button
-                                    onClick={() => {
-                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showMapControls"}})
-                                    }}
-                                >
-                                    Minimize filters &gt;
-                                </Button>
-                                <h3>Search filters</h3>
-                                <Divider/>
-                                <Grid container direction="column">
+                {<Grid className="grid-next-to-map" item xs={12} lg={3} container direction="column">
+                    <Paper>
+                        <Divider/>
+                        <Button
+                            onClick={() => {
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
+                            }}
+                        >
+                            <h3>Filters</h3>
+                            {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                        </Button>
+                        <Grid className="grid-map-controls" item container direction="column">
+                            {input.mapControlsExpanded
+                                ? (<Grid className="grid-map-controls-expanded" item>
                                     <Grid item xs={12}>
                                         <FormGroup>
                                             <FormLabel component="legend">Search mode</FormLabel>
@@ -613,31 +615,38 @@ export const OurMap = () => {
                                             />
                                         </FormGroup>
                                     </Grid>}
-                                </Grid>
-                            </Paper>
-                        </Grid>)
-                    : (
-                        <Grid item xs={1}>
-                            <Paper>
-                                <Button
-                                    onClick={() => {
-                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showMapControls"}})
-                                    }}
-                                >
-                                    Maximize filters &lt;
-                                </Button>
-                                <h3>Search filters</h3>
-                                <Divider/>
-                                <h4>Selection:</h4>
-                                <Chip label={input.mode === "archaeoSites" ? "Archaeological Sites" : "Objects"}/>
-                                {input.searchStr !== "" ? <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/> : ""}
-                                {input.checkedProjects.length !== 0 ? <Chip variant="outlined" label={`Project: ${input.checkedProjects}`}/> : ""}
-                                {input.chronOntologyTerm !== "" ? <Chip variant="outlined" label={`Chronontology term: ${input.chronOntologyTerm}`}/> : ""}
-                                {input.sitesMode==="region" ? <Chip variant="outlined" label={`Region: ${regions[0].title}`}/> : ""/* TODO: replace with actually selected region title */}
-                                {input.sitesMode==="bbox" ? <Chip variant="outlined" label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}\`]`}/> : ""}
-                            </Paper>
+                                </Grid>)
+                                : (<Grid className="grid-map-controls-collapsed" item>
+                                    <Chip label={input.mode === "archaeoSites" ? "Archaeological Sites" : "Objects"}/>
+                                    {input.searchStr !== "" ? <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/> : ""}
+                                    {input.checkedProjects.length !== 0 ? <Chip variant="outlined" label={`Project: ${input.checkedProjects}`}/> : ""}
+                                    {input.chronOntologyTerm !== "" ? <Chip variant="outlined" label={`Chronontology term: ${input.chronOntologyTerm}`}/> : ""}
+                                    {input.sitesMode==="region" ? <Chip variant="outlined" label={`Region: ${regions[0].title}`}/> : ""/* TODO: replace with actually selected region title */}
+                                    {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))) ? <Chip variant="outlined" label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}/> : ""}
+                                </Grid>)
+                            }
                         </Grid>
-                    )}
+                        <Divider/>
+                        <Button
+                            onClick={() => {
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
+                            }}
+                        >
+                            <h3>Search Results</h3>
+                            {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                        </Button>
+                        <Grid className="grid-results-list" item container direction="column">
+                            {input.resultsListExpanded
+                                ? (<Grid className="grid-results-list-expanded" item>
+                                    Here will be the list of results
+                                </Grid>)
+                                : (<Grid className="grid-results-list-collapsed" item>
+                                    Number of results: X
+                                </Grid>)
+                            }
+                        </Grid>
+                    </Paper>
+                </Grid>}
             </Grid>
         </div>
     );
