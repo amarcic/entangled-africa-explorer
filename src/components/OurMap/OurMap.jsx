@@ -4,10 +4,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MapIcon from '@material-ui/icons/Map';
 import RoomIcon from '@material-ui/icons/Room';
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
 //import { Icon } from 'leaflet';
+import { latLngBounds } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { ReturnPopup } from '../../components'
 
@@ -154,10 +156,11 @@ export const OurMap = () => {
 
     const initialInput = {
         mapCenter: [11.5024338, 17.7578122],
+        mapBounds: latLngBounds([35,-14], [-34,41]),
         zoomLevel: 4,
         objectId: 0,
         regionId: 0,
-        searchStr: "",
+        searchStr: "80",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"}],
@@ -171,7 +174,7 @@ export const OurMap = () => {
         boundingBoxCorner1: [],
         boundingBoxCorner2: [],
         drawBBox: false,
-        mapControlsExpanded: true,
+        mapControlsExpanded: false,
         resultsListExpanded: true
     };
 
@@ -183,39 +186,43 @@ export const OurMap = () => {
     const [mapDataSitesByRegion, setMapDataSitesByRegion] = useState({});
 
     //queries
-    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode==="objects"
+    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode === "objects"
         ? {variables: {arachneId: input.objectId}}
         : {variables: {arachneId: 0}});
 
     const {data: dataObjectsByString, loading: loadingObjectsByString, error: errorObjectsByString} =
-        useQuery(GET_OBJECTS, input.mode==="objects"
-            ? {variables: {
+        useQuery(GET_OBJECTS, input.mode === "objects"
+            ? {
+                variables: {
                     searchTerm: input.searchStr, project: input.checkedProjects,
                     // only send coordinates if entered values have valid format (floats with at least one decimal place)
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
                     periodTerm: input.chronOntologyTerm
-                }}
+                }
+            }
             : {variables: {searchTerm: "", project: [], bbox: [], periodTerm: ""}});
 
-    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode==="archaeoSites"
-        ? {variables: {
+    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "archaeoSites"
+        ? {
+            variables: {
                 searchTerm: input.searchStr,
                 // only send coordinates if entered values have valid format (floats with at least one decimal place)
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                     ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                     : []
-            }}
+            }
+        }
         : {variables: {searchTerm: "", bbox: []}});
 
-    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode==="region"
+    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode === "region"
         ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
-        'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich',  'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
+        'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
         'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch'
     ];
 
@@ -236,11 +243,20 @@ export const OurMap = () => {
         console.log("handleRelatedObjects!");
     };
 
+    const panToAllMarkers = () => {
+        const newMapBounds = latLngBounds(input.mapBounds);
+        mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+            return (site && newMapBounds.extend(site.coordinates.split(", ").reverse()))
+        });
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: newMapBounds.getCenter()}});
+        dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 3}});
+    }
+
     const panToMarker = (id) => {
         const marker = mapDataArchaeoSites.archaeologicalSites.filter((site, indexSite) => `${site.identifier}-${indexSite}` === id)[0];
         const markerPosition = marker.coordinates.split(", ").reverse();
         dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: markerPosition}});
-        //markerPosition.openPopup();
+        dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 5}});
     }
 
     useEffect( () => {
@@ -314,9 +330,10 @@ export const OurMap = () => {
                     <Map
                         className="markercluster-map"
                         center={input.mapCenter}
+                        //bounds={input.mapBounds}
                         zoom={input.zoomLevel}
                         minZoom={3}
-                        maxBounds={[[-90, -180], [90, 180]]}
+                        //maxBounds={[[-90, -180], [90, 180]]}
                         onClick={(event) => {
                             if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
                                 dispatch({type: "DRAW_BBOX", payload: event.latlng});
@@ -646,6 +663,9 @@ export const OurMap = () => {
                                 <h3>Search Results</h3>
                                 {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                             </Button>
+                            <Tooltip title="Fit map to show all markers" arrow placement="right">
+                                <MapIcon onClick={() => panToAllMarkers()}/>
+                            </Tooltip>
                             {input.resultsListExpanded
                                 ? (<Grid className="grid-results-list-expanded" item>
                                     { ((input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related)||(input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
@@ -685,18 +705,18 @@ export const OurMap = () => {
                                             }
                                             {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
                                             && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                                                return (site
-                                                    && <li
-                                                        key={`${site.identifier}-${indexSite}`}
-                                                        id={`${site.identifier}-${indexSite}`}
-                                                    >
-                                                        {site.name}
-                                                        <Tooltip title="Show on map" arrow placement="right">
-                                                            <RoomIcon fontSize="small" onClick={() => panToMarker(`${site.identifier}-${indexSite}`)}/>
-                                                        </Tooltip>
-                                                    </li>
-                                                )
-                                            }
+                                                    return (site
+                                                        && <li
+                                                            key={`${site.identifier}-${indexSite}`}
+                                                            id={`${site.identifier}-${indexSite}`}
+                                                        >
+                                                            {site.name}
+                                                            <Tooltip title="Show on map" arrow placement="right">
+                                                                <RoomIcon fontSize="small" onClick={() => panToMarker(`${site.identifier}-${indexSite}`)}/>
+                                                            </Tooltip>
+                                                        </li>
+                                                    )
+                                                }
                                             )
                                             }
                                         </ul>)
