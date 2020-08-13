@@ -532,8 +532,8 @@ export const OurMap = () => {
                         onClick={() => handleRelatedObjects()}
                         name="hideRelatedObjects"
                         variant="contained"
-                        color="primary">
-                        size="small"
+                        color="primary"
+                        size="small">
                         Return to search results (hide related objects)
                     </Button>}
                 </Grid>
@@ -772,7 +772,7 @@ export const OurMap = () => {
                                                         </TableCell>
                                                         <TableCell>
                                                             <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                <a href={`https://arachne.dainst.org/entity/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
                                                             </Tooltip>
                                                         </TableCell>
                                                     </TableRow>
@@ -799,7 +799,7 @@ export const OurMap = () => {
                                                             </TableCell>
                                                             <TableCell>
                                                                 <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                    <a href={`https://arachne.dainst.org/entity/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                    <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
                                                                 </Tooltip>
                                                             </TableCell>
                                                         </TableRow>
