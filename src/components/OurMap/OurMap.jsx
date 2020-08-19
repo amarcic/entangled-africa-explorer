@@ -259,8 +259,13 @@ export const OurMap = () => {
     }
 
     //side effects
+
+    //set state MapDataContext
     useEffect( () => {
-        if(dataContext&&input.showRelatedObjects) {
+        if(
+            dataContext
+            &&input.showRelatedObjects
+        ) {
             setMapDataContext(dataContext);
             console.log("rerender dataContext!");
             console.log("rerender dataContext --> dataContext: ", dataContext);
@@ -268,33 +273,87 @@ export const OurMap = () => {
         }
     }, [dataContext, input.showRelatedObjects]);
 
+    //set state for object query mode
     useEffect( () => {
-        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.checkedProjects.length!==0||input.chronOntologyTerm!==""
-            ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+        if (
+            dataObjectsByString
+            && input.showSearchResults
+            && (
+                input.searchStr!==""
+                ||input.checkedProjects.length!==0
+                ||input.chronOntologyTerm!==""
+                || (
+                    input.boundingBoxCorner1.length!==0
+                    &&input.boundingBoxCorner2.length!==0
+                )
+            )
+        ) {
             setMapDataObjectsByString(dataObjectsByString);
             console.log("rerender dataObjectsByString!");
             console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
             console.log("rerender dataObjectsByString --> input:", input);
         }
-    }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
+    }, [
+        dataObjectsByString,
+        input.showSearchResults,
+        input.searchStr,
+        input.checkedProjects,
+        input.chronOntologyTerm,
+        input.boundingBoxCorner1,
+        input.boundingBoxCorner2
+    ]);
 
+    //set state for archaeological site query mode
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && input.sitesMode!=="region" && (input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+        if (
+            dataArchaeoSites
+            && input.showArchaeoSites
+            && input.sitesMode!=="region"
+            && (
+                input.searchStr!==""
+                || (
+                    input.boundingBoxCorner1.length!==0
+                    &&input.boundingBoxCorner2.length!==0
+                )
+            )
+        ) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
             console.log("rerender dataArchaeoSites --> input:", input);
         }
-    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode]);
+    }, [
+        dataArchaeoSites,
+        input.showArchaeoSites,
+        input.searchStr,
+        input.boundingBoxCorner1,
+        input.boundingBoxCorner2,
+        input.sitesMode
+    ]);
 
+    //set state for ...
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && input.sitesMode==="region" && (input.searchStr!==""||(input.regionId!==0))) {
+        if (
+            dataSitesByRegion
+            && input.showArchaeoSites
+            && input.sitesMode==="region"
+            && (
+                input.searchStr!==""
+                ||input.regionId!==0
+            )
+        ) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
+    }, [
+        dataSitesByRegion,
+        input.showArchaeoSites,
+        input.searchStr,
+        input.regionId,
+        input.sitesMode
+    ]);
 
 
     return(
@@ -347,10 +406,9 @@ export const OurMap = () => {
                                         placeholder="*"
                                         onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
                                         InputProps={{
+                                            //add button to clear string query filter text input field
                                             endAdornment: (
-                                                //until a debouncer is added, waiting for at least a third input, helps to not block the application with query requests
-                                                //&&input.searchStr.length>2 can be removed, after debouncer is applied
-                                                input.searchStr!==""&&input.searchStr.length>2
+                                                input.searchStr!==""
                                                 &&<IconButton
                                                     onClick={() => {
                                                         dispatch({type: "UPDATE_INPUT", payload: {field: "searchStr", value: ""}});
