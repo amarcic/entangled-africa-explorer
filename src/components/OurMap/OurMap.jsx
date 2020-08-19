@@ -149,6 +149,7 @@ export const OurMap = () => {
         }
     }
 
+    //initial value for application state on first load
     const initialInput = {
         mapCenter: [11.5024338, 17.7578122],
         mapBounds: latLngBounds([35,-14], [-34,41]),
@@ -173,6 +174,7 @@ export const OurMap = () => {
         resultsListExpanded: true
     };
 
+    //state
     const [input, dispatch] = useReducer(inputReducer, initialInput);
 
     const [mapDataContext, setMapDataContext] = useState({});
@@ -215,6 +217,7 @@ export const OurMap = () => {
         ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
+    //values for dropdown menus
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
@@ -231,6 +234,7 @@ export const OurMap = () => {
         {title: 'Wadi Howar Region Sudan', id: 2042736},
     ];
 
+    //handler functions for events
     const handleRelatedObjects = (id) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
@@ -254,6 +258,7 @@ export const OurMap = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 5}});
     }
 
+    //side effects
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
             setMapDataContext(dataContext);
@@ -307,8 +312,11 @@ export const OurMap = () => {
                         <h3>Filters</h3>
                         {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                     </Button>
-                    {input.mapControlsExpanded
+                    {
+                        //suggestion: increase readability by extracting the map controls into a separate component (issue #17)
+                        input.mapControlsExpanded
                         ? (<Grid className="grid-map-controls-expanded" item container direction="row" spacing={2}>
+                                {/*radio buttons for selecting mode*/}
                             <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel component="legend">Search mode</FormLabel>
@@ -326,6 +334,7 @@ export const OurMap = () => {
                                     </RadioGroup>
                                 </FormGroup>
                             </Grid>
+                                {/*input field for string query*/}
                             <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel component="legend">Filter by search term</FormLabel>
@@ -339,7 +348,9 @@ export const OurMap = () => {
                                         onChange={event => dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})}
                                         InputProps={{
                                             endAdornment: (
-                                                input.searchStr!==""
+                                                //until a debouncer is added, waiting for at least a third input, helps to not block the application with query requests
+                                                //&&input.searchStr.length>2 can be removed, after debouncer is applied
+                                                input.searchStr!==""&&input.searchStr.length>2
                                                 &&<IconButton
                                                     onClick={() => {
                                                         dispatch({type: "UPDATE_INPUT", payload: {field: "searchStr", value: ""}});
@@ -352,7 +363,8 @@ export const OurMap = () => {
                                     />
                                 </FormGroup>
                             </Grid>
-                            {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
+                            {//dropdown for filter by period; only active in object search mode
+                            !input.showArchaeoSites && <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
                                     <Autocomplete
@@ -366,7 +378,8 @@ export const OurMap = () => {
                                     />
                                 </FormGroup>
                             </Grid>}
-                            {!input.showSearchResults && <Grid item xs={12} lg={2}>
+                            {//dropdown for filter by region
+                            !input.showSearchResults && <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel component="legend">Filter by region</FormLabel>
                                     <Autocomplete
@@ -389,7 +402,8 @@ export const OurMap = () => {
                                     />
                                 </FormGroup>
                             </Grid>}
-                            {<Grid item xs={12} lg={2}>
+                            {//switch and input fields for filter by coordinates
+                            <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel>Filter by coordinates (bounding box)
                                             <Tooltip title="Activate the switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner." arrow placement="right-start">
@@ -472,7 +486,8 @@ export const OurMap = () => {
                                     />
                                 </FormGroup>
                             </Grid>}
-                            {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
+                            {//checkboxes for filter by project
+                            !input.showArchaeoSites && <Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
                                     {input.projectList && input.projectList.map(project => {
@@ -500,7 +515,8 @@ export const OurMap = () => {
                                 </FormGroup>
                             </Grid>}
                         </Grid>)
-                        : (<Grid className="grid-map-controls-collapsed" item>
+                        : //summary of active filters when control panel is closed
+                            (<Grid className="grid-map-controls-collapsed" item>
                             <Chip label={input.mode === "archaeoSites" ? "Archaeological Sites" : "Objects"}/>
                             {input.searchStr !== "" ? <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/> : ""}
                             {input.checkedProjects.length !== 0 ? <Chip variant="outlined" label={`Project: ${input.checkedProjects}`}/> : ""}
