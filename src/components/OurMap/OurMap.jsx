@@ -106,7 +106,7 @@ export const OurMap = () => {
         i18n.changeLanguage(lng);
     };
 
-    //state
+    //state management with reducer
     function inputReducer(state, action) {
         const {type, payload} = action;
         switch (type) {
@@ -584,6 +584,7 @@ export const OurMap = () => {
                         </Grid>)
                     }
                 </Grid>
+                {/*loading indicator and button to toggle display of related objects*/}
                 <Grid item className="grid-loading-indicator" xs={12}>
                     {/*{input.showSearchResults && <span>Showing search results</span>}
                     {input.showRelatedObjects && <span>Showing related objects of </span>}
@@ -611,6 +612,7 @@ export const OurMap = () => {
                         Return to search results (hide related objects)
                     </Button>}
                 </Grid>
+                {/*and finally: the map!*/}
                 <Grid className="grid-map" item xs={12} lg={9}>
                     <Map
                         className="markercluster-map"
@@ -631,6 +633,7 @@ export const OurMap = () => {
                             url={osmTiles}
                             noWrap={true}
                         />
+                        {/*drawing the bounding box*/}
                         {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                         &&<Circle
                             center={input.boundingBoxCorner1}
@@ -648,20 +651,40 @@ export const OurMap = () => {
                             opacity={0.25}
                             fillOpacity={0.05}
                         />}
-                        {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
-                        &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
-                        {return(place
-                            &&<Marker
-                                key={`${place.identifier}-${indexPlace}`}
-                                //coordinates need to be reversed because of different standards between geojson and leaflet
-                                position={place.coordinates.split(", ").reverse()}
-                                opacity={1}
-                            >
-                                <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                            </Marker>
-                        )})}
+                        { //conditions for displaying markers, for which related objects are displayed
+                            input.showRelatedObjects
+                            &&input.objectId
+                            &&mapDataContext
+                            &&mapDataContext.entity
+                            &&mapDataContext.entity.spatial
+                            //creating markers for each set of spatial data
+                                &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
+                                    {return(place
+                                        &&<Marker
+                                            key={`${place.identifier}-${indexPlace}`}
+                                            //coordinates need to be reversed because of different standards between geojson and leaflet
+                                            position={place.coordinates.split(", ").reverse()}
+                                            opacity={1}
+                                        >
+                                            <ReturnPopup
+                                                object={mapDataContext.entity}
+                                                place={place}
+                                                handleRelatedObjects={handleRelatedObjects}
+                                                showRelatedObjects={input.showRelatedObjects}
+                                                mapDataContextEntity={mapDataContext.entity}
+                                            />
+                                        </Marker>
+                                    )}
+                        )}
+                        {/*Marker Cluster for markers of related objects*/}
                         <MarkerClusterGroup>
-                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                            {//conditions for displaying markers for related objects
+                                input.showRelatedObjects
+                                &&input.objectId
+                                &&mapDataContext
+                                &&mapDataContext.entity
+                                &&mapDataContext.entity.related
+                            //creating markers for each related object
                             &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
                             {
                                 if(relatedObj===null) return;
@@ -679,53 +702,79 @@ export const OurMap = () => {
                                     )})
                                 )
                             })}
-                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                            &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
-                            {return(entity.spatial
-                                && entity.spatial.map( (place, indexPlace) =>
-                                    { return( place
-                                        && <Marker
-                                            key={`${place.identifier}-${indexPlace}-${indexEntity}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={place.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                        </Marker>
+                            {//conditions for
+                                input.showSearchResults
+                                &&(
+                                    input.searchStr!==""
+                                    ||input.projectList.length!==0
+                                    ||input.chronOntologyTerm!==""
+                                    ||(
+                                        input.boundingBoxCorner1.length!==0
+                                        &&input.boundingBoxCorner2.length!==0
+                                    )
+                                )&&mapDataObjectsByString
+                                &&mapDataObjectsByString.entitiesMultiFilter
+                                //creating markers for...
+                                &&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                                    {return(entity.spatial
+                                        && entity.spatial.map( (place, indexPlace) =>
+                                            { return( place
+                                                && <Marker
+                                                    key={`${place.identifier}-${indexPlace}-${indexEntity}`}
+                                                    //coordinates need to be reversed because of different standards between geojson and leaflet
+                                                    position={place.coordinates.split(", ").reverse()}
+                                                >
+                                                    <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                                                </Marker>
+                                            )}
+                                        )
                                     )}
+                            )}
+                            {//conditions for
+                                input.showArchaeoSites
+                                &&(
+                                    input.searchStr!==""
+                                    ||input.regionId!==0
+                                )&&mapDataSitesByRegion
+                                //creating markers for...
+                                && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
+                                        return (site
+                                            && <Marker
+                                                key={`${site.identifier}-${indexSite}`}
+                                                //coordinates need to be reversed because of different standards between geojson and leaflet
+                                                position={site.coordinates.split(", ").reverse()}
+                                            >
+                                                <ReturnPopup object={site}/>
+                                            </Marker>
+                                        )
+                                    }
                                 )
-                            )})}
-                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
-                                    return (site
-                                        && <Marker
-                                            key={`${site.identifier}-${indexSite}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={site.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={site}/>
-                                        </Marker>
-                                    )
-                                }
-                            )
                             }
-                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                                    return (site
-                                        && <Marker
-                                            key={`${site.identifier}-${indexSite}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={site.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={site}/>
-                                        </Marker>
-                                    )
-                                }
-                            )
+                            {
+                                input.showArchaeoSites
+                                &&(
+                                    input.searchStr!==""
+                                    ||(input.boundingBoxCorner1.length!==0
+                                    &&input.boundingBoxCorner2.length!==0)
+                                )&&mapDataArchaeoSites
+                                //creating markers for...
+                                && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                        return (site
+                                            && <Marker
+                                                key={`${site.identifier}-${indexSite}`}
+                                                //coordinates need to be reversed because of different standards between geojson and leaflet
+                                                position={site.coordinates.split(", ").reverse()}
+                                            >
+                                                <ReturnPopup object={site}/>
+                                            </Marker>
+                                        )
+                                    }
+                                )
                             }
                         </MarkerClusterGroup>
                     </Map>
                 </Grid>
+                {/*search/filter result list*/}
                 {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
                     {/*<Paper>*/}
                         {<Grid className="grid-results-list" item container direction="column">
