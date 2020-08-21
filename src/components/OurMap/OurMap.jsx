@@ -149,9 +149,9 @@ export const OurMap = () => {
     }
 
     const initialInput = {
-        mapCenter: [11.5024338, 17.7578122],
-        //mapBounds: latLngBounds([35,-14], [-34,41]),
-        zoomLevel: 4,
+        //mapCenter: [11.5024338, 17.7578122],
+        mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
+        zoomLevel: 5,
         objectId: 0,
         regionId: 0,
         searchStr: "80",
@@ -243,13 +243,14 @@ export const OurMap = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
-    const panToAllMarkers = () => {
-        const newMapBounds = latLngBounds(input.mapBounds);
-        mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-            return (site && newMapBounds.extend(site.coordinates.split(", ").reverse()))
+    const extendMapBounds = (markers) => {
+        const newMapBounds = latLngBounds();
+        markers.map((item) => {
+            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
+            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
+                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
         });
-        dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: newMapBounds.getCenter()}});
-        dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 3}});
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
     }
 
     useEffect( () => {
@@ -413,15 +414,15 @@ export const OurMap = () => {
                             {<Grid item xs={12} lg={2}>
                                 <FormGroup>
                                     <FormLabel>Filter by coordinates (bounding box)
-                                            <Tooltip title="Activate the switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner." arrow placement="right-start">
-                                                <Switch
-                                                    name="drawBBox"
-                                                    checked={input.drawBBox}
-                                                    color="primary"
-                                                    onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
-                                                    disabled={input.sitesMode==="region"}
-                                                />
-                                            </Tooltip>
+                                        <Tooltip title="Activate the switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner." arrow placement="right-start">
+                                            <Switch
+                                                name="drawBBox"
+                                                checked={input.drawBBox}
+                                                color="primary"
+                                                onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
+                                                disabled={input.sitesMode==="region"}
+                                            />
+                                        </Tooltip>
                                     </FormLabel>
                                     <TextField
                                         type="text"
@@ -561,11 +562,10 @@ export const OurMap = () => {
                 <Grid className="grid-map" item xs={12} lg={9}>
                     <Map
                         className="markercluster-map"
-                        center={input.mapCenter}
-                        //bounds={input.mapBounds}
+                        //center={input.mapCenter}
+                        bounds={input.mapBounds}
                         zoom={input.zoomLevel}
                         minZoom={3}
-                        //maxBounds={[[-90, -180], [90, 180]]}
                         onClick={(event) => {
                             if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
                                 dispatch({type: "DRAW_BBOX", payload: event.latlng});
@@ -673,142 +673,118 @@ export const OurMap = () => {
                 </Grid>
                 {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
                     {/*<Paper>*/}
-                        {<Grid className="grid-results-list" item container direction="column">
-                            <Divider/>
-                            <Button
-                                size="small"
-                                onClick={() => {
-                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
-                                }}
-                            >
-                                <h3>Search Results</h3>
-                                {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                            </Button>
-                            <Tooltip title="Show all markers" arrow placement="right">
-                                <MapIcon onClick={() => panToAllMarkers()}/>
-                            </Tooltip>
-                            {input.resultsListExpanded
-                                ? (<Grid className="grid-results-list-expanded" item>
-                                    { ((input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related)||(input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                        ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                                        && mapDataObjectsByString.entitiesMultiFilter)||(input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                                        && mapDataSitesByRegion.sitesByRegion)||(input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                                        && mapDataArchaeoSites.archaeologicalSites))
-                                        ? (<Table size="small" stickyHeader aria-label="sticky table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>
-                                                        Show on map
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        Title
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        Located in
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        iDAI.world link
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
-                                                &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
-                                                {
-                                                    if(relatedObj===null) return;
-                                                    return(relatedObj.spatial
-                                                        &&relatedObj.spatial.map( (place, indexPlace) =>
-                                                        {return(place
-                                                            && <TableRow key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}>
-                                                                <TableCell>
-                                                                    {place.coordinates
-                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                            <RoomIcon
-                                                                                fontSize="small"
-                                                                                onClick={() => openPopup(indexSite)}
-                                                                            />
-                                                                        </Tooltip>)
-                                                                        : "no coordinates"}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {relatedObj.name}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {place.name}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                        <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                                    </Tooltip>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        )})
-                                                    )
-                                                })}
-                                                {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                                    ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                                                && mapDataObjectsByString.entitiesMultiFilter && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
-                                                {return(entity.spatial
-                                                    && entity.spatial.map( (place, indexPlace) =>
-                                                        { return( place
-                                                            && <TableRow key={`${place.identifier}-${indexPlace}-${indexEntity}`}>
-                                                                <TableCell>
-                                                                    {place.coordinates
-                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                            <RoomIcon
-                                                                                fontSize="small"
-                                                                                onClick={() => openPopup(indexSite)}
-                                                                            />
-                                                                        </Tooltip>)
-                                                                        : "no coordinates"}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {entity.name}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    {place.name}
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                        <a href={`https://arachne.dainst.org/entity/${entity.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                                    </Tooltip>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        )}
-                                                    )
-                                                )})}
-                                                {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                                                && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
-                                                        return (site
-                                                            &&
-                                                    <TableRow key={`${site.identifier}-${indexSite}`}>
-                                                        <TableCell>
-                                                            {site.coordinates
-                                                                ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                    <RoomIcon
-                                                                        fontSize="small"
-                                                                        onClick={() => openPopup(indexSite)}
-                                                                    />
-                                                                </Tooltip>)
-                                                                : "no coordinates"}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {site.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {site.locatedIn&&site.locatedIn.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                            </Tooltip>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                        )
-                                                    }
-                                                )}
-                                                {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                                                && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                    {<Grid className="grid-results-list" item container direction="column">
+                        <Divider/>
+                        <Button
+                            size="small"
+                            onClick={() => {
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
+                            }}
+                        >
+                            <h3>Search Results</h3>
+                            {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                        </Button>
+                        <Tooltip title="Show all markers" arrow placement="right">
+                            <MapIcon onClick={() => {
+                                if(mapDataContext.entity) extendMapBounds(mapDataContext.entity);
+                                else if(mapDataObjectsByString.entitiesMultiFilter) extendMapBounds(mapDataObjectsByString.entitiesMultiFilter);
+                                else if(mapDataSitesByRegion.sitesByRegion) extendMapBounds(mapDataSitesByRegion.sitesByRegion);
+                                else if(mapDataArchaeoSites.archaeologicalSites) extendMapBounds(mapDataArchaeoSites.archaeologicalSites);
+                            }
+                            }/>
+                        </Tooltip>
+                        {input.resultsListExpanded
+                            ? (<Grid className="grid-results-list-expanded" item>
+                                { ((input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related)||(input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                                    ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                                    && mapDataObjectsByString.entitiesMultiFilter)||(input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                                    && mapDataSitesByRegion.sitesByRegion)||(input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                                    && mapDataArchaeoSites.archaeologicalSites))
+                                    ? (<Table size="small" stickyHeader aria-label="sticky table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    Show on map
+                                                </TableCell>
+                                                <TableCell>
+                                                    Title
+                                                </TableCell>
+                                                <TableCell>
+                                                    Located in
+                                                </TableCell>
+                                                <TableCell>
+                                                    iDAI.world link
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
+                                            &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
+                                            {
+                                                if(relatedObj===null) return;
+                                                return(relatedObj.spatial
+                                                    &&relatedObj.spatial.map( (place, indexPlace) =>
+                                                    {return(place
+                                                        && <TableRow key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}>
+                                                            <TableCell>
+                                                                {place.coordinates
+                                                                    ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                        <RoomIcon
+                                                                            fontSize="small"
+                                                                            onClick={() => openPopup(indexPlace)}
+                                                                        />
+                                                                    </Tooltip>)
+                                                                    : "no coordinates"}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {relatedObj.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {place.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Tooltip title="View original entry in iDAI.world" arrow placement="right">
+                                                                    <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                </Tooltip>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )})
+                                                )
+                                            })}
+                                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
+                                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
+                                            && mapDataObjectsByString.entitiesMultiFilter && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                                            {return(entity.spatial
+                                                && entity.spatial.map( (place, indexPlace) =>
+                                                    { return( place
+                                                        && <TableRow key={`${place.identifier}-${indexPlace}-${indexEntity}`}>
+                                                            <TableCell>
+                                                                {place.coordinates
+                                                                    ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                        <RoomIcon
+                                                                            fontSize="small"
+                                                                            onClick={() => openPopup(indexPlace)}
+                                                                        />
+                                                                    </Tooltip>)
+                                                                    : "no coordinates"}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {entity.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {place.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Tooltip title="View original entry in iDAI.world" arrow placement="right">
+                                                                    <a href={`https://arachne.dainst.org/entity/${entity.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                </Tooltip>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                )
+                                            )})}
+                                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
+                                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
                                                     return (site
                                                         &&
                                                         <TableRow key={`${site.identifier}-${indexSite}`}>
@@ -834,22 +810,51 @@ export const OurMap = () => {
                                                                 </Tooltip>
                                                             </TableCell>
                                                         </TableRow>
-                                                    )})}
-                                            </TableBody>
-                                        </Table>)
-                                        : ("No results, try changing the filters")
-                                    }
-                                </Grid>)
-                                : (<Grid className="grid-results-list-collapsed" item>
-                                    {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
-                                    {input.showSearchResults && mapDataObjectsByString.entitiesMultiFilter && `${mapDataObjectsByString.entitiesMultiFilter.length} results (objects)`}
-                                    {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
-                                    {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
-                                </Grid>)
-                            }
-                        </Grid>}
+                                                    )
+                                                }
+                                            )}
+                                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
+                                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                                return (site
+                                                    &&
+                                                    <TableRow key={`${site.identifier}-${indexSite}`}>
+                                                        <TableCell>
+                                                            {site.coordinates
+                                                                ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                    <RoomIcon
+                                                                        fontSize="small"
+                                                                        onClick={() => openPopup(indexSite)}
+                                                                    />
+                                                                </Tooltip>)
+                                                                : "no coordinates"}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {site.name}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {site.locatedIn&&site.locatedIn.name}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Tooltip title="View original entry in iDAI.world" arrow placement="right">
+                                                                <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                            </Tooltip>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )})}
+                                        </TableBody>
+                                    </Table>)
+                                    : ("No results, try changing the filters")
+                                }
+                            </Grid>)
+                            : (<Grid className="grid-results-list-collapsed" item>
+                                {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
+                                {input.showSearchResults && mapDataObjectsByString.entitiesMultiFilter && `${mapDataObjectsByString.entitiesMultiFilter.length} results (objects)`}
+                                {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                                {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                            </Grid>)
+                        }
+                    </Grid>}
                     {/*</Paper>*/}
-                    {/*mapDataArchaeoSites.archaeologicalSites && <PointsList data={mapDataArchaeoSites.archaeologicalSites} onItemClick={openPopup} />*/}
                 </Grid>}
             </Grid>
         </div>

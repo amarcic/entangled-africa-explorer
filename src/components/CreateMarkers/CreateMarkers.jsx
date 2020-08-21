@@ -9,6 +9,7 @@ export const CreateMarkers = (props) => {
     console.log("The selectedMarker is index", selectedMarker)
 
     return data.map((item, index) => (
+        item &&
         <ReturnMarker
             key={index}
             item={item}
