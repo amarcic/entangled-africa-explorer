@@ -3,15 +3,20 @@ import {Popup} from "react-leaflet";
 import {Button} from "@material-ui/core";
 
 export const ReturnPopup = (props) => {
+
+    //const { object, place, showRelatedObjects, handleRelatedObjects, mapDataContextEntity } = props;
+    const { item } = props;
+
     return (
-        <Popup>
+        //TODO: bring back all contents to popups
+        /*<Popup>
             <div>
-                <h2>{props.object.name}</h2>
-                {props.place&&<p>{props.place.name}</p>}
-                {props.showRelatedObjects&&props.mapDataContextEntity
+                <h2>{object.name}</h2>
+                {place&&<p>{place.name}</p>}
+                {showRelatedObjects&&mapDataContextEntity
                 &&<ul>{
-                    (props.mapDataContextEntity.related
-                        &&props.mapDataContextEntity.related.map( relatedObj =>
+                    (mapDataContextEntity.related
+                        &&mapDataContextEntity.related.map( relatedObj =>
                             <li>{relatedObj
                                 ? `${relatedObj.name} (${relatedObj.type})`
                                 : "no access"
@@ -19,16 +24,19 @@ export const ReturnPopup = (props) => {
                         )
                     )
                 }</ul>}
-                {props.handleRelatedObjects&&<Button
-                    onClick={() => {props.handleRelatedObjects(props.object.identifier)}}
+                {handleRelatedObjects&&<Button
+                    onClick={() => {handleRelatedObjects(object.identifier)}}
                     name="showRelatedObjects"
                     variant="contained"
                     color="primary"
-                    disabled={props.showRelatedObjects}
+                    disabled={showRelatedObjects}
                 >
                     Show related objects
                 </Button>}
             </div>
+        </Popup>*/
+        <Popup>
+            {item.name}
         </Popup>
     );
 };

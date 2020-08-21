@@ -12,10 +12,9 @@ import MapIcon from '@material-ui/icons/Map';
 import RoomIcon from '@material-ui/icons/Room';
 import { useTranslation } from 'react-i18next';
 import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
-//import { Icon } from 'leaflet';
 import { latLngBounds } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { ReturnPopup } from '../../components'
+import {CreateMarkers, ReturnPopup} from '..'
 
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
@@ -151,11 +150,11 @@ export const OurMap = () => {
 
     const initialInput = {
         mapCenter: [11.5024338, 17.7578122],
-        mapBounds: latLngBounds([35,-14], [-34,41]),
+        //mapBounds: latLngBounds([35,-14], [-34,41]),
         zoomLevel: 4,
         objectId: 0,
         regionId: 0,
-        searchStr: "",
+        searchStr: "80",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"}],
@@ -170,7 +169,8 @@ export const OurMap = () => {
         boundingBoxCorner2: [],
         drawBBox: false,
         mapControlsExpanded: true,
-        resultsListExpanded: true
+        resultsListExpanded: true,
+        selectedMarker: undefined
     };
 
     const [input, dispatch] = useReducer(inputReducer, initialInput);
@@ -238,6 +238,11 @@ export const OurMap = () => {
         console.log("handleRelatedObjects!");
     };
 
+    function openPopup(index) {
+        console.log("openPopup...");
+        dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
+    }
+
     const panToAllMarkers = () => {
         const newMapBounds = latLngBounds(input.mapBounds);
         mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
@@ -245,13 +250,6 @@ export const OurMap = () => {
         });
         dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: newMapBounds.getCenter()}});
         dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 3}});
-    }
-
-    const panToMarker = (id) => {
-        const marker = mapDataArchaeoSites.archaeologicalSites.filter((site, indexSite) => `${site.identifier}-${indexSite}` === id)[0];
-        const markerPosition = marker.coordinates.split(", ").reverse();
-        dispatch({type: "UPDATE_INPUT", payload: {field: "mapCenter", value: markerPosition}});
-        dispatch({type: "UPDATE_INPUT", payload: {field: "zoomLevel", value: 5}});
     }
 
     useEffect( () => {
@@ -291,6 +289,29 @@ export const OurMap = () => {
         }
     }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
 
+
+    /*function PointsList(props) {
+        const { data, onItemClick } = props;
+
+        console.log("PointsList...");
+
+        return (
+            <div>
+                <ul>
+                    {data.map((item, index) => (
+                        <li
+                            key={index}
+                            onClick={e => {
+                                onItemClick(index);
+                            }}
+                        >
+                            {item.name}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }*/
 
     return(
         <div>
@@ -574,8 +595,12 @@ export const OurMap = () => {
                             opacity={0.25}
                             fillOpacity={0.05}
                         />}
-                        {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.spatial
-                        &&mapDataContext.entity.spatial.map( (place, indexPlace) =>
+                        {input.showRelatedObjects
+                        && input.objectId
+                        && mapDataContext
+                        && mapDataContext.entity
+                        && mapDataContext.entity.spatial
+                        && mapDataContext.entity.spatial.map( (place, indexPlace) =>
                         {return(place
                             &&<Marker
                                 key={`${place.identifier}-${indexPlace}`}
@@ -585,71 +610,65 @@ export const OurMap = () => {
                             >
                                 <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
                             </Marker>
+                            //TODO: should this marker be created by way of the new components, too?
                         )})}
-                        <MarkerClusterGroup>
-                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
-                            &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
-                            {
+                        {
+                            //TODO: find a way to use marker clustering while still being able to open popups inside cluster
+                            /*<MarkerClusterGroup>*/}
+                        {input.showRelatedObjects
+                        && input.objectId
+                        && mapDataContext
+                        && mapDataContext.entity
+                        && mapDataContext.entity.related
+                        && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
                                 if(relatedObj===null) return;
-                                return(relatedObj.spatial
-                                    &&relatedObj.spatial.map( (place, indexPlace) =>
-                                    {return(place
-                                        &&<Marker
-                                            key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={place.coordinates.split(", ").reverse()}
-                                            opacity={0.5}
-                                        >
-                                            <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                        </Marker>
-                                    )})
+                                return(
+                                    relatedObj.spatial
+                                    && <CreateMarkers
+                                        data={relatedObj.spatial}
+                                        selectedMarker={input.selectedMarker}
+                                        //opacity={0.5}
+                                        //previously had this Popup: <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                                    />
                                 )
-                            })}
-                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                            &&mapDataObjectsByString.entitiesMultiFilter&&mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
-                            {return(entity.spatial
-                                && entity.spatial.map( (place, indexPlace) =>
-                                    { return( place
-                                        && <Marker
-                                            key={`${place.identifier}-${indexPlace}-${indexEntity}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={place.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                        </Marker>
-                                    )}
+                            }
+                        )}
+                        {input.showSearchResults
+                        && (input.searchStr!==""
+                            || input.projectList.length!==0
+                            || input.chronOntologyTerm!==""
+                            || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+                        && mapDataObjectsByString
+                        && mapDataObjectsByString.entitiesMultiFilter
+                        && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
+                                return(
+                                    entity.spatial
+                                    && <CreateMarkers
+                                        data={entity.spatial}
+                                        selectedMarker={input.selectedMarker}
+                                        //previously had this Popup: <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
+                                    />
                                 )
-                            )})}
-                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map((site, indexSite) => {
-                                    return (site
-                                        && <Marker
-                                            key={`${site.identifier}-${indexSite}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={site.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={site}/>
-                                        </Marker>
-                                    )
-                                }
-                            )
                             }
-                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                                    return (site
-                                        && <Marker
-                                            key={`${site.identifier}-${indexSite}`}
-                                            //coordinates need to be reversed because of different standards between geojson and leaflet
-                                            position={site.coordinates.split(", ").reverse()}
-                                        >
-                                            <ReturnPopup object={site}/>
-                                        </Marker>
-                                    )
-                                }
-                            )
-                            }
-                        </MarkerClusterGroup>
+                        )}
+                        {input.showArchaeoSites
+                        && (input.searchStr!=="" || input.regionId!==0)
+                        && mapDataSitesByRegion
+                        && mapDataSitesByRegion.sitesByRegion
+                        && <CreateMarkers
+                            data={mapDataSitesByRegion.sitesByRegion}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                        {input.showArchaeoSites
+                        && (input.searchStr!==""
+                            || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+                        && mapDataArchaeoSites
+                        && mapDataArchaeoSites.archaeologicalSites
+                        && <CreateMarkers
+                            data={mapDataArchaeoSites.archaeologicalSites}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                        {/*</MarkerClusterGroup>*/}
                     </Map>
                 </Grid>
                 {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
@@ -704,7 +723,10 @@ export const OurMap = () => {
                                                                 <TableCell>
                                                                     {place.coordinates
                                                                         ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                            <RoomIcon fontSize="small" onClick={() => panToMarker(`${place.identifier}-${indexPlace}-${indexRelatedObj}`)}/>
+                                                                            <RoomIcon
+                                                                                fontSize="small"
+                                                                                onClick={() => openPopup(indexSite)}
+                                                                            />
                                                                         </Tooltip>)
                                                                         : "no coordinates"}
                                                                 </TableCell>
@@ -733,7 +755,10 @@ export const OurMap = () => {
                                                                 <TableCell>
                                                                     {place.coordinates
                                                                         ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                            <RoomIcon fontSize="small" onClick={() => panToMarker(`${place.identifier}-${indexPlace}-${indexEntity}`)}/>
+                                                                            <RoomIcon
+                                                                                fontSize="small"
+                                                                                onClick={() => openPopup(indexSite)}
+                                                                            />
                                                                         </Tooltip>)
                                                                         : "no coordinates"}
                                                                 </TableCell>
@@ -760,7 +785,10 @@ export const OurMap = () => {
                                                         <TableCell>
                                                             {site.coordinates
                                                                 ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                    <RoomIcon fontSize="small" onClick={() => panToMarker(`${site.identifier}-${indexSite}`)}/>
+                                                                    <RoomIcon
+                                                                        fontSize="small"
+                                                                        onClick={() => openPopup(indexSite)}
+                                                                    />
                                                                 </Tooltip>)
                                                                 : "no coordinates"}
                                                         </TableCell>
@@ -787,7 +815,10 @@ export const OurMap = () => {
                                                             <TableCell>
                                                                 {site.coordinates
                                                                     ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                        <RoomIcon fontSize="small" onClick={() => panToMarker(`${site.identifier}-${indexSite}`)}/>
+                                                                        <RoomIcon
+                                                                            fontSize="small"
+                                                                            onClick={() => openPopup(indexSite)}
+                                                                        />
                                                                     </Tooltip>)
                                                                     : "no coordinates"}
                                                             </TableCell>
@@ -818,6 +849,7 @@ export const OurMap = () => {
                             }
                         </Grid>}
                     {/*</Paper>*/}
+                    {/*mapDataArchaeoSites.archaeologicalSites && <PointsList data={mapDataArchaeoSites.archaeologicalSites} onItemClick={openPopup} />*/}
                 </Grid>}
             </Grid>
         </div>
