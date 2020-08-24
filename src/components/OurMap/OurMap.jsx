@@ -253,6 +253,7 @@ export const OurMap = () => {
         markers.map((item) => {
             if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
             else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
+                nestedItem &&
                 newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
         });
         dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
@@ -295,29 +296,6 @@ export const OurMap = () => {
         }
     }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
 
-
-    /*function PointsList(props) {
-        const { data, onItemClick } = props;
-
-        console.log("PointsList...");
-
-        return (
-            <div>
-                <ul>
-                    {data.map((item, index) => (
-                        <li
-                            key={index}
-                            onClick={e => {
-                                onItemClick(index);
-                            }}
-                        >
-                            {item.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        );
-    }*/
 
     return(
         <div>
@@ -624,20 +602,15 @@ export const OurMap = () => {
                         && input.objectId
                         && mapDataContext
                         && mapDataContext.entity
-                        && mapDataContext.entity.related
-                        && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
-                                if(relatedObj===null) return;
-                                return(
-                                    relatedObj.spatial
-                                    && <CreateMarkers
-                                        data={relatedObj.spatial}
-                                        selectedMarker={input.selectedMarker}
-                                        //opacity={0.5}
-                                        //previously had this Popup: <ReturnPopup object={relatedObj} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                    />
-                                )
-                            }
-                        )}
+                        && mapDataContext.entity.related //?
+                        && <CreateMarkers
+                            data={mapDataContext.entity.related}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                            //opacity={0.5}
+                        />
+                        }
                         {input.showSearchResults
                         && (input.searchStr!==""
                             || input.projectList.length!==0
@@ -645,17 +618,13 @@ export const OurMap = () => {
                             || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
                         && mapDataObjectsByString
                         && mapDataObjectsByString.entitiesMultiFilter
-                        && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
-                                return(
-                                    entity.spatial
-                                    && <CreateMarkers
-                                        data={entity.spatial}
-                                        selectedMarker={input.selectedMarker}
-                                        //previously had this Popup: <ReturnPopup object={entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                                    />
-                                )
-                            }
-                        )}
+                        && <CreateMarkers
+                            data={mapDataObjectsByString.entitiesMultiFilter}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                        />
+                        }
                         {input.showArchaeoSites
                         && (input.searchStr!=="" || input.regionId!==0)
                         && mapDataSitesByRegion
@@ -730,7 +699,7 @@ export const OurMap = () => {
                                                                     ? (<Tooltip title="Show on map" arrow placement="right">
                                                                         <RoomIcon
                                                                             fontSize="small"
-                                                                            onClick={() => openPopup(indexPlace)}
+                                                                            onClick={() => openPopup(indexRelatedObj+'.'+indexPlace)}
                                                                         />
                                                                     </Tooltip>)
                                                                     : "no coordinates"}
@@ -750,9 +719,15 @@ export const OurMap = () => {
                                                     )})
                                                 )
                                             })}
-                                            {input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                                ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                                            && mapDataObjectsByString.entitiesMultiFilter && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
+                                            {input.showSearchResults
+                                            && (input.searchStr!==""
+                                                || input.projectList.length!==0
+                                                || input.chronOntologyTerm!==""
+                                                || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
+                                            )
+                                            &&mapDataObjectsByString
+                                            && mapDataObjectsByString.entitiesMultiFilter
+                                            && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) =>
                                             {return(entity.spatial
                                                 && entity.spatial.map( (place, indexPlace) =>
                                                     { return( place
@@ -762,7 +737,7 @@ export const OurMap = () => {
                                                                     ? (<Tooltip title="Show on map" arrow placement="right">
                                                                         <RoomIcon
                                                                             fontSize="small"
-                                                                            onClick={() => openPopup(indexPlace)}
+                                                                            onClick={() => openPopup(indexEntity+'.'+indexPlace)}
                                                                         />
                                                                     </Tooltip>)
                                                                     : "no coordinates"}

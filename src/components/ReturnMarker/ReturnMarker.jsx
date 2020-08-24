@@ -4,10 +4,10 @@ import {ReturnPopup} from "..";
 
 
 export const ReturnMarker = (props) => {
-    console.log("ReturnMarker...")
-
+    //console.log("ReturnMarker...")
+    const { item, nestedItem, openPopup, handleRelatedObjects, showRelatedObjects } = props;
     const markerRef = useRef(null);
-    const { item, openPopup } = props;
+    //console.log("item", item); nestedItem && console.log("nestedItem", nestedItem);
 
     useEffect(() => {
         if (openPopup) {
@@ -16,13 +16,21 @@ export const ReturnMarker = (props) => {
         }
     }, [openPopup]);
 
+
     return (
         <Marker
             ref={markerRef}
             //coordinates need to be reversed because of different standards between geojson and leaflet
-            position={item.coordinates.split(", ").reverse()}
+            position={nestedItem ? nestedItem.coordinates.split(", ").reverse() : item.coordinates.split(", ").reverse()}
         >
-            <ReturnPopup item={item}/>
+            {nestedItem
+                ? <ReturnPopup item={item}
+                               nestedItem={nestedItem}
+                               handleRelatedObjects={handleRelatedObjects}
+                               showRelatedObjects={showRelatedObjects}
+                />
+                : <ReturnPopup item={item}/>
+            }
         </Marker>
     );
 };
