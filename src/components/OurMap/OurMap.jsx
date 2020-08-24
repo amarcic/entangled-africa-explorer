@@ -243,7 +243,12 @@ export const OurMap = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
-    const extendMapBounds = (markers) => {
+    const extendMapBounds = () => {
+        let markers;
+        if(mapDataContext.entity) markers = mapDataContext.entity;
+        else if(mapDataObjectsByString.entitiesMultiFilter) markers = mapDataObjectsByString.entitiesMultiFilter;
+        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
+        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
         const newMapBounds = latLngBounds();
         markers.map((item) => {
             if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
@@ -685,13 +690,7 @@ export const OurMap = () => {
                             {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                         </Button>
                         <Tooltip title="Show all markers" arrow placement="right">
-                            <MapIcon onClick={() => {
-                                if(mapDataContext.entity) extendMapBounds(mapDataContext.entity);
-                                else if(mapDataObjectsByString.entitiesMultiFilter) extendMapBounds(mapDataObjectsByString.entitiesMultiFilter);
-                                else if(mapDataSitesByRegion.sitesByRegion) extendMapBounds(mapDataSitesByRegion.sitesByRegion);
-                                else if(mapDataArchaeoSites.archaeologicalSites) extendMapBounds(mapDataArchaeoSites.archaeologicalSites);
-                            }
-                            }/>
+                            <MapIcon onClick={() => extendMapBounds()}/>
                         </Tooltip>
                         {input.resultsListExpanded
                             ? (<Grid className="grid-results-list-expanded" item>
