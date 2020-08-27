@@ -154,15 +154,15 @@ export const OurMap = () => {
         zoomLevel: 5,
         objectId: 0,
         regionId: 0,
-        searchStr: "80",
+        searchStr: "Schnurplombe",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"}],
         checkedProjects: [],
-        mode: "archaeoSites",
+        mode: "objects",
         sitesMode: "",
-        showSearchResults: false,
-        showArchaeoSites: true,
+        showSearchResults: true,
+        showArchaeoSites: false,
         showRelatedObjects: false,
         chronOntologyTerm: "",
         boundingBoxCorner1: [],
@@ -562,6 +562,8 @@ export const OurMap = () => {
                             url={osmTiles}
                             noWrap={true}
                         />
+
+                        {/* Circles and Rectangles used for drawing bounding box */}
                         {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
                         &&<Circle
                             center={input.boundingBoxCorner1}
@@ -579,6 +581,8 @@ export const OurMap = () => {
                             opacity={0.25}
                             fillOpacity={0.05}
                         />}
+
+                        {/* Markers */}
                         {input.showRelatedObjects
                         && input.objectId
                         && mapDataContext
@@ -637,7 +641,6 @@ export const OurMap = () => {
                     </Map>
                 </Grid>
                 {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
-                    {/*<Paper>*/}
                     {<Grid className="grid-results-list" item container direction="column">
                         <Divider/>
                         <Button
@@ -654,180 +657,97 @@ export const OurMap = () => {
                         </Tooltip>
                         {input.resultsListExpanded
                             ? (<Grid className="grid-results-list-expanded" item>
-                                { ((input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related)||(input.showSearchResults&&(input.searchStr!==""||input.projectList.length!==0||input.chronOntologyTerm!==""
-                                    ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataObjectsByString
-                                    && mapDataObjectsByString.entitiesMultiFilter)||(input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                                    && mapDataSitesByRegion.sitesByRegion)||(input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                                    && mapDataArchaeoSites.archaeologicalSites))
-                                    ? (<Table size="small" stickyHeader aria-label="sticky table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    Show on map
-                                                </TableCell>
-                                                <TableCell>
-                                                    Title
-                                                </TableCell>
-                                                <TableCell>
-                                                    Located in
-                                                </TableCell>
-                                                <TableCell>
-                                                    iDAI.world link
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {input.showRelatedObjects&&input.objectId&&mapDataContext&&mapDataContext.entity&&mapDataContext.entity.related
-                                            &&mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) =>
-                                            {
-                                                return relatedObj && relatedObj.spatial && relatedObj.spatial.map( (place, indexPlace) => {
-                                                        return (place === null
-                                                                ? entity
-                                                                && <TableRow key={indexRelatedObj}>
-                                                                    <TableCell>
-                                                                        {entity.coordinates
-                                                                            ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                                <RoomIcon
-                                                                                    fontSize="small"
-                                                                                    onClick={() => openPopup(indexRelatedObj)}
-                                                                                />
-                                                                            </Tooltip>)
-                                                                            : "(No coordinates)"}
-                                                                    </TableCell>
-                                                                    <TableCell>
-                                                                        {relatedObj.name}
-                                                                    </TableCell>
-                                                                    <TableCell>
-
-                                                                    </TableCell>
-                                                                    <TableCell>
-                                                                        <Tooltip
-                                                                            title="View original entry in iDAI.world"
-                                                                            arrow placement="right">
-                                                                            <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`}
-                                                                               target="_blank"
-                                                                               rel="noreferrer"><ExitToAppIcon/></a>
-                                                                        </Tooltip>
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                                : place &&
-                                                                <TableRow
-                                                                    key={`${indexEntity}.${indexPlace}`}>
-                                                                    <TableCell>
-                                                                        {<Tooltip title="Show on map" arrow
-                                                                                  placement="right">
-                                                                            <RoomIcon
-                                                                                fontSize="small"
-                                                                                onClick={() => openPopup(indexRelatedObj + '.' + indexPlace)}
-                                                                            />
-                                                                        </Tooltip>}
-                                                                    </TableCell>
-                                                                    <TableCell>
-                                                                        {relatedObj.name}
-                                                                    </TableCell>
-                                                                    <TableCell>
-                                                                        {place.name}
-                                                                    </TableCell>
-                                                                    <TableCell>
-                                                                        <Tooltip
-                                                                            title="View original entry in iDAI.world"
-                                                                            arrow placement="right">
-                                                                            <a href={`https://arachne.dainst.org/entity/${indexRelatedObj.identifier}`}
-                                                                               target="_blank"
-                                                                               rel="noreferrer"><ExitToAppIcon/></a>
-                                                                        </Tooltip>
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                        )
-                                                    }
-                                                )
-
-
-                                                /*if(relatedObj===null) return;
-                                                return(relatedObj.spatial
-                                                    &&relatedObj.spatial.map( (place, indexPlace) =>
-                                                    {return(place
-                                                        && <TableRow key={`${place.identifier}-${indexPlace}-${indexRelatedObj}`}>
-                                                            <TableCell>
-                                                                {place.coordinates
-                                                                    ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                        <RoomIcon
-                                                                            fontSize="small"
-                                                                            onClick={() => openPopup(indexRelatedObj+'.'+indexPlace)}
-                                                                        />
-                                                                    </Tooltip>)
-                                                                    : "no coordinates"}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {relatedObj.name}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {place.name}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                    <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                                </Tooltip>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )})
-                                                )*/
-
-
-                                            })}
-                                            {input.showSearchResults
-                                            && (input.searchStr!==""
+                                {/* Conditions for rendering a table */
+                                    (
+                                        (
+                                            input.showRelatedObjects
+                                            && input.objectId
+                                            && mapDataContext
+                                            && mapDataContext.entity
+                                        )
+                                        ||
+                                        (
+                                            input.showSearchResults
+                                            && (
+                                                input.searchStr!==""
                                                 || input.projectList.length!==0
                                                 || input.chronOntologyTerm!==""
                                                 || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
                                             )
                                             && mapDataObjectsByString
                                             && mapDataObjectsByString.entitiesMultiFilter
-                                            && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
-                                                    return entity && entity.spatial && entity.spatial.map( (place, indexPlace) => {
-                                                            return (place === null
-                                                                    ? entity
-                                                                    && <TableRow key={indexEntity}>
+                                        )
+                                        || (
+                                            input.showArchaeoSites
+                                            && (
+                                                input.searchStr!==""
+                                                || input.regionId!==0
+                                            )
+                                            && mapDataSitesByRegion
+                                            && mapDataSitesByRegion.sitesByRegion
+                                        )
+                                        || (
+                                            input.showArchaeoSites
+                                            && (
+                                                input.searchStr!==""
+                                                || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
+                                            )
+                                            && mapDataArchaeoSites
+                                            && mapDataArchaeoSites.archaeologicalSites
+                                        )
+                                    )
+                                        ? /* Yes, render a table */
+                                        (<Table size="small" stickyHeader aria-label="sticky table">
+                                            {/* Table header */}
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>
+                                                        Show on map
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Title
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Located in
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        iDAI.world link
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            {/* Table body */}
+                                            <TableBody>
+                                                {/* Table row(s) for selected object */}
+                                                {input.showRelatedObjects
+                                                && input.objectId
+                                                && mapDataContext
+                                                && mapDataContext.entity
+                                                && <TableRow>
+                                                    <TableCell align="center" colSpan={4}>
+                                                        Selected object:
+                                                    </TableCell>
+                                                </TableRow>}
+                                                {input.showRelatedObjects
+                                                && input.objectId
+                                                && mapDataContext
+                                                && mapDataContext.entity
+                                                && mapDataContext.entity.spatial
+                                                && mapDataContext.entity.spatial.map( (place, indexPlace) => {
+                                                        return (place === null
+                                                                ? (mapDataContext.entity
+                                                                    && <TableRow>
                                                                         <TableCell>
-                                                                            {entity.coordinates
+                                                                            {mapDataContext.entity.spatial.coordinates
                                                                                 ? (<Tooltip title="Show on map" arrow placement="right">
                                                                                     <RoomIcon
                                                                                         fontSize="small"
-                                                                                        onClick={() => openPopup(indexEntity)}
+                                                                                        onClick={() => openPopup(indexPlace)}
                                                                                     />
                                                                                 </Tooltip>)
                                                                                 : "(No coordinates)"}
                                                                         </TableCell>
                                                                         <TableCell>
-                                                                            {entity.name}
-                                                                        </TableCell>
-                                                                        <TableCell>
-
-                                                                        </TableCell>
-                                                                        <TableCell>
-                                                                            <Tooltip
-                                                                                title="View original entry in iDAI.world"
-                                                                                arrow placement="right">
-                                                                                <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
-                                                                                   target="_blank"
-                                                                                   rel="noreferrer"><ExitToAppIcon/></a>
-                                                                            </Tooltip>
-                                                                        </TableCell>
-                                                                    </TableRow>
-                                                                    : place &&
-                                                                    <TableRow
-                                                                        key={`${indexEntity}.${indexPlace}`}>
-                                                                        <TableCell>
-                                                                            {<Tooltip title="Show on map" arrow
-                                                                                      placement="right">
-                                                                                <RoomIcon
-                                                                                    fontSize="small"
-                                                                                    onClick={() => openPopup(indexEntity + '.' + indexPlace)}
-                                                                                />
-                                                                            </Tooltip>}
-                                                                        </TableCell>
-                                                                        <TableCell>
-                                                                            {entity.name}
+                                                                            {mapDataContext.entity.name}
                                                                         </TableCell>
                                                                         <TableCell>
                                                                             {place.name}
@@ -836,78 +756,274 @@ export const OurMap = () => {
                                                                             <Tooltip
                                                                                 title="View original entry in iDAI.world"
                                                                                 arrow placement="right">
-                                                                                <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
+                                                                                <a href={`https://arachne.dainst.org/entity/${mapDataContext.entity.identifier}`}
                                                                                    target="_blank"
                                                                                    rel="noreferrer"><ExitToAppIcon/></a>
                                                                             </Tooltip>
                                                                         </TableCell>
-                                                                    </TableRow>
+                                                                    </TableRow>)
+                                                                : (place
+                                                                    && <TableRow key={indexPlace}>
+                                                                        <TableCell>
+                                                                            {place.coordinates
+                                                                                ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                                    <RoomIcon
+                                                                                        fontSize="small"
+                                                                                        onClick={() => openPopup(indexPlace)}
+                                                                                    />
+                                                                                </Tooltip>)
+                                                                                : "(No coordinates)"}
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            {mapDataContext.entity.name}
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            {place.name}
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <Tooltip
+                                                                                title="View original entry in iDAI.world"
+                                                                                arrow placement="right">
+                                                                                <a href={`https://arachne.dainst.org/entity/${mapDataContext.entity.identifier}`}
+                                                                                   target="_blank"
+                                                                                   rel="noreferrer"><ExitToAppIcon/></a>
+                                                                            </Tooltip>
+                                                                        </TableCell>
+                                                                    </TableRow>)
+                                                        )
+                                                    }
+                                                )}
+                                                {/* Table row(s) for related objects */}
+                                                {input.showRelatedObjects
+                                                && input.objectId
+                                                && mapDataContext
+                                                && mapDataContext.entity
+                                                && mapDataContext.entity.related
+                                                && <TableRow>
+                                                    <TableCell align="center" colSpan={4}>
+                                                        Related objects:
+                                                    </TableCell>
+                                                </TableRow>}
+                                                {input.showRelatedObjects
+                                                && input.objectId
+                                                && mapDataContext
+                                                && mapDataContext.entity
+                                                && mapDataContext.entity.related
+                                                && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
+                                                        return ( relatedObj
+                                                            && relatedObj.spatial
+                                                            && relatedObj.spatial.map( (place, indexPlace) => {
+                                                                    return (place === null
+                                                                            ? (relatedObj
+                                                                                && <TableRow key={indexRelatedObj + '.' + indexPlace}>
+                                                                                    <TableCell>
+                                                                                        {mapDataContext.entity.spatial.coordinates
+                                                                                            ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                                                <RoomIcon
+                                                                                                    fontSize="small"
+                                                                                                    onClick={() => openPopup(indexRelatedObj)}
+                                                                                                />
+                                                                                            </Tooltip>)
+                                                                                            : "(No coordinates)"}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        {relatedObj.name}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Tooltip
+                                                                                            title="View original entry in iDAI.world"
+                                                                                            arrow placement="right">
+                                                                                            <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`}
+                                                                                               target="_blank"
+                                                                                               rel="noreferrer"><ExitToAppIcon/></a>
+                                                                                        </Tooltip>
+                                                                                    </TableCell>
+                                                                                </TableRow>)
+                                                                            : (place
+                                                                                && <TableRow key={indexRelatedObj + '.' + indexPlace}>
+                                                                                    <TableCell>
+                                                                                        {<Tooltip title="Show on map" arrow
+                                                                                                  placement="right">
+                                                                                            <RoomIcon
+                                                                                                fontSize="small"
+                                                                                                onClick={() => openPopup(indexRelatedObj + '.' + indexPlace)}
+                                                                                            />
+                                                                                        </Tooltip>}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        {relatedObj.name}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        {place.name}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <Tooltip
+                                                                                            title="View original entry in iDAI.world"
+                                                                                            arrow placement="right">
+                                                                                            <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`}
+                                                                                               target="_blank"
+                                                                                               rel="noreferrer"><ExitToAppIcon/></a>
+                                                                                        </Tooltip>
+                                                                                    </TableCell>
+                                                                                </TableRow>)
+                                                                    )
+                                                                }
                                                             )
-                                                        }
-                                                    )
-                                                }
-                                            )}
-                                            {input.showArchaeoSites&&(input.searchStr!==""||input.regionId!==0)&&mapDataSitesByRegion
-                                            && mapDataSitesByRegion.sitesByRegion && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
-                                                    return (site
-                                                        &&
-                                                        <TableRow key={indexSite}>
-                                                            <TableCell>
-                                                                {site.coordinates
-                                                                    ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                        <RoomIcon
-                                                                            fontSize="small"
-                                                                            onClick={() => openPopup(indexSite)}
-                                                                        />
-                                                                    </Tooltip>)
-                                                                    : "no coordinates"}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {site.name}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {site.locatedIn&&site.locatedIn.name}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                    <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                                </Tooltip>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
-                                                }
-                                            )}
-                                            {input.showArchaeoSites&&(input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))&&mapDataArchaeoSites
-                                            && mapDataArchaeoSites.archaeologicalSites && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
-                                                return (site
-                                                    &&
-                                                    <TableRow key={indexSite}>
-                                                        <TableCell>
-                                                            {site.coordinates
-                                                                ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                    <RoomIcon
-                                                                        fontSize="small"
-                                                                        onClick={() => openPopup(indexSite)}
-                                                                    />
-                                                                </Tooltip>)
-                                                                : "no coordinates"}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {site.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {site.locatedIn&&site.locatedIn.name}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Tooltip title="View original entry in iDAI.world" arrow placement="right">
-                                                                <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
-                                                            </Tooltip>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )})}
-                                        </TableBody>
-                                    </Table>)
-                                    : ("No results, try changing the filters")
+                                                        )
+                                                    }
+                                                )}
+                                                {/* Table row(s) for objects in mapDataObjectsByString.entitiesMultiFilter */}
+                                                {input.showSearchResults
+                                                && (input.searchStr!==""
+                                                    || input.projectList.length!==0
+                                                    || input.chronOntologyTerm!==""
+                                                    || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
+                                                )
+                                                && mapDataObjectsByString
+                                                && mapDataObjectsByString.entitiesMultiFilter
+                                                && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
+                                                        return entity && entity.spatial && entity.spatial.map( (place, indexPlace) => {
+                                                                return (place === null
+                                                                        ? (entity
+                                                                            && <TableRow key={indexEntity}>
+                                                                                <TableCell>
+                                                                                    {entity.coordinates
+                                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                                            <RoomIcon
+                                                                                                fontSize="small"
+                                                                                                onClick={() => openPopup(indexEntity)}
+                                                                                            />
+                                                                                        </Tooltip>)
+                                                                                        : "(No coordinates)"}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {entity.name}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {place.name}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    <Tooltip
+                                                                                        title="View original entry in iDAI.world"
+                                                                                        arrow placement="right">
+                                                                                        <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
+                                                                                           target="_blank"
+                                                                                           rel="noreferrer"><ExitToAppIcon/></a>
+                                                                                    </Tooltip>
+                                                                                </TableCell>
+                                                                            </TableRow>)
+                                                                        : (place
+                                                                            && <TableRow
+                                                                                key={`${indexEntity}.${indexPlace}`}>
+                                                                                <TableCell>
+                                                                                    {<Tooltip title="Show on map" arrow
+                                                                                              placement="right">
+                                                                                        <RoomIcon
+                                                                                            fontSize="small"
+                                                                                            onClick={() => openPopup(indexEntity + '.' + indexPlace)}
+                                                                                        />
+                                                                                    </Tooltip>}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {entity.name}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {place.name}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    <Tooltip
+                                                                                        title="View original entry in iDAI.world"
+                                                                                        arrow placement="right">
+                                                                                        <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
+                                                                                           target="_blank"
+                                                                                           rel="noreferrer"><ExitToAppIcon/></a>
+                                                                                    </Tooltip>
+                                                                                </TableCell>
+                                                                            </TableRow>)
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                )}
+                                                {/* Table row(s) for sites in mapDataSitesByRegion.sitesByRegion */}
+                                                {input.showArchaeoSites
+                                                && (
+                                                    input.searchStr!==""
+                                                    ||input.regionId!==0
+                                                )
+                                                && mapDataSitesByRegion
+                                                && mapDataSitesByRegion.sitesByRegion
+                                                && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
+                                                        return (site
+                                                            && <TableRow key={indexSite}>
+                                                                <TableCell>
+                                                                    {site.coordinates
+                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                            <RoomIcon
+                                                                                fontSize="small"
+                                                                                onClick={() => openPopup(indexSite)}
+                                                                            />
+                                                                        </Tooltip>)
+                                                                        : "no coordinates"}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {site.name}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {site.locatedIn&&site.locatedIn.name}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Tooltip title="View original entry in iDAI.world" arrow placement="right">
+                                                                        <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                    </Tooltip>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )
+                                                    }
+                                                )}
+                                                {/* Table row(s) for sites in mapDataArchaeoSites.archaeologicalSites */}
+                                                {input.showArchaeoSites
+                                                && (
+                                                    input.searchStr!==""
+                                                    || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
+                                                )
+                                                && mapDataArchaeoSites
+                                                && mapDataArchaeoSites.archaeologicalSites
+                                                && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                                        return (site
+                                                            && <TableRow key={indexSite}>
+                                                                <TableCell>
+                                                                    {site.coordinates
+                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                            <RoomIcon
+                                                                                fontSize="small"
+                                                                                onClick={() => openPopup(indexSite)}
+                                                                            />
+                                                                        </Tooltip>)
+                                                                        : "no coordinates"}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {site.name}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {site.locatedIn&&site.locatedIn.name}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Tooltip title="View original entry in iDAI.world" arrow placement="right">
+                                                                        <a href={`https://gazetteer.dainst.org/place/${site.identifier}`} target="_blank" rel="noreferrer"><ExitToAppIcon/></a>
+                                                                    </Tooltip>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )
+                                                    }
+                                                )}
+                                            </TableBody>
+                                        </Table>)
+                                        : /* No, do not render a table */
+                                        ("No results, try changing the filters")
                                 }
                             </Grid>)
                             : (<Grid className="grid-results-list-collapsed" item>
@@ -918,7 +1034,6 @@ export const OurMap = () => {
                             </Grid>)
                         }
                     </Grid>}
-                    {/*</Paper>*/}
                 </Grid>}
             </Grid>
         </div>
