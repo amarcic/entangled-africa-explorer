@@ -332,6 +332,7 @@ export const OurMap = () => {
                                             dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: newValue}})
                                             dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showArchaeoSites"}})
                                             dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
+                                            dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: undefined}}) // Is this a good place to clear selectedMarker?
                                         }}
                                     >
                                         <FormControlLabel value="archaeoSites" control={<Radio />} label="Archaeological Sites"/>
