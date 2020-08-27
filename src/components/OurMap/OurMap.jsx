@@ -744,20 +744,13 @@ export const OurMap = () => {
                                                                 ? (mapDataContext.entity
                                                                     && <TableRow>
                                                                         <TableCell>
-                                                                            {mapDataContext.entity.spatial.coordinates
-                                                                                ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                                    <RoomIcon
-                                                                                        fontSize="small"
-                                                                                        onClick={() => openPopup(indexPlace)}
-                                                                                    />
-                                                                                </Tooltip>)
-                                                                                : "(No coordinates)"}
+                                                                            (No coordinates)
                                                                         </TableCell>
                                                                         <TableCell>
                                                                             {mapDataContext.entity.name}
                                                                         </TableCell>
                                                                         <TableCell>
-                                                                            {place.name}
+
                                                                         </TableCell>
                                                                         <TableCell>
                                                                             <Tooltip
@@ -824,14 +817,7 @@ export const OurMap = () => {
                                                                             ? (relatedObj
                                                                                 && <TableRow key={indexRelatedObj + '.' + indexPlace}>
                                                                                     <TableCell>
-                                                                                        {mapDataContext.entity.spatial.coordinates
-                                                                                            ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                                                <RoomIcon
-                                                                                                    fontSize="small"
-                                                                                                    onClick={() => openPopup(indexRelatedObj)}
-                                                                                                />
-                                                                                            </Tooltip>)
-                                                                                            : "(No coordinates)"}
+                                                                                        (No coordinates)
                                                                                     </TableCell>
                                                                                     <TableCell>
                                                                                         {relatedObj.name}
@@ -852,13 +838,14 @@ export const OurMap = () => {
                                                                             : (place
                                                                                 && <TableRow key={indexRelatedObj + '.' + indexPlace}>
                                                                                     <TableCell>
-                                                                                        {<Tooltip title="Show on map" arrow
-                                                                                                  placement="right">
-                                                                                            <RoomIcon
-                                                                                                fontSize="small"
-                                                                                                onClick={() => openPopup(indexRelatedObj + '.' + indexPlace)}
-                                                                                            />
-                                                                                        </Tooltip>}
+                                                                                        {place.coordinates
+                                                                                            ? (<Tooltip title="Show on map" arrow placement="right">
+                                                                                                <RoomIcon
+                                                                                                    fontSize="small"
+                                                                                                    onClick={() => openPopup(indexRelatedObj + '.' + indexPlace)}
+                                                                                                />
+                                                                                            </Tooltip>)
+                                                                                            : "(No coordinates)"}
                                                                                     </TableCell>
                                                                                     <TableCell>
                                                                                         {relatedObj.name}
@@ -897,20 +884,13 @@ export const OurMap = () => {
                                                                         ? (entity
                                                                             && <TableRow key={indexEntity}>
                                                                                 <TableCell>
-                                                                                    {entity.coordinates
-                                                                                        ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                                            <RoomIcon
-                                                                                                fontSize="small"
-                                                                                                onClick={() => openPopup(indexEntity)}
-                                                                                            />
-                                                                                        </Tooltip>)
-                                                                                        : "(No coordinates)"}
+                                                                                    (No coordinates)
                                                                                 </TableCell>
                                                                                 <TableCell>
                                                                                     {entity.name}
                                                                                 </TableCell>
                                                                                 <TableCell>
-                                                                                    {place.name}
+
                                                                                 </TableCell>
                                                                                 <TableCell>
                                                                                     <Tooltip
