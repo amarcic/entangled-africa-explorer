@@ -1,11 +1,10 @@
 import React from 'react';
-import {ReturnMarker} from "..";
+import { ReturnMarker } from "..";
 
 
 export const CreateMarkers = (props) => {
     //console.log("CreateMarkers...")
     const { data, selectedMarker, handleRelatedObjects, showRelatedObjects } = props;
-    //console.log("The selectedMarker is index", selectedMarker)
 
 
     return data && data.map((item, index) => {

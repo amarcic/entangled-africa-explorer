@@ -1,13 +1,12 @@
-import React, {useRef, useEffect} from 'react';
-import {Marker} from "react-leaflet";
-import {ReturnPopup} from "..";
+import React, { useRef, useEffect } from 'react';
+import { Marker } from "react-leaflet";
+import { ReturnPopup } from "..";
 
 
 export const ReturnMarker = (props) => {
     //console.log("ReturnMarker...")
     const { item, nestedItem, openPopup, handleRelatedObjects, showRelatedObjects } = props;
     const markerRef = useRef(null);
-    //console.log("item", item); nestedItem && console.log("nestedItem", nestedItem);
 
     useEffect(() => {
         if (openPopup) {

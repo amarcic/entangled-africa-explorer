@@ -1,7 +1,9 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
     FormGroup, FormControlLabel, Checkbox, FormLabel, Button, TextField, Switch, Grid, IconButton, LinearProgress,
-    Divider, RadioGroup, Radio, Chip, Paper, Tooltip, Table, TableHead, TableBody, TableRow, TableCell
+    Divider, RadioGroup, Radio, Chip, Tooltip, Table, TableHead, TableBody, TableRow, TableCell
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
@@ -10,20 +12,18 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MapIcon from '@material-ui/icons/Map';
 import RoomIcon from '@material-ui/icons/Room';
-import { useTranslation } from 'react-i18next';
-import {Map, TileLayer, Marker, Rectangle, Circle} from 'react-leaflet';
+
+import { Map, TileLayer, Rectangle, Circle } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import {CreateMarkers, ReturnMarker, ReturnPopup} from '..'
+
+import { CreateMarkers } from '..'
 
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
 
-const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-//const mapCenter = [11.5024338, 17.7578122];
-//const zoomLevel = 4;
 
+// Queries
 const GET_CONTEXT_BY_ID = gql`
     query giveInf($arachneId: ID!) {
         entity(id: $arachneId) {
@@ -98,6 +98,11 @@ const GET_SITES_BY_REGION = gql`
     }
 `;
 
+
+const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+
 export const OurMap = () => {
     const {t, i18n} = useTranslation();
 
@@ -105,7 +110,7 @@ export const OurMap = () => {
         i18n.changeLanguage(lng);
     };
 
-    //state
+    // State
     function inputReducer(state, action) {
         const {type, payload} = action;
         switch (type) {
@@ -149,7 +154,6 @@ export const OurMap = () => {
     }
 
     const initialInput = {
-        //mapCenter: [11.5024338, 17.7578122],
         mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
         zoomLevel: 5,
         objectId: 0,
@@ -180,7 +184,7 @@ export const OurMap = () => {
     const [mapDataArchaeoSites, setMapDataArchaeoSites] = useState({});
     const [mapDataSitesByRegion, setMapDataSitesByRegion] = useState({});
 
-    //queries
+    // Queries
     const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode === "objects"
         ? {variables: {arachneId: input.objectId}}
         : {variables: {arachneId: 0}});
@@ -215,6 +219,7 @@ export const OurMap = () => {
         ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
+
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
@@ -230,6 +235,7 @@ export const OurMap = () => {
         {title: 'Tschad', id: 2128989},
         {title: 'Wadi Howar Region Sudan', id: 2042736},
     ];
+
 
     const handleRelatedObjects = (id) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
@@ -259,6 +265,7 @@ export const OurMap = () => {
         });
         dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
     }
+
 
     useEffect( () => {
         if(dataContext&&input.showRelatedObjects) {
