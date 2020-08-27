@@ -584,65 +584,55 @@ export const OurMap = () => {
                         && mapDataContext
                         && mapDataContext.entity
                         && mapDataContext.entity.spatial
-                        && mapDataContext.entity.spatial.map( (place, indexPlace) =>
-                        {return(place
-                            &&<Marker
-                                key={`${place.identifier}-${indexPlace}`}
-                                //coordinates need to be reversed because of different standards between geojson and leaflet
-                                position={place.coordinates.split(", ").reverse()}
-                                opacity={1}
-                            >
-                                <ReturnPopup object={mapDataContext.entity} place={place} handleRelatedObjects={handleRelatedObjects} showRelatedObjects={input.showRelatedObjects} mapDataContextEntity={mapDataContext.entity}/>
-                            </Marker>
-                            //TODO: should this marker be created by way of the new components, too?
-                        )})}
-                        {
-                            //TODO: find a way to use marker clustering while still being able to open popups inside cluster
-                            /*<MarkerClusterGroup>*/}
-                        {input.showRelatedObjects
-                        && input.objectId
-                        && mapDataContext
-                        && mapDataContext.entity
-                        && mapDataContext.entity.related //?
                         && <CreateMarkers
-                            data={mapDataContext.entity.related}
+                            data={mapDataContext.entity.spatial}
                             selectedMarker={input.selectedMarker}
                             handleRelatedObjects={handleRelatedObjects}
                             showRelatedObjects={input.showRelatedObjects}
-                            //opacity={0.5}
-                        />
-                        }
-                        {input.showSearchResults
-                        && (input.searchStr!==""
-                            || input.projectList.length!==0
-                            || input.chronOntologyTerm!==""
-                            || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
-                        && mapDataObjectsByString
-                        && mapDataObjectsByString.entitiesMultiFilter
-                        && <CreateMarkers
-                            data={mapDataObjectsByString.entitiesMultiFilter}
-                            selectedMarker={input.selectedMarker}
-                            handleRelatedObjects={handleRelatedObjects}
-                            showRelatedObjects={input.showRelatedObjects}
-                        />
-                        }
-                        {input.showArchaeoSites
-                        && (input.searchStr!=="" || input.regionId!==0)
-                        && mapDataSitesByRegion
-                        && mapDataSitesByRegion.sitesByRegion
-                        && <CreateMarkers
-                            data={mapDataSitesByRegion.sitesByRegion}
-                            selectedMarker={input.selectedMarker}
                         />}
-                        {input.showArchaeoSites
-                        && (input.searchStr!==""
-                            || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
-                        && mapDataArchaeoSites
-                        && mapDataArchaeoSites.archaeologicalSites
-                        && <CreateMarkers
-                            data={mapDataArchaeoSites.archaeologicalSites}
-                            selectedMarker={input.selectedMarker}
-                        />}
+                        {/*<MarkerClusterGroup>*/ /*TODO: find a way to use marker clustering while still being able to open popups inside cluster*/}
+                            {input.showRelatedObjects
+                            && input.objectId
+                            && mapDataContext
+                            && mapDataContext.entity
+                            && mapDataContext.entity.related
+                            && <CreateMarkers
+                                data={mapDataContext.entity.related}
+                                selectedMarker={input.selectedMarker}
+                                handleRelatedObjects={handleRelatedObjects}
+                                showRelatedObjects={input.showRelatedObjects}
+                                //opacity={0.5}
+                            />}
+                            {input.showSearchResults
+                            && (input.searchStr!==""
+                                || input.projectList.length!==0
+                                || input.chronOntologyTerm!==""
+                                || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+                            && mapDataObjectsByString
+                            && mapDataObjectsByString.entitiesMultiFilter
+                            && <CreateMarkers
+                                data={mapDataObjectsByString.entitiesMultiFilter}
+                                selectedMarker={input.selectedMarker}
+                                handleRelatedObjects={handleRelatedObjects}
+                                showRelatedObjects={input.showRelatedObjects}
+                            />}
+                            {input.showArchaeoSites
+                            && (input.searchStr!=="" || input.regionId!==0)
+                            && mapDataSitesByRegion
+                            && mapDataSitesByRegion.sitesByRegion
+                            && <CreateMarkers
+                                data={mapDataSitesByRegion.sitesByRegion}
+                                selectedMarker={input.selectedMarker}
+                            />}
+                            {input.showArchaeoSites
+                            && (input.searchStr!==""
+                                || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+                            && mapDataArchaeoSites
+                            && mapDataArchaeoSites.archaeologicalSites
+                            && <CreateMarkers
+                                data={mapDataArchaeoSites.archaeologicalSites}
+                                selectedMarker={input.selectedMarker}
+                            />}
                         {/*</MarkerClusterGroup>*/}
                     </Map>
                 </Grid>
