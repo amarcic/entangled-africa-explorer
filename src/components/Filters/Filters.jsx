@@ -68,9 +68,14 @@ export const Filters = (props) => {
                     <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
                     <Autocomplete
                         name="chronOntologyTerm"
+                        value={input.chronOntologyTerm}
                         options={chronOntologyTerms}
-                        onChange={(event, newValue) => {dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})}}
-                        renderInput={(params) => <TextField {...params} label="iDAI.chronontology term" variant="outlined" />}
+                        onChange={(event, newValue) =>
+                            dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})
+                        }
+                        renderInput={(params) =>
+                            <TextField {...params} label="iDAI.chronontology term" variant="outlined" />
+                        }
                         autoSelect={true}
                         disabled={input.showArchaeoSites}
                         size="small"
@@ -84,16 +89,20 @@ export const Filters = (props) => {
                     <FormLabel component="legend">Filter by region</FormLabel>
                     <Autocomplete
                         name="regionId"
+                        //value={input.regionTitle}
                         options={regions}
                         getOptionLabel={(option) => option.title}
                         getOptionSelected={(option, value) => {
                             return (option.id === value.id)
                         }}
                         onChange={(event, newValue) => {
-                            dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}})
-                            newValue===null
-                                ? (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}), dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}))
-                                : dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}});
+                            dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}});
+                            newValue === null
+                                ? (dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}),
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}),
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "regionTitle", value: null}}))
+                                : (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}}),
+                                    dispatch({type: "UPDATE_INPUT", payload: {field: "regionTitle", value: newValue.title}}));
                         }}
                         renderInput={(params) => <TextField {...params} label="Filter by region" variant="outlined" />}
                         autoSelect={true}
@@ -191,7 +200,7 @@ export const Filters = (props) => {
             {/*checkboxes for filter by projects; only active in object search mode*/}
             {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
                 <FormGroup>
-                    <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
+                        <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
                     {input.projectList && input.projectList.map(project => {
                         return (project
                             && <FormControlLabel
@@ -201,8 +210,19 @@ export const Filters = (props) => {
                                         checked={input.checkedProjects.includes(project.projectBestandsname)}
                                         onChange={() => {
                                             dispatch({
-                                                type: input.checkedProjects.includes(project.projectBestandsname) ? "UNCHECK_ITEM" : "CHECK_ITEM",
+                                                type: input.checkedProjects.includes(project.projectBestandsname)
+                                                    ? "UNCHECK_ITEM"
+                                                    : "CHECK_ITEM",
                                                 payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
+                                            });
+                                            dispatch({
+                                                type: "UPDATE_INPUT",
+                                                payload: {
+                                                    field: "checkedProjectsLabels",
+                                                    value: input.checkedProjectsLabels.includes(project.projectLabel)
+                                                        ? [...input.checkedProjectsLabels.filter(projectLabel => projectLabel !== project.projectLabel)]
+                                                        : [...input.checkedProjectsLabels, project.projectLabel]
+                                                }
                                             })
                                         }}
                                         name={project.projectBestandsname}

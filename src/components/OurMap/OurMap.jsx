@@ -2,8 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-    Button, Grid, LinearProgress,
-    Divider, Chip, Tooltip, Table, TableHead, TableBody, TableRow, TableCell
+    Button, Divider, Grid, LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, Tooltip
 } from '@material-ui/core';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
@@ -156,17 +155,19 @@ export const OurMap = () => {
         zoomLevel: 5,
         objectId: 0,
         regionId: 0,
-        searchStr: "Schnurplombe",
+        regionTitle: null,
+        searchStr: "80",
         projectList: [{"projectLabel": "African Archaeology Archive Cologne", "projectBestandsname": "AAArC"},
             {"projectLabel": "Friedrich Rakob’s Bequest", "projectBestandsname": "dai-rom-nara"},
             {"projectLabel": "Syrian Heritage Archive Project", "projectBestandsname": "Syrian-Heritage-Archive-Project"}],
         checkedProjects: [],
-        mode: "objects",
+        checkedProjectsLabels: [],
+        mode: "archaeoSites",
         sitesMode: "",
-        showSearchResults: true,
-        showArchaeoSites: false,
+        showSearchResults: false,
+        showArchaeoSites: true,
         showRelatedObjects: false,
-        chronOntologyTerm: "",
+        chronOntologyTerm: null,
         boundingBoxCorner1: [],
         boundingBoxCorner2: [],
         drawBBox: false,
@@ -275,7 +276,7 @@ export const OurMap = () => {
     }, [dataContext, input.showRelatedObjects]);
 
     useEffect( () => {
-        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.checkedProjects.length!==0||input.chronOntologyTerm!==""
+        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.checkedProjects.length!==0||input.chronOntologyTerm!==null
             ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
             setMapDataObjectsByString(dataObjectsByString);
             console.log("rerender dataObjectsByString!");
@@ -325,9 +326,11 @@ export const OurMap = () => {
                             input={input}
                             regions={regions}
                         />
-                        : <CollapsedFilters
-                            input={input}
-                        />
+                        : (/*summary of active filters when control panel is closed*/
+                            <CollapsedFilters
+                                input={input}
+                            />
+                        )
                     }
                 </Grid>
                 <Grid item className="grid-loading-indicator" xs={12}>
@@ -424,7 +427,7 @@ export const OurMap = () => {
                             {input.showSearchResults
                             && (input.searchStr!==""
                                 || input.projectList.length!==0
-                                || input.chronOntologyTerm!==""
+                                || input.chronOntologyTerm!==null
                                 || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
                             && mapDataObjectsByString
                             && mapDataObjectsByString.entitiesMultiFilter
@@ -435,6 +438,7 @@ export const OurMap = () => {
                                 showRelatedObjects={input.showRelatedObjects}
                             />}
                             {input.showArchaeoSites
+                            && input.sitesMode==="region"
                             && (input.searchStr!=="" || input.regionId!==0)
                             && mapDataSitesByRegion
                             && mapDataSitesByRegion.sitesByRegion
@@ -443,6 +447,7 @@ export const OurMap = () => {
                                 selectedMarker={input.selectedMarker}
                             />}
                             {input.showArchaeoSites
+                            && input.sitesMode!=="region"
                             && (input.searchStr!==""
                                 || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
                             && mapDataArchaeoSites
@@ -485,7 +490,7 @@ export const OurMap = () => {
                                             && (
                                                 input.searchStr!==""
                                                 || input.projectList.length!==0
-                                                || input.chronOntologyTerm!==""
+                                                || input.chronOntologyTerm!==null
                                                 || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
                                             )
                                             && mapDataObjectsByString
@@ -493,6 +498,7 @@ export const OurMap = () => {
                                         )
                                         || (
                                             input.showArchaeoSites
+                                            && input.sitesMode==="region"
                                             && (
                                                 input.searchStr!==""
                                                 || input.regionId!==0
@@ -502,6 +508,7 @@ export const OurMap = () => {
                                         )
                                         || (
                                             input.showArchaeoSites
+                                            && input.sitesMode!=="region"
                                             && (
                                                 input.searchStr!==""
                                                 || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
@@ -680,7 +687,7 @@ export const OurMap = () => {
                                                 {input.showSearchResults
                                                 && (input.searchStr!==""
                                                     || input.projectList.length!==0
-                                                    || input.chronOntologyTerm!==""
+                                                    || input.chronOntologyTerm!==null
                                                     || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
                                                 )
                                                 && mapDataObjectsByString
@@ -744,6 +751,7 @@ export const OurMap = () => {
                                                 )}
                                                 {/* Table row(s) for sites in mapDataSitesByRegion.sitesByRegion */}
                                                 {input.showArchaeoSites
+                                                && input.sitesMode==="region"
                                                 && (
                                                     input.searchStr!==""
                                                     ||input.regionId!==0
@@ -780,6 +788,7 @@ export const OurMap = () => {
                                                 )}
                                                 {/* Table row(s) for sites in mapDataArchaeoSites.archaeologicalSites */}
                                                 {input.showArchaeoSites
+                                                && input.sitesMode!=="region"
                                                 && (
                                                     input.searchStr!==""
                                                     || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
@@ -823,8 +832,8 @@ export const OurMap = () => {
                             : (<Grid className="grid-results-list-collapsed" item>
                                 {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
                                 {input.showSearchResults && mapDataObjectsByString.entitiesMultiFilter && `${mapDataObjectsByString.entitiesMultiFilter.length} results (objects)`}
-                                {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
-                                {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                                {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode==="region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                                {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode!=="region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
                             </Grid>)
                         }
                     </Grid>}
