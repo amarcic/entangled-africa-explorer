@@ -7,3 +7,5 @@ export { OurMap } from './OurMap/OurMap';
 export { ReturnPopup } from './ReturnPopup/ReturnPopup';
 export { CreateMarkers } from './CreateMarkers/CreateMarkers';
 export { ReturnMarker } from './ReturnMarker/ReturnMarker';
+export { Filters } from './Filters/Filters'
+export { CollapsedFilters } from './CollapsedFilters/CollapsedFilters'
