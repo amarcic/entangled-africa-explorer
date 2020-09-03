@@ -10,6 +10,17 @@ export const Filters = (props) => {
     //console.log("Filters...")
     const { chronOntologyTerms, dispatch, input, regions } = props;
 
+    const updateBBoxValue = (event) => {
+        dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
+        // only create bbox if entered values have valid format (floats with at least one decimal place)
+        if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
+            dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
+        }
+        else {
+            dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
+        }
+    }
+
 
     return (
         <Grid className="grid-map-controls-expanded" item container direction="row" spacing={2}>
@@ -134,7 +145,7 @@ export const Filters = (props) => {
                         value={input.boundingBoxCorner1}
                         placeholder="North, East decimal degrees"
                         label="North, East decimal degrees"
-                        onChange={(event) => {
+                        /*onChange={(event) => {
                             dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
                             // only create bbox if entered values have valid format (floats with at least one decimal place)
                             if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
@@ -143,7 +154,8 @@ export const Filters = (props) => {
                             else {
                                 dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
                             }
-                        }}
+                        }}*/
+                        onChange={updateBBoxValue}
                         InputProps={{
                             endAdornment: (
                                 input.boundingBoxCorner1.length!==0
@@ -167,18 +179,17 @@ export const Filters = (props) => {
                         value={input.boundingBoxCorner2}
                         placeholder="South, West decimal degrees"
                         label="South, West decimal degrees"
-                        onChange={(event) => {
+                        /*onChange={(event) => {
                             dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
-
                             // only create bbox if entered values have valid format (floats with at least one decimal place)
                             if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
                                 dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
                             }
                             else {
                                 dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
-
                             }
-                        }}
+                        }}*/
+                        onChange={updateBBoxValue}
                         InputProps={{
                             endAdornment: (
                                 input.boundingBoxCorner2.length!==0

@@ -244,8 +244,8 @@ export const OurMap = () => {
     };
 
     function openPopup(index) {
-        console.log("openPopup...");
-        console.log("selected index / marker:", index);
+        //console.log("openPopup...");
+        //console.log("selected index / marker:", index);
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
@@ -256,7 +256,7 @@ export const OurMap = () => {
         else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
         else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
         const newMapBounds = latLngBounds();
-        markers.map((item) => {
+        markers.map( (item) => {
             if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
             else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
                 nestedItem &&
@@ -276,8 +276,8 @@ export const OurMap = () => {
     }, [dataContext, input.showRelatedObjects]);
 
     useEffect( () => {
-        if (dataObjectsByString && input.showSearchResults && (input.searchStr!==""||input.checkedProjects.length!==0||input.chronOntologyTerm!==null
-            ||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+        if (dataObjectsByString && input.showSearchResults && (input.searchStr || input.checkedProjects.length!==0 || input.chronOntologyTerm
+            ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjectsByString(dataObjectsByString);
             console.log("rerender dataObjectsByString!");
             console.log("rerender dataObjectsByString --> dataObjectsByString: ", dataObjectsByString);
@@ -286,7 +286,7 @@ export const OurMap = () => {
     }, [dataObjectsByString, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
 
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && input.sitesMode!=="region" && (input.searchStr!==""||(input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0))) {
+        if (dataArchaeoSites && input.showArchaeoSites && input.sitesMode!=="region" && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
@@ -295,7 +295,7 @@ export const OurMap = () => {
     }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && input.sitesMode==="region" && (input.searchStr!==""||(input.regionId!==0))) {
+        if (dataSitesByRegion && input.showArchaeoSites && input.sitesMode==="region" && (input.searchStr || input.regionId)) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
@@ -304,10 +304,48 @@ export const OurMap = () => {
     }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
 
 
+    /* Conditions used to determine whether to render certain data (objects, related objects, sites, sites by region) */
+    /* TODO: better names? use a function to check this instead? */
+    const renderingConditionObjects =
+        // this mode is selected
+        input.showSearchResults
+        // at least one relevant input not empty
+        && (input.searchStr || input.projectList.length!==0 || input.chronOntologyTerm
+        || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+        // query result not empty
+        && mapDataObjectsByString && mapDataObjectsByString.entitiesMultiFilter;
+
+    const renderingConditionRelatedObjects =
+        // this mode is selected
+        input.showRelatedObjects
+        // relevant input not empty
+        && input.objectId
+        // query result not empty
+        && mapDataContext && mapDataContext.entity;
+
+    const renderingConditionSites =
+        // this mode is selected
+        input.showArchaeoSites && input.sitesMode!=="region"
+        // at least one relevant input not empty
+        && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+        // query result not empty
+        && mapDataArchaeoSites && mapDataArchaeoSites.archaeologicalSites;
+
+    const renderingConditionSitesByRegion =
+        // this mode is selected
+        input.showArchaeoSites && input.sitesMode==="region"
+        // at least one relevant input not empty
+        && (input.searchStr || input.regionId)
+        // query result not empty
+        && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
+
+
     return(
         <div>
             <h2>{t('Map')}</h2>
+
             <Grid className="grid-outer" container direction="row" spacing={1}>
+
                 <Grid className="grid-map-controls" item container direction="column" xs={12}>
                     <Divider/>
                     <Button
@@ -319,6 +357,7 @@ export const OurMap = () => {
                         <h3>Filters</h3>
                         {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                     </Button>
+                    {/* Map controls = filters */}
                     {input.mapControlsExpanded
                         ? <Filters
                             chronOntologyTerms={chronOntologyTerms}
@@ -333,6 +372,7 @@ export const OurMap = () => {
                         )
                     }
                 </Grid>
+
                 <Grid item className="grid-loading-indicator" xs={12}>
                     {/*{input.showSearchResults && <span>Showing search results</span>}
                     {input.showRelatedObjects && <span>Showing related objects of </span>}
@@ -400,10 +440,7 @@ export const OurMap = () => {
                         />}
 
                         {/* Markers */}
-                        {input.showRelatedObjects
-                        && input.objectId
-                        && mapDataContext
-                        && mapDataContext.entity
+                        {renderingConditionRelatedObjects
                         && mapDataContext.entity.spatial
                         && <CreateMarkers
                             data={mapDataContext.entity.spatial}
@@ -412,10 +449,7 @@ export const OurMap = () => {
                             showRelatedObjects={input.showRelatedObjects}
                         />}
                         {/*<MarkerClusterGroup>*/ /*TODO: find a way to use marker clustering while still being able to open popups inside cluster*/}
-                            {input.showRelatedObjects
-                            && input.objectId
-                            && mapDataContext
-                            && mapDataContext.entity
+                            {renderingConditionRelatedObjects
                             && mapDataContext.entity.related
                             && <CreateMarkers
                                 data={mapDataContext.entity.related}
@@ -424,34 +458,19 @@ export const OurMap = () => {
                                 showRelatedObjects={input.showRelatedObjects}
                                 //opacity={0.5}
                             />}
-                            {input.showSearchResults
-                            && (input.searchStr!==""
-                                || input.projectList.length!==0
-                                || input.chronOntologyTerm!==null
-                                || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
-                            && mapDataObjectsByString
-                            && mapDataObjectsByString.entitiesMultiFilter
+                            {renderingConditionObjects
                             && <CreateMarkers
                                 data={mapDataObjectsByString.entitiesMultiFilter}
                                 selectedMarker={input.selectedMarker}
                                 handleRelatedObjects={handleRelatedObjects}
                                 showRelatedObjects={input.showRelatedObjects}
                             />}
-                            {input.showArchaeoSites
-                            && input.sitesMode==="region"
-                            && (input.searchStr!=="" || input.regionId!==0)
-                            && mapDataSitesByRegion
-                            && mapDataSitesByRegion.sitesByRegion
+                            {renderingConditionSitesByRegion
                             && <CreateMarkers
                                 data={mapDataSitesByRegion.sitesByRegion}
                                 selectedMarker={input.selectedMarker}
                             />}
-                            {input.showArchaeoSites
-                            && input.sitesMode!=="region"
-                            && (input.searchStr!==""
-                                || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
-                            && mapDataArchaeoSites
-                            && mapDataArchaeoSites.archaeologicalSites
+                            {renderingConditionSites
                             && <CreateMarkers
                                 data={mapDataArchaeoSites.archaeologicalSites}
                                 selectedMarker={input.selectedMarker}
@@ -477,46 +496,7 @@ export const OurMap = () => {
                         {input.resultsListExpanded
                             ? (<Grid className="grid-results-list-expanded" item>
                                 {/* Conditions for rendering a table */
-                                    (
-                                        (
-                                            input.showRelatedObjects
-                                            && input.objectId
-                                            && mapDataContext
-                                            && mapDataContext.entity
-                                        )
-                                        ||
-                                        (
-                                            input.showSearchResults
-                                            && (
-                                                input.searchStr!==""
-                                                || input.projectList.length!==0
-                                                || input.chronOntologyTerm!==null
-                                                || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
-                                            )
-                                            && mapDataObjectsByString
-                                            && mapDataObjectsByString.entitiesMultiFilter
-                                        )
-                                        || (
-                                            input.showArchaeoSites
-                                            && input.sitesMode==="region"
-                                            && (
-                                                input.searchStr!==""
-                                                || input.regionId!==0
-                                            )
-                                            && mapDataSitesByRegion
-                                            && mapDataSitesByRegion.sitesByRegion
-                                        )
-                                        || (
-                                            input.showArchaeoSites
-                                            && input.sitesMode!=="region"
-                                            && (
-                                                input.searchStr!==""
-                                                || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
-                                            )
-                                            && mapDataArchaeoSites
-                                            && mapDataArchaeoSites.archaeologicalSites
-                                        )
-                                    )
+                                    (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
                                         ? /* Yes, render a table */
                                         (<Table size="small" stickyHeader aria-label="sticky table">
                                             {/* Table header */}
@@ -539,19 +519,13 @@ export const OurMap = () => {
                                             {/* Table body */}
                                             <TableBody>
                                                 {/* Table row(s) for selected object */}
-                                                {input.showRelatedObjects
-                                                && input.objectId
-                                                && mapDataContext
-                                                && mapDataContext.entity
+                                                {renderingConditionRelatedObjects
                                                 && <TableRow>
                                                     <TableCell align="center" colSpan={4}>
                                                         Selected object:
                                                     </TableCell>
                                                 </TableRow>}
-                                                {input.showRelatedObjects
-                                                && input.objectId
-                                                && mapDataContext
-                                                && mapDataContext.entity
+                                                {renderingConditionRelatedObjects
                                                 && mapDataContext.entity.spatial
                                                 && mapDataContext.entity.spatial.map( (place, indexPlace) => {
                                                         return (place === null
@@ -608,20 +582,14 @@ export const OurMap = () => {
                                                     }
                                                 )}
                                                 {/* Table row(s) for related objects */}
-                                                {input.showRelatedObjects
-                                                && input.objectId
-                                                && mapDataContext
-                                                && mapDataContext.entity
+                                                {renderingConditionRelatedObjects
                                                 && mapDataContext.entity.related
                                                 && <TableRow>
                                                     <TableCell align="center" colSpan={4}>
                                                         Related objects:
                                                     </TableCell>
                                                 </TableRow>}
-                                                {input.showRelatedObjects
-                                                && input.objectId
-                                                && mapDataContext
-                                                && mapDataContext.entity
+                                                {renderingConditionRelatedObjects
                                                 && mapDataContext.entity.related
                                                 && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
                                                         return ( relatedObj
@@ -684,14 +652,7 @@ export const OurMap = () => {
                                                     }
                                                 )}
                                                 {/* Table row(s) for objects in mapDataObjectsByString.entitiesMultiFilter */}
-                                                {input.showSearchResults
-                                                && (input.searchStr!==""
-                                                    || input.projectList.length!==0
-                                                    || input.chronOntologyTerm!==null
-                                                    || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)
-                                                )
-                                                && mapDataObjectsByString
-                                                && mapDataObjectsByString.entitiesMultiFilter
+                                                {renderingConditionObjects
                                                 && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
                                                         return entity && entity.spatial && entity.spatial.map( (place, indexPlace) => {
                                                                 return (place === null
@@ -750,14 +711,7 @@ export const OurMap = () => {
                                                     }
                                                 )}
                                                 {/* Table row(s) for sites in mapDataSitesByRegion.sitesByRegion */}
-                                                {input.showArchaeoSites
-                                                && input.sitesMode==="region"
-                                                && (
-                                                    input.searchStr!==""
-                                                    ||input.regionId!==0
-                                                )
-                                                && mapDataSitesByRegion
-                                                && mapDataSitesByRegion.sitesByRegion
+                                                {renderingConditionSitesByRegion
                                                 && mapDataSitesByRegion.sitesByRegion.map( (site, indexSite) => {
                                                         return (site
                                                             && <TableRow key={indexSite}>
@@ -787,15 +741,8 @@ export const OurMap = () => {
                                                     }
                                                 )}
                                                 {/* Table row(s) for sites in mapDataArchaeoSites.archaeologicalSites */}
-                                                {input.showArchaeoSites
-                                                && input.sitesMode!=="region"
-                                                && (
-                                                    input.searchStr!==""
-                                                    || (input.boundingBoxCorner1.length!==0&&input.boundingBoxCorner2.length!==0)
-                                                )
-                                                && mapDataArchaeoSites
-                                                && mapDataArchaeoSites.archaeologicalSites
-                                                && mapDataArchaeoSites.archaeologicalSites.map((site, indexSite) => {
+                                                {renderingConditionSites
+                                                && mapDataArchaeoSites.archaeologicalSites.map( (site, indexSite) => {
                                                         return (site
                                                             && <TableRow key={indexSite}>
                                                                 <TableCell>

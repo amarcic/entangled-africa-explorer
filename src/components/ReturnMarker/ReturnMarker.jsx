@@ -10,7 +10,7 @@ export const ReturnMarker = (props) => {
 
     useEffect(() => {
         if (openPopup) {
-            console.log("Now the popup for marker", item.name, "should open...");
+            //console.log("Now the popup for marker", item.name, "should open...");
             markerRef.current.leafletElement.openPopup();
         }
     }, [openPopup]);
