@@ -4,16 +4,16 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import React from "react";
 
 export const ResultsTableRow = (props) => {
-    const { item, key, openPopup } = props;
+    const { item, index, openPopup } = props;
 
     return (
-        <TableRow key={key}>
+        <TableRow>
             <TableCell>
                 {item.coordinates
                     ? (<Tooltip title="Show on map" arrow placement="right">
                         <RoomIcon
                             fontSize="small"
-                            onClick={() => openPopup(key)}
+                            onClick={() => openPopup(index)}
                         />
                     </Tooltip>)
                     : "no coordinates"}

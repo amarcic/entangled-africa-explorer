@@ -232,6 +232,7 @@ export const ResultsTable = (props) => {
                             && <ResultsTableRow
                                 item={item}
                                 key={index}
+                                index={index}
                             />
                         )
                     }
@@ -243,6 +244,7 @@ export const ResultsTable = (props) => {
                             && <ResultsTableRow
                                 item={item}
                                 key={index}
+                                index={index}
                             />
                         )
                     }
