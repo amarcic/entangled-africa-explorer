@@ -233,6 +233,7 @@ export const ResultsTable = (props) => {
                                 item={item}
                                 key={index}
                                 index={index}
+                                openPopup={openPopup}
                             />
                         )
                     }
@@ -245,6 +246,7 @@ export const ResultsTable = (props) => {
                                 item={item}
                                 key={index}
                                 index={index}
+                                openPopup={openPopup}
                             />
                         )
                     }
