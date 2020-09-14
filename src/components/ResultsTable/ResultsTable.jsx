@@ -1,8 +1,6 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from "@material-ui/core";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import RoomIcon from "@material-ui/icons/Room";
-import { ResultsTableRow } from '..'
+import {Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
+import {ResultsTableRow} from '..'
 
 export const ResultsTable = (props) => {
     const {
@@ -13,7 +11,8 @@ export const ResultsTable = (props) => {
 
     return (
         <Table size="small" stickyHeader aria-label="sticky table">
-            {/* Table header */}
+
+            {/* Table head */}
             <TableHead>
                 <TableRow>
                     <TableCell>
@@ -30,74 +29,37 @@ export const ResultsTable = (props) => {
                     </TableCell>
                 </TableRow>
             </TableHead>
+
             {/* Table body */}
             <TableBody>
 
-                {/* TODO: extract to ResultsTableRow? */}
-                {/* Table row(s) for selected object */}
+                {/* Headline over selected objects */}
                 {renderingConditionRelatedObjects
                 && <TableRow>
                     <TableCell align="center" colSpan={4}>
                         Selected object:
                     </TableCell>
                 </TableRow>}
+                {/* Table row(s) for selected object */}
                 {renderingConditionRelatedObjects
                 && mapDataContext.entity.spatial
                 && mapDataContext.entity.spatial.map( (place, indexPlace) => {
-                        return (place === null
-                                ? (mapDataContext.entity
-                                    && <TableRow>
-                                        <TableCell>
-                                            (No coordinates)
-                                        </TableCell>
-                                        <TableCell>
-                                            {mapDataContext.entity.name}
-                                        </TableCell>
-                                        <TableCell>
-
-                                        </TableCell>
-                                        <TableCell>
-                                            <Tooltip
-                                                title="View original entry in iDAI.world"
-                                                arrow placement="right">
-                                                <a href={`https://arachne.dainst.org/entity/${mapDataContext.entity.identifier}`}
-                                                   target="_blank"
-                                                   rel="noreferrer"><ExitToAppIcon/></a>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>)
-                                : (place
-                                    && <TableRow key={indexPlace}>
-                                        <TableCell>
-                                            {place.coordinates
-                                                ? (<Tooltip title="Show on map" arrow placement="right">
-                                                    <RoomIcon
-                                                        fontSize="small"
-                                                        onClick={() => openPopup(indexPlace)}
-                                                    />
-                                                </Tooltip>)
-                                                : "(No coordinates)"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {mapDataContext.entity.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {place.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Tooltip
-                                                title="View original entry in iDAI.world"
-                                                arrow placement="right">
-                                                <a href={`https://arachne.dainst.org/entity/${mapDataContext.entity.identifier}`}
-                                                   target="_blank"
-                                                   rel="noreferrer"><ExitToAppIcon/></a>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>)
+                        return (
+                            //"mapDataContext.entity &&" or "place &&" needed?
+                            <ResultsTableRow
+                                key={indexPlace}
+                                index={indexPlace}
+                                item={mapDataContext.entity}
+                                itemCoordinates={place === null ? null : place.coordinates}
+                                itemLocation={place === null ? null : place.name}
+                                mode={"objects"}
+                                openPopup={openPopup}
+                            />
                         )
                     }
                 )}
-                {/* Table row(s) for related objects */}
+
+                {/* Headlines over related objects */}
                 {renderingConditionRelatedObjects
                 && mapDataContext.entity.related
                 && <TableRow>
@@ -105,60 +67,24 @@ export const ResultsTable = (props) => {
                         Related objects:
                     </TableCell>
                 </TableRow>}
-                {renderingConditionRelatedObjects && mapDataContext.entity.related && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
-                        return ( relatedObj
+
+                {/* Table row(s) for related objects */}
+                {renderingConditionRelatedObjects
+                && mapDataContext.entity.related
+                && mapDataContext.entity.related.map( (relatedObj, indexRelatedObj) => {
+                        return (relatedObj
                             && relatedObj.spatial
                             && relatedObj.spatial.map( (place, indexPlace) => {
-                                    return (place === null
-                                            ? (relatedObj
-                                                && <TableRow key={indexRelatedObj + '.' + indexPlace}>
-                                                    <TableCell>
-                                                        (No coordinates)
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {relatedObj.name}
-                                                    </TableCell>
-                                                    <TableCell>
-
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Tooltip
-                                                            title="View original entry in iDAI.world"
-                                                            arrow placement="right">
-                                                            <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`}
-                                                               target="_blank"
-                                                               rel="noreferrer"><ExitToAppIcon/></a>
-                                                        </Tooltip>
-                                                    </TableCell>
-                                                </TableRow>)
-                                            : (place
-                                                && <TableRow key={indexRelatedObj + '.' + indexPlace}>
-                                                    <TableCell>
-                                                        {place.coordinates
-                                                            ? (<Tooltip title="Show on map" arrow placement="right">
-                                                                <RoomIcon
-                                                                    fontSize="small"
-                                                                    onClick={() => openPopup(indexRelatedObj + '.' + indexPlace)}
-                                                                />
-                                                            </Tooltip>)
-                                                            : "(No coordinates)"}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {relatedObj.name}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {place.name}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Tooltip
-                                                            title="View original entry in iDAI.world"
-                                                            arrow placement="right">
-                                                            <a href={`https://arachne.dainst.org/entity/${relatedObj.identifier}`}
-                                                               target="_blank"
-                                                               rel="noreferrer"><ExitToAppIcon/></a>
-                                                        </Tooltip>
-                                                    </TableCell>
-                                                </TableRow>)
+                                    return (
+                                        //"relatedObj &&" or "place &&" needed?
+                                        <ResultsTableRow
+                                            key={`${indexRelatedObj}.${indexPlace}`}
+                                            index={`${indexRelatedObj}.${indexPlace}`}
+                                            item={relatedObj}
+                                            itemLocation={place && place.name}
+                                            mode={"objects"}
+                                            openPopup={openPopup}
+                                        />
                                     )
                                 }
                             )
@@ -166,62 +92,25 @@ export const ResultsTable = (props) => {
                     }
                 )}
 
-                {/* TODO: extract to ResultsTableRow? */}
                 {/* Table row(s) for objects in mapDataObjectsByString.entitiesMultiFilter */}
                 {renderingConditionObjects && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
-                        return entity && entity.spatial && entity.spatial.map( (place, indexPlace) => {
-                                return (place === null
-                                        ? (entity
-                                            && <TableRow key={indexEntity}>
-                                                <TableCell>
-                                                    (No coordinates)
-                                                </TableCell>
-                                                <TableCell>
-                                                    {entity.name}
-                                                </TableCell>
-                                                <TableCell>
-
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Tooltip
-                                                        title="View original entry in iDAI.world"
-                                                        arrow placement="right">
-                                                        <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
-                                                           target="_blank"
-                                                           rel="noreferrer"><ExitToAppIcon/></a>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>)
-                                        : (place
-                                            && <TableRow
-                                                key={`${indexEntity}.${indexPlace}`}>
-                                                <TableCell>
-                                                    {<Tooltip title="Show on map" arrow
-                                                              placement="right">
-                                                        <RoomIcon
-                                                            fontSize="small"
-                                                            onClick={() => openPopup(indexEntity + '.' + indexPlace)}
-                                                        />
-                                                    </Tooltip>}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {entity.name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {place.name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Tooltip
-                                                        title="View original entry in iDAI.world"
-                                                        arrow placement="right">
-                                                        <a href={`https://arachne.dainst.org/entity/${entity.identifier}`}
-                                                           target="_blank"
-                                                           rel="noreferrer"><ExitToAppIcon/></a>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>)
-                                )
-                            }
+                        return (entity
+                            && entity.spatial
+                            && entity.spatial.map( (place, indexPlace) => {
+                                    return (
+                                        //"entity &&" or "place &&" needed?
+                                        <ResultsTableRow
+                                            key={place === null ? indexEntity : `${indexEntity}.${indexPlace}`}
+                                            index={place === null ? indexEntity : `${indexEntity}.${indexPlace}`}
+                                            item={entity}
+                                            itemCoordinates={place && place.coordinates}
+                                            itemLocation={place && place.name}
+                                            mode={"objects"}
+                                            openPopup={openPopup}
+                                        />
+                                    )
+                                }
+                            )
                         )
                     }
                 )}
@@ -230,6 +119,7 @@ export const ResultsTable = (props) => {
                 {renderingConditionSitesByRegion && mapDataSitesByRegion.sitesByRegion.map( (item, index) => {
                         return (item
                             && <ResultsTableRow
+                                mode={"archaeoSites"}
                                 item={item}
                                 key={index}
                                 index={index}
@@ -243,6 +133,7 @@ export const ResultsTable = (props) => {
                 {renderingConditionSites && mapDataArchaeoSites.archaeologicalSites.map( (item, index) => {
                         return (item
                             && <ResultsTableRow
+                                mode={"archaeoSites"}
                                 item={item}
                                 key={index}
                                 index={index}
