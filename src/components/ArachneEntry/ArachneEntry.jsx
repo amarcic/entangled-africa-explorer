@@ -29,5 +29,5 @@ export const ArachneEntry = (props) => {
                 </TableBody>
             </Table>
         </React.Fragment>
-    );
+    )
 }
