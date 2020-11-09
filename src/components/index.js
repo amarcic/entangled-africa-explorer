@@ -4,6 +4,8 @@
 export { ArachneEntry } from './ArachneEntry/ArachneEntry'
 export { CollapsedFilters } from './CollapsedFilters/CollapsedFilters'
 export { CreateMarkers } from './CreateMarkers/CreateMarkers';
+export { CreateTimelineAxis } from './CreateTimelineAxis/CreateTimelineAxis';
+export { CreateTimelineObjects } from './CreateTimelineObjects/CreateTimelineObjects';
 export { Filters } from './Filters/Filters'
 export { GazetteerEntry } from './GazetteerEntry/GazetteerEntry'
 //export { HelloComputerButton } from './HelloComputerButton/HelloComputerButton';
@@ -14,3 +16,4 @@ export { ResultsTable } from './ResultsTable/ResultsTable'
 export { ResultsTableRow } from './ResultsTableRow/ResultsTableRow'
 export { ReturnMarker } from './ReturnMarker/ReturnMarker';
 export { ReturnPopup } from './ReturnPopup/ReturnPopup';
+export { ReturnTimelineObject } from './ReturnTimelineObject/ReturnTimelineObject';
