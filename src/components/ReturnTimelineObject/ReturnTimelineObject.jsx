@@ -14,19 +14,20 @@ export const ReturnTimelineObject = (props) => {
             //offset the rects along the y-axis using the index value; TODO: find better solution to avoid overlapping
             ? <g key={"timespan_" + index + "_" + timespanIndex}>
                 <rect
-                    x={datingSpan[0]}
-                    y={index * 10}
+                    x={timespan[0]}
+                    y={index * 20 + 10}
                     width={calculatedWidth}
-                    height="10"
-                    strokeWidth="1"
-                    stroke="black"
-                    rx="2"
-                    ry="2"
-                    fill="gold"
+                    height="16"
+                    rx="4"
+                    ry="4"
+                    fill={color}
+                    stroke={color}
+                    strokeWidth={whichTimespan === "datingSpan" ? "1" : "10"}
+                    opacity="0.5"
                 />
                 <text
-                    x={datingSpan[0]}
-                    y={index * 10 + 10}
+                    x={timespan[0]}
+                    y={index * 20 + 23}
                     fill="black"
                 >
                     {label}
@@ -35,16 +36,17 @@ export const ReturnTimelineObject = (props) => {
             //if the width of the rect would be 0 because timespan[0] === timespan[1], draw a circle instead
             : <g key={"datingSpan_" + index + "_" + timespanIndex}>
                 <circle
-                    cx={datingSpan[0]}
-                    cy={index * 10}
-                    r="5"
-                    strokeWidth="1"
-                    stroke="black"
-                    fill="gold"
+                    cx={timespan[0]}
+                    cy={index * 20 + 20}
+                    r="8"
+                    fill={color}
+                    stroke={color}
+                    strokeWidth={whichTimespan === "datingSpan" ? "1" : "10"}
+                    opacity="0.5"
                 />
                 <text
-                    x={datingSpan[0]}
-                    y={index * 10 + 10}
+                    x={timespan[0]}
+                    y={index * 20 + 23}
                     fill="black"
                 >
                     {label}
