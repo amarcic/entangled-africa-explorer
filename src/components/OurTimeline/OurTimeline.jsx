@@ -93,10 +93,9 @@ export const OurTimeline = () => {
                                 1000`
                                 : "0 0 1000 1000"
                         }
-                        //style={{ border: "2px solid gold" }}
                     >
 
-                        {/*top axis*/
+                        {//top axis
                             timeRangeOfTimelineData
                             && <g>
                                 <CreateTimelineAxis
@@ -106,33 +105,39 @@ export const OurTimeline = () => {
                                 />
                             </g>}
 
-                        {/*TODO: not solved well so far*/
-                            sortedTimelineData && <g
-                                //move down along y axis by 50
-                                transform="translate(0, 50)"
-                            >
-                                <CreateTimelineObjects
-                                    color="red"
-                                    data={sortedTimelineData}
-                                    whichTimespan="temporal"
-                                />
-                            </g>}
+                        <g
+                            transform="translate(0, 50)"
+                        >
+                            {//timeline objects made from iDAI.chronontology periods' data //TODO: not solved well so far
+                                sortedTimelineData && <g
+                                    //move down along y axis by 50
+                                    //transform="translate(0, 50)"
+                                >
+                                    <CreateTimelineObjects
+                                        color="red"
+                                        data={sortedTimelineData}
+                                        whichTimespan="temporal"
+                                    />
+                                </g>}
 
-                        {/*timeline objects (rects or circles) made from iDAI.objects entities' data*/
-                            sortedTimelineData && <g
-                                //move down along y axis by 50
-                                transform="translate(0, 50)"
-                            >
-                                <CreateTimelineObjects
-                                    color="gold"
-                                    data={sortedTimelineData}
-                                    whichTimespan="datingSpan"
-                                />
-                            </g>}
+                            {//timeline objects (rects or circles) made from iDAI.objects entities' data
+                                sortedTimelineData && <g
+                                    //move down along y axis by 50
+                                    //transform="translate(0, 50)"
+                                >
+                                    <CreateTimelineObjects
+                                        color="gold"
+                                        data={sortedTimelineData}
+                                        whichTimespan="datingSpan"
+                                    />
+                                </g>}
+                        </g>
 
-                        {/*bottom axis*/
+                        {//bottom axis
                             timeRangeOfTimelineData
-                            && <g>
+                            && <g
+                                transform="translate(0, 950)"
+                            >
                                 <CreateTimelineAxis
                                     domain={timeRangeOfTimelineData}
                                     range={timeRangeOfTimelineData}

@@ -29,13 +29,13 @@ export const CreateTimelineAxis = (props) => {
             <path
                 d={position === "top"
                     ? [
-                        "M", range[0], 25,
+                        "M", range[0], 35,
                         "v", 10,
                         "H", range[1],
                         "v", -10
                     ].join(" ")
                     : [
-                        "M", range[0], 950,
+                        "M", range[0], 15,
                         "v", -10,
                         "H", range[1],
                         "v", 10
@@ -44,45 +44,25 @@ export const CreateTimelineAxis = (props) => {
                 stroke="black"
             />
             {ticks.map(({ value, xOffset }) => (
-                position === "top"
-                    ? <g
+                <g
+                    key={value}
+                    transform= {position === "top" ? `translate(${xOffset}, 35)` : `translate(${xOffset}, 5)`}
+                >
+                    <line
+                        y2="10"
+                        stroke="black"
+                    />
+                    <text
                         key={value}
-                        transform={`translate(${xOffset}, 25)`}
+                        style={{
+                            fontSize: "14px",
+                            textAnchor: "middle",
+                            transform: position === "top" ? "translateY(-5px)" : "translateY(25px)"
+                        }}
                     >
-                        <line
-                            y2="10"
-                            stroke="black"
-                        />
-                        <text
-                            key={value}
-                            style={{
-                                fontSize: "14px",
-                                textAnchor: "middle",
-                                transform: "translateY(-5px)"
-                            }}
-                        >
-                            { value < 0 ? -value + "BC" : value !== 0 ? value + " AD" : 0 }
-                        </text>
-                    </g>
-                    : <g
-                        key={value}
-                        transform={`translate(${xOffset}, 940)`}
-                    >
-                        <line
-                            y2="10"
-                            stroke="black"
-                        />
-                        <text
-                            key={value}
-                            style={{
-                                fontSize: "14px",
-                                textAnchor: "middle",
-                                transform: "translateY(30px)"
-                            }}
-                        >
-                            { value < 0 ? -value + "BC" : value !== 0 ? value + " AD" : 0 }
-                        </text>
-                    </g>
+                        { value < 0 ? -value + "BC" : value !== 0 ? value + " AD" : 0 }
+                    </text>
+                </g>
             ))}
         </>
     );
