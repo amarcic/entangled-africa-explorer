@@ -20,7 +20,16 @@ export const OurTimeline = () => {
                 name
                 type
                 datingSpan
-                periodName
+                temporal {
+                    title
+                    types
+                    senses(typeOfSense: political) {
+                        title
+                        identifier
+                        begin
+                        end
+                    }
+                }
             }
         }
     `;
@@ -88,44 +97,48 @@ export const OurTimeline = () => {
                     >
 
                         {/*top axis*/
-                        timeRangeOfTimelineData
-                        && <g>
-                            <CreateTimelineAxis
-                            domain={timeRangeOfTimelineData}
-                            range={timeRangeOfTimelineData}
-                            position="top"
-                        />
-                        </g>}
+                            timeRangeOfTimelineData
+                            && <g>
+                                <CreateTimelineAxis
+                                    domain={timeRangeOfTimelineData}
+                                    range={timeRangeOfTimelineData}
+                                    position="top"
+                                />
+                            </g>}
 
-                        {/*timeline objects (rects or circles) made from iDAI.objects entities' data*/
-                        sortedTimelineData && <g
-                            //move down along y axis by 50
-                            transform="translate(0, 50)"
-                        >
-                            <CreateTimelineObjects
-                                data={sortedTimelineData}
-                            />
-                        </g>}
-
-                        {/*TODO: timeline objects (tbd) made from iDAI.chronontology periods' data*/
-                            /*data && <g
+                        {/*TODO: not solved well so far*/
+                            sortedTimelineData && <g
                                 //move down along y axis by 50
                                 transform="translate(0, 50)"
                             >
                                 <CreateTimelineObjects
-                                    data={data}
+                                    color="red"
+                                    data={sortedTimelineData}
+                                    whichTimespan="temporal"
                                 />
-                            </g>*/}
+                            </g>}
+
+                        {/*timeline objects (rects or circles) made from iDAI.objects entities' data*/
+                            sortedTimelineData && <g
+                                //move down along y axis by 50
+                                transform="translate(0, 50)"
+                            >
+                                <CreateTimelineObjects
+                                    color="gold"
+                                    data={sortedTimelineData}
+                                    whichTimespan="datingSpan"
+                                />
+                            </g>}
 
                         {/*bottom axis*/
-                        timeRangeOfTimelineData
-                        && <g>
-                            <CreateTimelineAxis
-                                domain={timeRangeOfTimelineData}
-                                range={timeRangeOfTimelineData}
-                                position="bottom"
-                            />
-                        </g>}
+                            timeRangeOfTimelineData
+                            && <g>
+                                <CreateTimelineAxis
+                                    domain={timeRangeOfTimelineData}
+                                    range={timeRangeOfTimelineData}
+                                    position="bottom"
+                                />
+                            </g>}
                     </svg>
                 </Grid>
             </Grid>
