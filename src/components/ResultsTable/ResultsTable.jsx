@@ -5,7 +5,7 @@ import {ResultsTableRow} from '..'
 export const ResultsTable = (props) => {
     const {
         renderingConditionObjects, renderingConditionRelatedObjects, renderingConditionSites, renderingConditionSitesByRegion,
-        mapDataObjectsByString, mapDataContext, mapDataArchaeoSites, mapDataSitesByRegion,
+        mapDataObjects, mapDataContext, mapDataArchaeoSites, mapDataSitesByRegion,
         openPopup
     } = props;
 
@@ -92,8 +92,8 @@ export const ResultsTable = (props) => {
                     }
                 )}
 
-                {/* Table row(s) for objects in mapDataObjectsByString.entitiesMultiFilter */}
-                {renderingConditionObjects && mapDataObjectsByString.entitiesMultiFilter.map( (entity, indexEntity) => {
+                {/* Table row(s) for objects in mapDataObjects.entitiesMultiFilter */}
+                {renderingConditionObjects && mapDataObjects.entitiesMultiFilter.map( (entity, indexEntity) => {
                         return (entity
                             && entity.spatial
                             && entity.spatial.map( (place, indexPlace) => {

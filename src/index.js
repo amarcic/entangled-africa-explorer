@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import ReactDOM from 'react-dom';
-//import { HelloComputerButton } from './components/';
-import { PageHeader, OurMap, OurTimeline } from './components/';
+import {PageHeader, AppContent} from './components/';
 import { LabelsContext, SettingsContext } from './Contexts';
 import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
@@ -13,7 +12,6 @@ import Container from '@material-ui/core/Container';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
-//import gql from 'graphql-tag';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 const App = () => {
@@ -33,22 +31,6 @@ const App = () => {
         link
     });
 
-    //example to check if fetching works
-    /*client
-        .query({
-            query: gql`
-            query giveInfo {
-                entity(id: 1189042) {
-                    name 
-                    temporalArachne {
-                        begin
-                    }
-                }
-            }
-            `
-        }).then(result => console.log(result));
-     */
-
     return(
         <SettingsContext.Provider value={settings}>
             <CssBaseline />
@@ -56,12 +38,11 @@ const App = () => {
                 <PageHeader />
                 <h1>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h1>
                 <ApolloProvider client={client}>
-                    <OurTimeline/>
-                    <OurMap/>
+                    <AppContent/>
                 </ApolloProvider>
             </Container>
         </SettingsContext.Provider>
-        );
-    };
+    );
+};
 
 ReactDOM.render(<App />, document.getElementById('app' ));

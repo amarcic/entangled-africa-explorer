@@ -1,51 +1,14 @@
-import React, {useEffect, useMemo, useState} from "react";
-import {Grid} from "@material-ui/core";
-import {useTranslation} from "react-i18next";
-import {useQuery} from "@apollo/react-hooks";
-import gql from 'graphql-tag';
+import React from "react";
+import { Grid } from "@material-ui/core";
+import Skeleton from "@material-ui/lab/Skeleton";
+import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 
 
-export const OurTimeline = () => {
+export const OurTimeline = (props) => {
+    const { timelineData } = props;
 
     const { t, i18n } = useTranslation();
-
-    const input = {searchStr: "kopf"};
-    //const input = {searchStr: "prähistorisch"}; //TODO: result looks ugly/unreadable
-
-    const GET_TIMELINE_DATA = gql`
-        query getTimelineData($searchTerm: String) {
-            entitiesByString(searchString: $searchTerm) {
-                identifier
-                name
-                type
-                datingSpan
-                temporal {
-                    title
-                    types
-                    senses(typeOfSense: political) {
-                        title
-                        identifier
-                        begin
-                        end
-                    }
-                }
-            }
-        }
-    `;
-
-    const {data: dataTimelineData, loading: loadingTimelineData, error: errorTimelineData} = useQuery(GET_TIMELINE_DATA,
-        {variables: {searchTerm: input.searchStr}});
-
-    const [timelineData, setTimelineData] = useState({});
-
-    useEffect( () => {
-        if(dataTimelineData) {
-            setTimelineData(dataTimelineData);
-            console.log("rerender timelineData --> timelineData: ", timelineData);
-        }
-    }, [dataTimelineData, input.searchStr]);
-
 
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
@@ -68,7 +31,7 @@ export const OurTimeline = () => {
     }
 
     //apply filters and sorts to transform data as needed/wanted
-    const sortedTimelineData = timelineData && timelineData.entitiesByString && timelineData.entitiesByString
+    const sortedTimelineData = timelineData && timelineData.entitiesMultiFilter && timelineData.entitiesMultiFilter
         .filter(filterNoDatingSpan) //filter out elements where no datingSpan is specified
         .sort(sortYearAscending); //sort elements by year in ascending order
 
