@@ -3,6 +3,7 @@ import { Grid } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
+import * as d3 from "d3";
 
 
 export const OurTimeline = (props) => {
@@ -77,7 +78,7 @@ export const OurTimeline = (props) => {
                                     //transform="translate(0, 50)"
                                 >
                                     <CreateTimelineObjects
-                                        color="red"
+                                        color={d3.color("red")}
                                         data={sortedTimelineData}
                                         whichTimespan="temporal"
                                     />
@@ -89,7 +90,7 @@ export const OurTimeline = (props) => {
                                     //transform="translate(0, 50)"
                                 >
                                     <CreateTimelineObjects
-                                        color="gold"
+                                        color={d3.color("blue")}
                                         data={sortedTimelineData}
                                         whichTimespan="datingSpan"
                                     />
@@ -108,7 +109,7 @@ export const OurTimeline = (props) => {
                                 />
                             </g>}
                     </svg>
-                    : <Skeleton variant="rect" width="100%" height="40%" />}
+                    : <Skeleton variant="rect" width="100%" height="70%" />}
             </Grid>
         </div>
     );

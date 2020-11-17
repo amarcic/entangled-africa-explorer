@@ -8,6 +8,10 @@ export const CreateTimelineAxis = (props) => {
         range = [range[0] - 1000, range[1] + 1000];
     }*/
 
+    const formatDate = (value) => {
+        return value < 0 ? -value + " BC" : value !== 0 ? value + " AD" : 0
+    }
+
     const ticks = useMemo(() => {
         const xScale = d3.scaleLinear()
             .domain(domain)
@@ -60,7 +64,7 @@ export const CreateTimelineAxis = (props) => {
                             transform: position === "top" ? "translateY(-5px)" : "translateY(25px)"
                         }}
                     >
-                        { value < 0 ? -value + "BC" : value !== 0 ? value + " AD" : 0 }
+                        {formatDate(value)}
                     </text>
                 </g>
             ))}
