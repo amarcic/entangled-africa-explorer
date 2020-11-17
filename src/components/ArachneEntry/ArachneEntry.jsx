@@ -8,6 +8,17 @@ export const ArachneEntry = (props) => {
     return (
         <React.Fragment>
             <h4>{item.name}</h4>
+            <Button
+                //onClick={() => {handleRelatedObjects(item.identifier)}}
+                //name="showRelatedObjects"
+                //disabled={showRelatedObjects}
+                variant="contained"
+                color="primary"
+                size="small"
+                style={{float: "right"}}
+            >
+                Show related objects
+            </Button>
             <Table size="small">
                 <TableBody>
                     <TableRow>

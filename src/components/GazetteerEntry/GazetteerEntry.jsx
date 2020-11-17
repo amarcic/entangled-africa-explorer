@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
+import {Button, Table, TableBody, TableCell, TableRow} from "@material-ui/core";
 import React from "react";
 
 export const GazetteerEntry = (props) => {
@@ -8,6 +8,17 @@ export const GazetteerEntry = (props) => {
     return (
         <React.Fragment>
             <h4>{item.name}</h4>
+            <Button
+                //onClick={() => {handleRelatedObjects(item.identifier)}}
+                //name="showRelatedObjects"
+                //disabled={showRelatedObjects}
+                variant="contained"
+                color="primary"
+                size="small"
+                style={{float: "right"}}
+            >
+                Show related sites
+            </Button>
             <Table size="small">
                 <TableBody>
                     <TableRow>
