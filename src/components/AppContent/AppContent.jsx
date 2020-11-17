@@ -21,7 +21,7 @@ const GET_CONTEXT_BY_ID = gql`
                 name
                 coordinates
             }
-            # ???
+            #is temporal needed here?
             temporal {
                 title
                 begin
@@ -109,7 +109,7 @@ const initialInput = {
         {"projectLabel": "P03", "projectBestandsname": "P03"}],
     checkedProjects: [],
     checkedProjectsLabels: [],
-    mode: "objects",
+    mode: "archaeoSites",
     sitesMode: "",
     showSearchResults: false,
     showArchaeoSites: true,
@@ -217,7 +217,7 @@ export const AppContent = () => {
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
-        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch'
+        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch', 'Neues Reich'
     ];
 
     const regions = [
@@ -238,7 +238,7 @@ export const AppContent = () => {
         console.log("handleRelatedObjects!");
     };
 
-    function openPopup(index) {
+    const openPopup = (index) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
