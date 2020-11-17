@@ -37,15 +37,15 @@ export const OurTimeline = (props) => {
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     let timeRangeOfTimelineData;
-    if (sortedTimelineData) {
+    if (sortedTimelineData !== null && sortedTimelineData.length !== 0) {
         timeRangeOfTimelineData = [parseInt(sortedTimelineData[0].datingSpan[0][0]), parseInt(sortedTimelineData[sortedTimelineData.length - 1].datingSpan[0][1])];
     }
 
     return (
         <div>
             <h2>{t('Timeline')}</h2>
-            <Grid className="grid-outer" container direction="row" spacing={1}>
-                <Grid className="grid-timeline" item xs={12} lg={9}>
+            <Grid className="grid-timeline" item xs={12}/* lg={9}*/>
+                {timelineData ?
                     <svg
                         //viewBox parameters are "min-x min-y width height"
                         viewBox={
@@ -108,7 +108,7 @@ export const OurTimeline = (props) => {
                                 />
                             </g>}
                     </svg>
-                </Grid>
+                    : <Skeleton variant="rect" width="100%" height="40%" />}
             </Grid>
         </div>
     );
