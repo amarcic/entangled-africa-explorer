@@ -217,17 +217,25 @@ export const AppContent = () => {
     const chronOntologyTerms = [
         'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
         'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
-        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch', 'Neues Reich'
+        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch',
+        'Altes Reich', 'Neues Reich', 'Erste Zwischenzeit', 'Holocene', 'Early Holocene', 'Middle Holocene', 'Late Holocene', 'Pleistocene'
     ];
 
     const regions = [
         {title: 'Africa', id: 2042601},
+        {title: 'Benin', id: 2353200},
+        {title: 'East Africa', id: 2359915},
         {title: 'Egypt', id: 2042786},
+        {title: 'Horn of Africa', id: 2379066},
+        {title: 'Maghreb', id: 2042694},
         {title: 'Meroe', id: 2293921},
+        {title: 'Nubien', id: 2042608},
         {title: 'Republic of Namibia', id: 2293917},
+        {title: 'Senegambia', id: 2348444},
         {title: 'Sudan', id: 2042707},
         {title: 'Tschad', id: 2128989},
         {title: 'Wadi Howar Region Sudan', id: 2042736},
+        {title: 'West Africa', id: 2379014}
     ];
 
 
