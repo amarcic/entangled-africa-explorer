@@ -37,7 +37,7 @@ export const OurTimeline = (props) => {
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     let timeRangeOfTimelineData;
-    if (sortedTimelineData !== null && sortedTimelineData.length !== 0) {
+    if (sortedTimelineData !== null && sortedTimelineData !== undefined && sortedTimelineData.length !== 0) {
         timeRangeOfTimelineData = [parseInt(sortedTimelineData[0].datingSpan[0][0]), parseInt(sortedTimelineData[sortedTimelineData.length - 1].datingSpan[0][1])];
     }
 
