@@ -1,4 +1,15 @@
-import {Box, Button, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Tooltip} from "@material-ui/core";
+import {
+    Box,
+    Button,
+    Collapse,
+    FormLabel,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Tooltip
+} from "@material-ui/core";
 import RoomIcon from "@material-ui/icons/Room";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import React, { useState } from 'react';
@@ -16,6 +27,7 @@ export const ResultsTableRow = (props) => {
         <React.Fragment>
             <TableRow
                 onClick={() => setOpen(!open)}
+                style={{cursor: "pointer"}}
             >
                 <TableCell>
                     {(item.coordinates || itemCoordinates)
