@@ -29,6 +29,7 @@ export const OurMap = (props) => {
             bounds={input.mapBounds}
             zoom={input.zoomLevel}
             minZoom={3}
+            zoomSnap={0.5}
             onClick={(event) => {
                 if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
                     dispatch({type: "DRAW_BBOX", payload: event.latlng});
@@ -70,34 +71,71 @@ export const OurMap = (props) => {
                 handleRelatedObjects={handleRelatedObjects}
                 showRelatedObjects={input.showRelatedObjects}
             />}
-            {/*<MarkerClusterGroup>*/} {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster*/}
-                {renderingConditionRelatedObjects
-                && mapDataContext.entity.related
-                && <CreateMarkers
-                    data={mapDataContext.entity.related}
-                    selectedMarker={input.selectedMarker}
-                    handleRelatedObjects={handleRelatedObjects}
-                    showRelatedObjects={input.showRelatedObjects}
-                    //opacity={0.5}
-                />}
-                {renderingConditionObjects
-                && <CreateMarkers
-                    data={mapDataObjects.entitiesMultiFilter}
-                    selectedMarker={input.selectedMarker}
-                    handleRelatedObjects={handleRelatedObjects}
-                    showRelatedObjects={input.showRelatedObjects}
-                />}
-                {renderingConditionSitesByRegion
-                && <CreateMarkers
-                    data={mapDataSitesByRegion.sitesByRegion}
-                    selectedMarker={input.selectedMarker}
-                />}
-                {renderingConditionSites
-                && <CreateMarkers
-                    data={mapDataArchaeoSites.archaeologicalSites}
-                    selectedMarker={input.selectedMarker}
-                />}
-            {/*</MarkerClusterGroup>*/}
+
+            {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
+            {input.clusterMarkers
+                ? (
+                    <MarkerClusterGroup
+                        disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
+                    >
+                        {renderingConditionRelatedObjects
+                        && mapDataContext.entity.related
+                        && <CreateMarkers
+                            data={mapDataContext.entity.related}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                            //opacity={0.5}
+                        />}
+                        {renderingConditionObjects
+                        && <CreateMarkers
+                            data={mapDataObjects.entitiesMultiFilter}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                        />}
+                        {renderingConditionSitesByRegion
+                        && <CreateMarkers
+                            data={mapDataSitesByRegion.sitesByRegion}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                        {renderingConditionSites
+                        && <CreateMarkers
+                            data={mapDataArchaeoSites.archaeologicalSites}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                    </MarkerClusterGroup>
+                )
+                : (<div>
+                        {renderingConditionRelatedObjects
+                        && mapDataContext.entity.related
+                        && <CreateMarkers
+                            data={mapDataContext.entity.related}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                            //opacity={0.5}
+                        />}
+                        {renderingConditionObjects
+                        && <CreateMarkers
+                            data={mapDataObjects.entitiesMultiFilter}
+                            selectedMarker={input.selectedMarker}
+                            handleRelatedObjects={handleRelatedObjects}
+                            showRelatedObjects={input.showRelatedObjects}
+                        />}
+                        {renderingConditionSitesByRegion
+                        && <CreateMarkers
+                            data={mapDataSitesByRegion.sitesByRegion}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                        {renderingConditionSites
+                        && <CreateMarkers
+                            data={mapDataArchaeoSites.archaeologicalSites}
+                            selectedMarker={input.selectedMarker}
+                        />}
+                    </div>
+                )
+            }
         </Map>
     )
 }

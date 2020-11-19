@@ -211,7 +211,7 @@ export const Filters = (props) => {
             {/*checkboxes for filter by projects; only active in object search mode*/}
             {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
                 <FormGroup>
-                        <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
+                    <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
                     {input.projectList && input.projectList.map(project => {
                         return (project
                             && <FormControlLabel
@@ -245,6 +245,21 @@ export const Filters = (props) => {
                             />
                         )
                     })}
+                </FormGroup>
+            </Grid>}
+
+            {<Grid item xs={12} lg={2}>
+                <FormGroup>
+                    <FormLabel>Turn on/off marker clustering
+                        <Tooltip title="Deactivate the switch to show individual markers instead of clustered circles." arrow placement="right-start">
+                            <Switch
+                                name="drawBBox"
+                                checked={input.clusterMarkers}
+                                color="primary"
+                                onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "clusterMarkers"}})}
+                            />
+                        </Tooltip>
+                    </FormLabel>
                 </FormGroup>
             </Grid>}
 

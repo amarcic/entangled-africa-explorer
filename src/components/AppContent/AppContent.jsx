@@ -99,6 +99,7 @@ const GET_SITES_BY_REGION = gql`
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
     zoomLevel: 5,
+    clusterMarkers: true,
     objectId: 0,
     regionId: 0,
     regionTitle: null,
