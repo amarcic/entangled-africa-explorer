@@ -103,7 +103,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "stein*",
+    searchStr: "spp2143",
     projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
         {"projectLabel": "P01", "projectBestandsname": "P01"},
         {"projectLabel": "P02", "projectBestandsname": "P02"},
