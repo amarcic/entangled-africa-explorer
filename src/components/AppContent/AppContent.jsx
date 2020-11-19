@@ -364,6 +364,7 @@ export const AppContent = () => {
                         ? <Filters
                             chronOntologyTerms={chronOntologyTerms}
                             dispatch={dispatch}
+                            extendMapBounds={extendMapBounds}
                             input={input}
                             regions={regions}
                         />

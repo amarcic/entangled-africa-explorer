@@ -4,11 +4,12 @@ import {
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
+import MapIcon from "@material-ui/icons/Map";
 
 
 export const Filters = (props) => {
     //console.log("Filters...")
-    const { chronOntologyTerms, dispatch, input, regions } = props;
+    const { chronOntologyTerms, dispatch, extendMapBounds, input, regions } = props;
 
     const updateBBoxValue = (event) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
@@ -258,6 +259,15 @@ export const Filters = (props) => {
                                 color="primary"
                                 onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "clusterMarkers"}})}
                             />
+                        </Tooltip>
+                    </FormLabel>
+                    <FormLabel
+                        onClick={() => extendMapBounds()}
+                        style={{cursor: "pointer"}}
+                    >
+                        {`Resize map to show all markers\t`}
+                        <Tooltip title="Show all markers" arrow placement="right">
+                            <MapIcon/>
                         </Tooltip>
                     </FormLabel>
                 </FormGroup>
