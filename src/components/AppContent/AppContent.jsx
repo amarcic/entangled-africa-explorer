@@ -26,7 +26,7 @@ const GET_OBJECT_CONTEXT = gql`
                 begin
                 end
             }
-            related(types: [Einzelobjekte]) {
+            related(types: [Einzelobjekte, Bauwerke]) {
                 identifier
                 name
                 type
