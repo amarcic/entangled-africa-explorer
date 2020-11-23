@@ -81,6 +81,7 @@ export const ResultsTable = (props) => {
                                             key={`${indexRelatedObj}.${indexPlace}`}
                                             index={`${indexRelatedObj}.${indexPlace}`}
                                             item={relatedObj}
+                                            itemCoordinates={place && place.coordinates}
                                             itemLocation={place && place.name}
                                             mode={"objects"}
                                             openPopup={openPopup}
