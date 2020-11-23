@@ -406,14 +406,6 @@ export const AppContent = () => {
 
                 {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
 
-                {input.showRelatedObjects && <Button
-                    onClick={() => handleRelatedObjects()}
-                    name="hideRelatedObjects"
-                    variant="contained"
-                    color="primary"
-                    size="small">
-                    Return to search results (hide related objects)
-                </Button>}
             </Grid>
             <Grid className="grid-map" item xs={12} lg={9}>
                 <OurMap
@@ -441,6 +433,14 @@ export const AppContent = () => {
                         <h3>Search Results</h3>
                         {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                     </Button>
+                    {input.showRelatedObjects && <Button
+                        onClick={() => handleRelatedObjects()}
+                        name="hideRelatedObjects"
+                        variant="contained"
+                        color="primary"
+                        size="small">
+                        Return to search results (hide related objects)
+                    </Button>}
                     {input.resultsListExpanded
                         ? (<Grid className="grid-results-list-expanded" item>
                             {/* Conditions for rendering a table */
