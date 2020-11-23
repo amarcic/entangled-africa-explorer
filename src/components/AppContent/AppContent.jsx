@@ -344,8 +344,6 @@ export const AppContent = () => {
 
     return (
         <div>
-            <h2>{t('Map')}</h2>
-
             <Grid className="grid-outer" container direction="row" spacing={1}>
 
                 <Grid className="grid-controls" item container direction="column" xs={12}>
@@ -464,7 +462,8 @@ export const AppContent = () => {
                         ? <OurTimeline
                             timelineData={dataObjects}
                         />
-                        : "Timeline not available for this mode"}
+                        : ""}
+                    {/*: "Timeline not available for this mode"}*/}
                 </Grid>}
             </Grid>
         </div>
