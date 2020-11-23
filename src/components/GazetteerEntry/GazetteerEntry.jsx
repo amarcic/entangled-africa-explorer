@@ -22,7 +22,7 @@ export const GazetteerEntry = (props) => {
             <Table size="small">
                 <TableBody>
                     <TableRow>
-                        <TableCell component="th" scope="row">Namen:</TableCell>
+                        <TableCell component="th" scope="row">Names:</TableCell>
                         <TableCell>{item.name}</TableCell>
                     </TableRow>
                     <TableRow>
@@ -30,33 +30,33 @@ export const GazetteerEntry = (props) => {
                         <TableCell>{item.identifier}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell component="th" scope="row">Lage:</TableCell>
+                        <TableCell component="th" scope="row">Position:</TableCell>
                         <TableCell>{item.coordinates || itemCoordinates}</TableCell>
                     </TableRow>
-                    <TableRow>
+                    {/*<TableRow>
                         <TableCell component="th" scope="row">Art:</TableCell>
-                        <TableCell>?</TableCell>
+                        <TableCell> </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell component="th" scope="row">Kontexte:</TableCell>
-                        <TableCell>?</TableCell>
-                    </TableRow>
+                        <TableCell> </TableCell>
+                    </TableRow>*/}
                     <TableRow>
-                        <TableCell component="th" scope="row">Liegt in:</TableCell>
+                        <TableCell component="th" scope="row">Localization:</TableCell>
                         <TableCell>{(item.locatedIn && item.locatedIn.name) || itemLocation}</TableCell>
                     </TableRow>
-                    <TableRow>
+                    {/*<TableRow>
                         <TableCell component="th" scope="row">Tags:</TableCell>
-                        <TableCell>?</TableCell>
+                        <TableCell> </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell component="th" scope="row">Provenienz:</TableCell>
-                        <TableCell>?</TableCell>
+                        <TableCell> </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell component="th" scope="row">Datensatzgruppe:</TableCell>
-                        <TableCell>?</TableCell>
-                    </TableRow>
+                        <TableCell> </TableCell>
+                    </TableRow>*/}
                 </TableBody>
             </Table>
         </React.Fragment>

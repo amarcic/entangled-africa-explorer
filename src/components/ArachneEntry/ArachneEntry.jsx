@@ -31,13 +31,17 @@ export const ArachneEntry = (props) => {
                         <TableCell>{item.identifier}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell component="th" scope="row">Lokalisierung:</TableCell>
+                        <TableCell component="th" scope="row">Localization:</TableCell>
                         <TableCell>{item.coordinates || itemCoordinates}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell component="th" scope="row">Datierung:</TableCell>
-                        <TableCell>{item.periodName}</TableCell>
+                        <TableCell component="th" scope="row">Dating:</TableCell>
+                        <TableCell>{item.dating && item.dating.toString()}</TableCell>
                     </TableRow>
+                    {/*<TableRow>
+                        <TableCell component="th" scope="row">Period:</TableCell>
+                        <TableCell>{item.temporal && item.temporal.title[0]}</TableCell>
+                    </TableRow>*/}
                 </TableBody>
             </Table>
         </React.Fragment>
