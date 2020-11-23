@@ -69,21 +69,20 @@ export const OurMap = (props) => {
                 />}
 
                 {/* Markers */}
-                {renderingConditionRelatedObjects
-                && mapDataContext.entity.spatial
-                && <CreateMarkers
-                    data={mapDataContext.entity.spatial}
-                    selectedMarker={input.selectedMarker}
-                    handleRelatedObjects={handleRelatedObjects}
-                    showRelatedObjects={input.showRelatedObjects}
-                />}
-
                 {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
                 {input.clusterMarkers
                     ? (
                         <MarkerClusterGroup
                             disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
                         >
+                            {renderingConditionRelatedObjects
+                            && mapDataContext.entity.spatial
+                            && <CreateMarkers
+                                data={mapDataContext.entity.spatial}
+                                selectedMarker={input.selectedMarker}
+                                handleRelatedObjects={handleRelatedObjects}
+                                showRelatedObjects={input.showRelatedObjects}
+                            />}
                             {renderingConditionRelatedObjects
                             && mapDataContext.entity.related
                             && <CreateMarkers
@@ -113,6 +112,14 @@ export const OurMap = (props) => {
                         </MarkerClusterGroup>
                     )
                     : (<div>
+                            {renderingConditionRelatedObjects
+                            && mapDataContext.entity.spatial
+                            && <CreateMarkers
+                                data={mapDataContext.entity.spatial}
+                                selectedMarker={input.selectedMarker}
+                                handleRelatedObjects={handleRelatedObjects}
+                                showRelatedObjects={input.showRelatedObjects}
+                            />}
                             {renderingConditionRelatedObjects
                             && mapDataContext.entity.related
                             && <CreateMarkers
