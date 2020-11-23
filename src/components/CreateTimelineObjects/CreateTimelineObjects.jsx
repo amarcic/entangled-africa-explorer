@@ -1,5 +1,5 @@
 import React from "react";
-import {ReturnTimelineObject} from "../ReturnTimelineObject/ReturnTimelineObject";
+import { ReturnTimelineObject } from "..";
 
 export const CreateTimelineObjects = (props) => {
     const { color, data, whichTimespan } = props;

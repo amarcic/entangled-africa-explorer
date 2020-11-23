@@ -7,12 +7,11 @@ import { CollapsedFilters, Filters, OurMap, OurTimeline, ResultsTable } from "..
 import { Button, Divider, Grid, LinearProgress, Tooltip } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MapIcon from "@material-ui/icons/Map";
 
 
 // Queries
-const GET_CONTEXT_BY_ID = gql`
-    query giveInf($arachneId: ID!) {
+const GET_OBJECT_CONTEXT = gql`
+    query searchObjectContext($arachneId: ID!) {
         entity(id: $arachneId) {
             identifier
             name
@@ -42,7 +41,7 @@ const GET_CONTEXT_BY_ID = gql`
 `;
 
 const GET_OBJECTS = gql`
-    query search ($searchTerm: String, $project: [String], $bbox: [String], $periodTerm: String) {
+    query searchObjects ($searchTerm: String, $project: [String], $bbox: [String], $periodTerm: String) {
         entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm, entityTypes: [Einzelobjekte]) {
             identifier
             name
@@ -51,6 +50,7 @@ const GET_OBJECTS = gql`
                 name
                 coordinates
             }
+            dating
             datingSpan
             temporal {
                 title
@@ -95,6 +95,21 @@ const GET_SITES_BY_REGION = gql`
         }
     }
 `;
+
+/*const GET_ARCHAEOLOGICAL_SITE_CONTEXT = gql`
+    query searchArchaeoSiteContext($searchTerm: String, $bbox: [String]) {
+        place() {
+            identifier
+            name
+            coordinates
+            types
+            locatedIn {
+                identifier
+                name
+            }
+        }
+    }
+`;*/
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -180,7 +195,7 @@ export const AppContent = () => {
     const [mapDataSitesByRegion, setMapDataSitesByRegion] = useState({});
 
     // Queries
-    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_CONTEXT_BY_ID, input.mode === "objects"
+    const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_OBJECT_CONTEXT, input.mode === "objects"
         ? {variables: {arachneId: input.objectId}}
         : {variables: {arachneId: 0}});
 
@@ -343,39 +358,38 @@ export const AppContent = () => {
 
 
     return (
-        <div>
-            <Grid className="grid-outer" container direction="row" spacing={1}>
+        <Grid className="grid-outer" container direction="row" spacing={1}>
 
-                <Grid className="grid-controls" item container direction="column" xs={12}>
-                    <Divider/>
-                    <Button
-                        size="small"
-                        onClick={() => {
-                            dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
-                        }}
-                    >
-                        <h3>Filters</h3>
-                        {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                    </Button>
-                    {/* Map controls = filters */}
-                    {input.mapControlsExpanded
-                        ? <Filters
-                            chronOntologyTerms={chronOntologyTerms}
-                            dispatch={dispatch}
-                            extendMapBounds={extendMapBounds}
+            <Grid className="grid-controls" item container direction="column" xs={12}>
+                <Divider/>
+                <Button
+                    size="small"
+                    onClick={() => {
+                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
+                    }}
+                >
+                    <h3>Filters</h3>
+                    {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                </Button>
+                {/* Map controls = filters */}
+                {input.mapControlsExpanded
+                    ? <Filters
+                        chronOntologyTerms={chronOntologyTerms}
+                        dispatch={dispatch}
+                        extendMapBounds={extendMapBounds}
+                        input={input}
+                        regions={regions}
+                    />
+                    : (/*summary of active filters when control panel is closed*/
+                        <CollapsedFilters
                             input={input}
-                            regions={regions}
                         />
-                        : (/*summary of active filters when control panel is closed*/
-                            <CollapsedFilters
-                                input={input}
-                            />
-                        )
-                    }
-                </Grid>
+                    )
+                }
+            </Grid>
 
-                <Grid item className="grid-loading-indicator" xs={12}>
-                    {/*{input.showSearchResults && <span>Showing search results</span>}
+            <Grid item className="grid-loading-indicator" xs={12}>
+                {/*{input.showSearchResults && <span>Showing search results</span>}
                     {input.showRelatedObjects && <span>Showing related objects of </span>}
                     {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
                     {input.showArchaeoSites && <span>Showing archaeological sites</span>}
@@ -390,82 +404,78 @@ export const AppContent = () => {
                     {loadingSitesByRegion && <span>...loadingSitesByRegion</span>}
                     {errorSitesByRegion && <span>...errorSitesByRegion</span> && console.log(errorSitesByRegion.message)}*/}
 
-                    {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
+                {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
 
-                    {input.showRelatedObjects && <Button
-                        onClick={() => handleRelatedObjects()}
-                        name="hideRelatedObjects"
-                        variant="contained"
-                        color="primary"
-                        size="small">
-                        Return to search results (hide related objects)
-                    </Button>}
-                </Grid>
-                <Grid className="grid-map" item xs={12} lg={9}>
-                    <OurMap
-                        handleRelatedObjects={handleRelatedObjects}
-                        mapDataObjects={mapDataObjects}
-                        mapDataContext={mapDataContext}
-                        mapDataArchaeoSites={mapDataArchaeoSites}
-                        mapDataSitesByRegion={mapDataSitesByRegion}
-                        reducer={[input, dispatch]}
-                        renderingConditionObjects={renderingConditionObjects}
-                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                        renderingConditionSites={renderingConditionSites}
-                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                    />
-                </Grid>
-                {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
-                    {<Grid className="grid-results-list" item container direction="column">
-                        <Divider/>
-                        <Button
-                            size="small"
-                            onClick={() => {
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
-                            }}
-                        >
-                            <h3>Search Results</h3>
-                            {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                        </Button>
-                        <Tooltip title="Show all markers" arrow placement="right">
-                            <MapIcon onClick={() => extendMapBounds()}/>
-                        </Tooltip>
-                        {input.resultsListExpanded
-                            ? (<Grid className="grid-results-list-expanded" item>
-                                {/* Conditions for rendering a table */
-                                    (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
-                                        ? <ResultsTable
-                                            mapDataObjects={mapDataObjects}
-                                            mapDataContext={mapDataContext}
-                                            mapDataArchaeoSites={mapDataArchaeoSites}
-                                            mapDataSitesByRegion={mapDataSitesByRegion}
-                                            renderingConditionObjects={renderingConditionObjects}
-                                            renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                                            renderingConditionSites={renderingConditionSites}
-                                            renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                                            openPopup={openPopup}
-                                        />
-                                        : "No results, try changing the filters"
-                                }
-                            </Grid>)
-                            : (<Grid className="grid-results-list-collapsed" item>
-                                {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
-                                {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
-                                {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode==="region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
-                                {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode!=="region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
-                            </Grid>)
-                        }
-                    </Grid>}
-                </Grid>}
-                {<Grid className="grid-timeline" item xs={12}>
-                    {input.mode === "objects"
-                        ? <OurTimeline
-                            timelineData={dataObjects}
-                        />
-                        : ""}
-                    {/*: "Timeline not available for this mode"}*/}
-                </Grid>}
+                {input.showRelatedObjects && <Button
+                    onClick={() => handleRelatedObjects()}
+                    name="hideRelatedObjects"
+                    variant="contained"
+                    color="primary"
+                    size="small">
+                    Return to search results (hide related objects)
+                </Button>}
             </Grid>
-        </div>
+            <Grid className="grid-map" item xs={12} lg={9}>
+                <OurMap
+                    handleRelatedObjects={handleRelatedObjects}
+                    mapDataObjects={mapDataObjects}
+                    mapDataContext={mapDataContext}
+                    mapDataArchaeoSites={mapDataArchaeoSites}
+                    mapDataSitesByRegion={mapDataSitesByRegion}
+                    reducer={[input, dispatch]}
+                    renderingConditionObjects={renderingConditionObjects}
+                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                    renderingConditionSites={renderingConditionSites}
+                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                />
+            </Grid>
+            {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
+                {<Grid className="grid-results-list" item container direction="column">
+                    <Divider/>
+                    <Button
+                        size="small"
+                        onClick={() => {
+                            dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
+                        }}
+                    >
+                        <h3>Search Results</h3>
+                        {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                    </Button>
+                    {input.resultsListExpanded
+                        ? (<Grid className="grid-results-list-expanded" item>
+                            {/* Conditions for rendering a table */
+                                (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
+                                    ? <ResultsTable
+                                        mapDataObjects={mapDataObjects}
+                                        mapDataContext={mapDataContext}
+                                        mapDataArchaeoSites={mapDataArchaeoSites}
+                                        mapDataSitesByRegion={mapDataSitesByRegion}
+                                        renderingConditionObjects={renderingConditionObjects}
+                                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                                        renderingConditionSites={renderingConditionSites}
+                                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                                        openPopup={openPopup}
+                                    />
+                                    : "No results, try changing the filters"
+                            }
+                        </Grid>)
+                        : (<Grid className="grid-results-list-collapsed" item>
+                            {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
+                            {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
+                            {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode==="region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                            {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode!=="region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                        </Grid>)
+                    }
+                </Grid>}
+            </Grid>}
+            {<Grid className="grid-timeline" item xs={12}>
+                {input.mode === "objects"
+                    ? <OurTimeline
+                        timelineData={dataObjects}
+                    />
+                    : ""}
+                {/*: "Timeline not available for this mode"}*/}
+            </Grid>}
+        </Grid>
     );
 };
