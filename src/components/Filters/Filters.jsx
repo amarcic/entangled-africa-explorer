@@ -96,7 +96,7 @@ export const Filters = (props) => {
             </Grid>}
 
             {/*dropdown for filter by region; only active in site search mode*/}
-            {!input.showSearchResults && <Grid item xs={12} lg={2}>
+            {input.showArchaeoSites && <Grid item xs={12} lg={2}>
                 <FormGroup>
                     <FormLabel component="legend">Filter by region</FormLabel>
                     <Autocomplete
