@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
@@ -23,7 +23,8 @@ export const OurTimeline = (props) => {
     //filter out elements that do not have a period timespan specified
     const filterNoPeriodDating = (element) => {
         //shorten conditions?
-        if (element && element.temporal && element.temporal[0] && element.temporal[0].senses && element.temporal[0].senses[0] && element.temporal[0].senses[0].begin && element.temporal[0].senses[0].begin !== null && element.temporal[0].senses[0].begin !== undefined)
+        if (element && element.temporal && element.temporal[0] && element.temporal[0].senses && element.temporal[0].senses[0]
+            && element.temporal[0].senses[0].begin && element.temporal[0].senses[0].begin !== null && element.temporal[0].senses[0].begin !== undefined)
             return element;
     }
 
@@ -36,26 +37,65 @@ export const OurTimeline = (props) => {
     const sortYearAscending = (itemA, itemB) => {
         return itemA.datingSpan[0][0] - itemB.datingSpan[0][0];
     }
-    //sort by period start date
+    //sort by period start date; TODO: takes into account only the first sense
     const sortPeriodAscending = (itemA, itemB) => {
         //shorten conditions?
-        if (itemA && itemA.temporal && itemA.temporal[0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
-            && itemB && itemB.temporal && itemB.temporal[0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)
-            return itemA.temporal[0][0].senses[0].begin - itemB.temporal[0][0].senses[0].begin
+        if (itemA && itemA.temporal && itemA.temporal[0][0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
+            && itemB && itemB.temporal && itemB.temporal[0][0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)
+            return itemA.temporal[0].senses[0].begin - itemB.temporal[0].senses[0].begin
         else
             return 0
     }
 
+
     //apply filters and sorts to transform data as needed/wanted
-    const sortedTimelineData = timelineData && timelineData.entitiesMultiFilter && timelineData.entitiesMultiFilter
-        .filter(filterNoDatingSpan) //filter out elements where no datingSpan is specified
-        .sort(sortYearAscending); //sort elements by year in ascending order
+    const transformTimelineData = () => {
+        let transformedTimelineData = timelineData && timelineData.entitiesMultiFilter && timelineData.entitiesMultiFilter
+            .filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
+
+        if (input.timelineSort === "object") transformedTimelineData && transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
+        else if (input.timelineSort === "period") transformedTimelineData && transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
+
+        timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+
+        return transformedTimelineData;
+    }
+
+    //put the smallest and largest year in the sortedTimelineData into variable for easier access
+    const getTimeRangeOfTimelineData = () => {
+        let timeRange;
+        if (sortedTimelineData !== null && sortedTimelineData !== undefined && sortedTimelineData.length !== 0 && sortedTimelineData[0]) {
+            if (input.timelineSort === "object") {
+                console.log("getTimeRangeOfTimelineData in object sorting mode")
+                timeRange = [parseInt(sortedTimelineData[0].datingSpan[0][0]), parseInt(sortedTimelineData[sortedTimelineData.length - 1].datingSpan[0][1])];
+            }
+            else if (input.timelineSort === "period") {
+                console.log("getTimeRangeOfTimelineData in period sorting mode")
+                timeRange = [parseInt(sortedTimelineData[0].temporal[0].senses[0].begin), parseInt(sortedTimelineData[sortedTimelineData.length - 1].temporal[0].senses[0].end)];
+            }
+        }
+        return timeRange;
+    }
+
+
+    let sortedTimelineData;
+    if(!sortedTimelineData) sortedTimelineData = transformTimelineData();
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     let timeRangeOfTimelineData;
-    if (sortedTimelineData !== null && sortedTimelineData !== undefined && sortedTimelineData.length !== 0) {
-        timeRangeOfTimelineData = [parseInt(sortedTimelineData[0].datingSpan[0][0]), parseInt(sortedTimelineData[sortedTimelineData.length - 1].datingSpan[0][1])];
-    }
+    if (!timeRangeOfTimelineData) timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+
+
+    useEffect(() => {
+        sortedTimelineData = transformTimelineData();
+        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+    }, [input.timelineSort])
+
+
+    console.log("sort by:", input.timelineSort)
+    console.log("sortedTimelineData:", sortedTimelineData)
+    console.log("timeRangeOfTimelineData:", timeRangeOfTimelineData)
+
 
     return (
         <div>
