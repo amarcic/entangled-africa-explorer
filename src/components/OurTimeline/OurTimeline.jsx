@@ -11,6 +11,8 @@ export const OurTimeline = (props) => {
 
     const { t, i18n } = useTranslation();
 
+    let sortedTimelineData;
+
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
     const filterNoDatingSpan = (element) => {
@@ -56,10 +58,15 @@ export const OurTimeline = (props) => {
         if (input.timelineSort === "object") transformedTimelineData && transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
         else if (input.timelineSort === "period") transformedTimelineData && transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
 
-        timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+        //commented out for provisional fix for circular dependency between transformTimeLineData and getTimeRangeOfTimeLineData
+        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
 
         return transformedTimelineData;
     }
+
+    // !circular dependency:
+    // this cannot work, since transformTimeLineData requires getTimeRangeOfTimeLineData, which again requires transformTimeLineData
+    if(!sortedTimelineData) sortedTimelineData = transformTimelineData();
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     const getTimeRangeOfTimelineData = () => {
@@ -77,9 +84,6 @@ export const OurTimeline = (props) => {
         return timeRange;
     }
 
-
-    let sortedTimelineData;
-    if(!sortedTimelineData) sortedTimelineData = transformTimelineData();
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     let timeRangeOfTimelineData;
