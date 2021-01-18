@@ -24,9 +24,10 @@ export const OurTimeline = (props) => {
     }
     //filter out elements that do not have a period timespan specified
     const filterNoPeriodDating = (element) => {
-        //shorten conditions?
-        if (element && element.temporal && element.temporal[0] && element.temporal[0].senses && element.temporal[0].senses[0]
-            && element.temporal[0].senses[0].begin && element.temporal[0].senses[0].begin !== null && element.temporal[0].senses[0].begin !== undefined)
+        //conditions shortened
+        const hasBegin = element?.temporal?.[0]?.senses?.[0].begin;
+        if (hasBegin !== null
+            && hasBegin !== undefined)
             return element;
     }
 
