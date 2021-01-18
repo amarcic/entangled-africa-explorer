@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
@@ -7,7 +7,7 @@ import * as d3 from "d3";
 
 
 export const OurTimeline = (props) => {
-    const { timelineData } = props;
+    const { dispatch, input, timelineData } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -45,6 +45,19 @@ export const OurTimeline = (props) => {
     return (
         <div>
             <h2>{t('Timeline')}</h2>
+            <FormControl>
+                <InputLabel>Sort by</InputLabel>
+                <Select
+                    value={input.timelineSort}
+                    onChange={(event) => {
+                        console.log("change sorting to", event.target.value);
+                        dispatch({type: "UPDATE_INPUT", payload: {field: "timelineSort", value: event.target.value}});
+                    }}
+                >
+                    <MenuItem value={"object"}>Object date</MenuItem>
+                    <MenuItem value={"period"}>Period date</MenuItem>
+                </Select>
+            </FormControl>
             <Grid className="grid-timeline" item xs={12}/* lg={9}*/>
                 {timelineData ?
                     <svg

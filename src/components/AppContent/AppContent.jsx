@@ -118,17 +118,17 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "spp2143",
+    searchStr: "kopf",
     projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
         {"projectLabel": "P01", "projectBestandsname": "P01"},
         {"projectLabel": "P02", "projectBestandsname": "P02"},
         {"projectLabel": "P03", "projectBestandsname": "P03"}],
     checkedProjects: [],
     checkedProjectsLabels: [],
-    mode: "archaeoSites",
+    mode: "objects",
     sitesMode: "",
-    showSearchResults: false,
-    showArchaeoSites: true,
+    showSearchResults: true,
+    showArchaeoSites: false,
     showRelatedObjects: false,
     chronOntologyTerm: null,
     boundingBoxCorner1: [],
@@ -136,7 +136,8 @@ const initialInput = {
     drawBBox: false,
     mapControlsExpanded: true,
     resultsListExpanded: true,
-    selectedMarker: undefined
+    selectedMarker: undefined,
+    timelineSort: "object"
 };
 
 
