@@ -36,6 +36,15 @@ export const OurTimeline = (props) => {
     const sortYearAscending = (itemA, itemB) => {
         return itemA.datingSpan[0][0] - itemB.datingSpan[0][0];
     }
+    //sort by period start date
+    const sortPeriodAscending = (itemA, itemB) => {
+        //shorten conditions?
+        if (itemA && itemA.temporal && itemA.temporal[0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
+            && itemB && itemB.temporal && itemB.temporal[0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)
+            return itemA.temporal[0][0].senses[0].begin - itemB.temporal[0][0].senses[0].begin
+        else
+            return 0
+    }
 
     //apply filters and sorts to transform data as needed/wanted
     const sortedTimelineData = timelineData && timelineData.entitiesMultiFilter && timelineData.entitiesMultiFilter
