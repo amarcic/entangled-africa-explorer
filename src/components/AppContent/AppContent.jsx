@@ -472,6 +472,8 @@ export const AppContent = () => {
             {<Grid className="grid-timeline" item xs={12}>
                 {input.mode === "objects"
                     ? <OurTimeline
+                        dispatch={dispatch}
+                        input={input}
                         timelineData={dataObjects}
                     />
                     : ""}
