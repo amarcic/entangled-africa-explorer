@@ -284,41 +284,41 @@ export const AppContent = () => {
 
 
     useEffect( () => {
-        if(dataContext&&input.showRelatedObjects) {
+        if(dataContext && input.mode === "objects" && input.showRelatedObjects) {
             setMapDataContext(dataContext);
             console.log("rerender dataContext!");
             console.log("rerender dataContext --> dataContext: ", dataContext);
             console.log("rerender dataContext --> input:", input);
         }
-    }, [dataContext, input.showRelatedObjects]);
+    }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.showSearchResults && (input.searchStr || input.checkedProjects.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && input.showSearchResults && (input.searchStr || input.checkedProjects.length!==0 || input.chronOntologyTerm
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2]);
+    }, [dataObjects, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
 
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && input.sitesMode!=="region" && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
+        if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
             console.log("rerender dataArchaeoSites --> input:", input);
         }
-    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode]);
+    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode, input.mode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && input.sitesMode==="region" && (input.searchStr || input.regionId)) {
+        if (dataSitesByRegion && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode==="region" && (input.searchStr || input.regionId)) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode]);
+    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode, input.mode]);
 
 
     /* Conditions used to determine whether to render certain data (objects, related objects, sites, sites by region) */
