@@ -25,8 +25,7 @@ export const OurTimeline = (props) => {
     //filter out elements that do not have a period timespan specified
     const filterNoPeriodDating = (element) => {
         //conditions shortened
-        const hasBegin = element?.temporal[0]?.senses?.[0]?.begin;
-        console.log("begin: " + hasBegin)
+        const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
         if (hasBegin)
             return element;
     }
@@ -43,12 +42,12 @@ export const OurTimeline = (props) => {
     //sort by period start date; TODO: takes into account only the first sense
     const sortPeriodAscending = (itemA, itemB) => {
         //shorten conditions?
-        const hasBeginA = itemA?.temporal?.[0]?.senses[0]?.begin;
-        const hasBeginB = itemB?.temporal?.[0]?.senses[0]?.begin;
+        const hasBeginA = itemA?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
+        const hasBeginB = itemB?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
         if (hasBeginA && hasBeginB)
         /*if (itemA && itemA.temporal && itemA.temporal[0][0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
             && itemB && itemB.temporal && itemB.temporal[0][0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)*/
-            return itemA.temporal[0].senses[0].begin - itemB.temporal[0].senses[0].begin
+            return itemA.temporal[0][0].senses[0].begin - itemB.temporal[0][0].senses[0].begin
         else
             return 0
     }
@@ -93,8 +92,8 @@ export const OurTimeline = (props) => {
                 console.log(sortedTLData);
                 //no thorough checking is done, if senses objects with valid dates are available
                 //some default values are given in case no reasonable values are available
-                const first = sortedTLData[0].temporal[0].senses?.[0].begin || -6000;
-                const last = sortedTLData[sortedTLDataLength - 1].temporal[0].senses?.[0].end || -500;
+                const first = sortedTLData[0].temporal?.[0]?.[0]?.senses?.[0]?.begin || -6000;
+                const last = sortedTLData[sortedTLDataLength - 1]?.temporal?.[0]?.[0]?.senses?.[0]?.end || -500;
 
                 //if (sortedTLData[0].temporal[0].senses)
                     timeRange = [parseInt(first), parseInt(last)];
