@@ -23,6 +23,7 @@ export const OurTimeline = (props) => {
         if (element.datingSpan.length === 1) return element;
     }
     //filter out elements that do not have a period timespan specified
+    //filter should be correct now, but nothing gets filtered out (maybe due to passing by reference)
     const filterNoPeriodDating = (element) => {
         //conditions shortened
         const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
@@ -90,7 +91,7 @@ export const OurTimeline = (props) => {
             else if (input.timelineSort === "period") {
                 console.log("getTimeRangeOfTimelineData in period sorting mode");
                 console.log(sortedTLData);
-                //no thorough checking is done, if senses objects with valid dates are available
+                //thorough checking for valid dates is done, but should not be necessary after filtering
                 //some default values are given in case no reasonable values are available
                 const first = sortedTLData[0].temporal?.[0]?.[0]?.senses?.[0]?.begin || -6000;
                 const last = sortedTLData[sortedTLDataLength - 1]?.temporal?.[0]?.[0]?.senses?.[0]?.end || -500;
