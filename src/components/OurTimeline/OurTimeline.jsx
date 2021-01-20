@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,8 @@ export const OurTimeline = (props) => {
 
     const { t, i18n } = useTranslation();
 
-    let sortedTimelineData;
+    const [sortedTimelineData, setSortedTimelineData] = useState([]);
+    const [timeRangeOfTimelineData, setTimeRangeOfTimelineData] = useState([-6000, -500])
 
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
@@ -53,27 +54,6 @@ export const OurTimeline = (props) => {
             return 0
     }
 
-
-    //apply filters and sorts to transform data as needed/wanted
-    const transformTimelineData = (timeLData) => {
-        if(!timeLData) return;
-
-        let transformedTimelineData = timeLData.entitiesMultiFilter?.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
-        if (input.timelineSort === "object") transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
-        else if (input.timelineSort === "period") transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
-
-        console.log("timelinedata is being transformed!")
-        //commented out for provisional fix for circular dependency between transformTimeLineData and getTimeRangeOfTimeLineData
-        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
-        console.log(transformedTimelineData);
-
-        return transformedTimelineData;
-    }
-
-    // !circular dependency:
-    // this cannot work, since transformTimeLineData requires getTimeRangeOfTimeLineData, which again requires transformTimeLineData
-    if(!sortedTimelineData) sortedTimelineData = transformTimelineData(timelineData);
-
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
     const getTimeRangeOfTimelineData = (sortedTLData) => {
         if (!sortedTLData) return;
@@ -100,18 +80,35 @@ export const OurTimeline = (props) => {
                     timeRange = [parseInt(first), parseInt(last)];
             }
         }
-        return timeRange;
+        setTimeRangeOfTimelineData(timeRange)
+        //return timeRange;
+    }
+
+    //apply filters and sorts to transform data as needed/wanted
+    const transformTimelineData = (timeLData) => {
+        if(!timeLData) return;
+
+        let transformedTimelineData = timeLData.entitiesMultiFilter?.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
+        if (input.timelineSort === "object") transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
+        else if (input.timelineSort === "period") transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
+
+        console.log("timelinedata is being transformed!")
+        //commented out for provisional fix for circular dependency between transformTimeLineData and getTimeRangeOfTimeLineData
+        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+        console.log(transformedTimelineData);
+        getTimeRangeOfTimelineData(transformedTimelineData);
+        setSortedTimelineData(transformedTimelineData);
+        //return transformedTimelineData;
     }
 
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
-    let timeRangeOfTimelineData;
-    if (!timeRangeOfTimelineData) timeRangeOfTimelineData = getTimeRangeOfTimelineData(sortedTimelineData);
+    //let timeRangeOfTimelineData;
+    //if (!timeRangeOfTimelineData) timeRangeOfTimelineData = getTimeRangeOfTimelineData(sortedTimelineData);
 
 
     useEffect(() => {
-        sortedTimelineData = transformTimelineData(timelineData);
-        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
+        transformTimelineData(timelineData);
     }, [input.timelineSort, timelineData])
 
 
