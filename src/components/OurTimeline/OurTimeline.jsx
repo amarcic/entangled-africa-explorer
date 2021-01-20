@@ -24,12 +24,14 @@ export const OurTimeline = (props) => {
         if (element.datingSpan.length === 1) return element;
     }
     //filter out elements that do not have a period timespan specified
-    //filter should be correct now, but nothing gets filtered out (maybe due to passing by reference)
     const filterNoPeriodDating = (element) => {
         //conditions shortened
+        //only .begin is checked but later .end is used
         const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
-        if (hasBegin)
+        console.log(hasBegin)
+        if (hasBegin) {
             return element;
+        }
     }
 
     //sort functions for timeline data:
@@ -75,8 +77,8 @@ export const OurTimeline = (props) => {
                 //some default values are given in case no reasonable values are available
                 const first = sortedTLData[0].temporal?.[0]?.[0]?.senses?.[0]?.begin || -6000;
                 const last = sortedTLData[sortedTLDataLength - 1]?.temporal?.[0]?.[0]?.senses?.[0]?.end || -500;
+                console.log(sortedTLData[sortedTLDataLength - 1])
 
-                //if (sortedTLData[0].temporal[0].senses)
                     timeRange = [parseInt(first), parseInt(last)];
             }
         }
@@ -89,8 +91,8 @@ export const OurTimeline = (props) => {
         if(!timeLData) return;
 
         let transformedTimelineData = timeLData.entitiesMultiFilter?.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
-        if (input.timelineSort === "object") transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
-        else if (input.timelineSort === "period") transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
+        if (input.timelineSort === "object") transformedTimelineData = transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
+        else if (input.timelineSort === "period") transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
 
         console.log("timelinedata is being transformed!")
         //commented out for provisional fix for circular dependency between transformTimeLineData and getTimeRangeOfTimeLineData
