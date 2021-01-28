@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 export const ReturnTimelineObject = (props) => {
     const { color, index, item, timespan, timespanIndex, whichTimespan } = props;
-
+    
     //state used to focus timeline objects
     const [highlighted, setHighlighted] = useState(false);
 
@@ -39,7 +39,7 @@ export const ReturnTimelineObject = (props) => {
                     ry="4"
                     fill={highlighted ? color.darker() : color}
                     stroke={highlighted ? color.darker() : color}
-                    strokeWidth={whichTimespan === "datingSpan" ? "1" : "10"}
+                    strokeWidth={whichTimespan === "objectDating" ? "1" : "10"}
                     opacity={highlighted ? "1" : "0.5"}
                 />
                 //if the width of the rect would be 0 because timespan[0] === timespan[1], draw a circle instead
@@ -49,7 +49,7 @@ export const ReturnTimelineObject = (props) => {
                     r="8"
                     fill={highlighted ? color.darker() : color}
                     stroke={highlighted ? color.darker() : color}
-                    strokeWidth={whichTimespan === "datingSpan" ? "1" : "10"}
+                    strokeWidth={whichTimespan === "objectDating" ? "1" : "10"}
                     opacity={highlighted ? "1" : "0.5"}
 
                 />
@@ -65,7 +65,7 @@ export const ReturnTimelineObject = (props) => {
                 opacity={highlighted ? "1" : "0"}
             >
                 <tspan x="1">
-                    {whichTimespan === "datingSpan" ? item.name : item.title}
+                    {whichTimespan === "objectDating" ? item.itemName : item.name}
                 </tspan>
                 <tspan x="1" dy="1.2em">
                     {`(${formatDate(timespan[0])} - ${formatDate(timespan[1])})`}

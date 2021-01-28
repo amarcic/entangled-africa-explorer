@@ -14,21 +14,49 @@ export const OurTimeline = (props) => {
     const [sortedTimelineData, setSortedTimelineData] = useState([]);
     const [timeRangeOfTimelineData, setTimeRangeOfTimelineData] = useState([-6000, -500])
 
+    //maps selected fields from deeply nested query result data for easy digestion by timeline
+    const timelineMapper = ( item ) => {
+        const objectDating = item.datingSpan;
+        let periodDating = item.temporal?.map( periodSpan => periodSpan.map( period => {
+            if (period.begin||period.end) {
+                return {
+                    name: period.title,
+                    begin: period.begin,
+                    end: period.end
+                }
+            } else {
+                //checks senses only if no dating is given on the period itself
+                return {
+                    name: period.title,
+                    begin: period.senses?.[0]?.begin,
+                    end: period.senses?.[0]?.end
+                }
+            }
+        }))
+
+        return {
+            itemId: item.identifier,
+            itemName: item.name,
+            objectDating: objectDating,
+            periodDating: periodDating
+        }
+    }
+
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
     const filterNoDatingSpan = (element) => {
-        if (element.datingSpan?.length > 0) return element;
+        if (element.objectDating?.length > 0) return element;
     }
     //filter out elements that have more than one datingSpan (just temporarily)
     const filterMultipleDatingSpans = (element) => {
-        if (element.datingSpan.length === 1) return element;
+        if (element.objectDating.length === 1) return element;
     }
     //filter out elements that do not have a period timespan specified
     const filterNoPeriodDating = (element) => {
         //conditions shortened
         //only .begin is checked but later .end is used
-        const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
-        console.log(hasBegin)
+        //const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
+        const hasBegin = element?.periodDating?.[0]?.[0]?.begin;
         if (hasBegin) {
             return element;
         }
@@ -41,17 +69,17 @@ export const OurTimeline = (props) => {
     }
     //sort by object dating start date; TODO: is based on datingSpan[0][0], if there is more than one datingSpan given this is not taken into account so far
     const sortYearAscending = (itemA, itemB) => {
-        return itemA.datingSpan[0][0] - itemB.datingSpan[0][0];
+        return itemA.objectDating[0][0] - itemB.objectDating[0][0];
     }
     //sort by period start date; TODO: takes into account only the first sense
     const sortPeriodAscending = (itemA, itemB) => {
         //shorten conditions?
-        const hasBeginA = itemA?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
-        const hasBeginB = itemB?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
+        const hasBeginA = itemA?.periodDating?.[0]?.[0]?.begin;
+        const hasBeginB = itemB?.periodDating?.[0]?.[0]?.begin;
         if (hasBeginA && hasBeginB)
         /*if (itemA && itemA.temporal && itemA.temporal[0][0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
             && itemB && itemB.temporal && itemB.temporal[0][0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)*/
-            return itemA.temporal[0][0].senses[0].begin - itemB.temporal[0][0].senses[0].begin
+            return itemA.periodDating?.[0]?.[0]?.begin - itemB.periodDating?.[0]?.[0]?.begin
         else
             return 0
     }
@@ -65,9 +93,10 @@ export const OurTimeline = (props) => {
 
         if (sortedTLDataLength > 0 && sortedTLData[0]) {
             if (input.timelineSort === "object") {
-                const first = sortedTLData[0].datingSpan[0][0];
-                const last = sortedTLData[sortedTLDataLength - 1].datingSpan[0][1];
+                const first = sortedTLData[0].objectDating[0][0];
+                const last = sortedTLData[sortedTLDataLength - 1].objectDating[0][1];
                 console.log("getTimeRangeOfTimelineData in object sorting mode")
+                console.log(first);
                 timeRange = [parseInt(first), parseInt(last)];
             }
             else if (input.timelineSort === "period") {
@@ -75,11 +104,9 @@ export const OurTimeline = (props) => {
                 console.log(sortedTLData);
                 //thorough checking for valid dates is done, but should not be necessary after filtering
                 //some default values are given in case no reasonable values are available
-                const first = sortedTLData[0].temporal?.[0]?.[0]?.senses?.[0]?.begin || -6000;
-                const last = sortedTLData[sortedTLDataLength - 1]?.temporal?.[0]?.[0]?.senses?.[0]?.end || -500;
-                console.log(sortedTLData[sortedTLDataLength - 1])
-
-                    timeRange = [parseInt(first), parseInt(last)];
+                const first = sortedTLData[0].periodDating?.[0]?.[0]?.begin || -6000;
+                const last = sortedTLData[sortedTLDataLength - 1]?.periodDating?.[0]?.[0]?.end || -500;
+                timeRange = [parseInt(first), parseInt(last)];
             }
         }
         setTimeRangeOfTimelineData(timeRange)
@@ -90,7 +117,7 @@ export const OurTimeline = (props) => {
     const transformTimelineData = (timeLData) => {
         if(!timeLData) return;
 
-        let transformedTimelineData = timeLData.entitiesMultiFilter?.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
+        let transformedTimelineData = timeLData.entitiesMultiFilter?.map(timelineMapper).filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
         if (input.timelineSort === "object") transformedTimelineData = transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
         else if (input.timelineSort === "period") transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
 
@@ -170,7 +197,7 @@ export const OurTimeline = (props) => {
                                     <CreateTimelineObjects
                                         color={d3.color("red")}
                                         data={sortedTimelineData}
-                                        whichTimespan="temporal"
+                                        whichTimespan="periodDating"
                                     />
                                 </g>}
 
@@ -182,7 +209,7 @@ export const OurTimeline = (props) => {
                                     <CreateTimelineObjects
                                         color={d3.color("blue")}
                                         data={sortedTimelineData}
-                                        whichTimespan="datingSpan"
+                                        whichTimespan="objectDating"
                                     />
                                 </g>}
                         </g>
