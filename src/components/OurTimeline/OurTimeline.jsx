@@ -163,7 +163,7 @@ export const OurTimeline = (props) => {
                 </Select>
             </FormControl>
             <Grid className="grid-timeline" item xs={12}/* lg={9}*/>
-                {timelineData ?
+                {//timelineData ?
                     <svg
                         //viewBox parameters are "min-x min-y width height"
                         viewBox={
@@ -226,7 +226,8 @@ export const OurTimeline = (props) => {
                                 />
                             </g>}
                     </svg>
-                    : <Skeleton variant="rect" width="100%" height="70%" />}
+                    //: <Skeleton variant="rect" width="100%" height="70%" />
+                    }
             </Grid>
         </div>
     );

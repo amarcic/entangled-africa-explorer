@@ -32,30 +32,30 @@ export const ReturnTimelineObject = (props) => {
                 //offset the rects along the y-axis using the index value; TODO: find better solution to avoid overlapping
                 ? <rect
                     x={timespan[0]}
-                    y={index * 20 + 10}
+                    y={index * 25 + 10}
                     width={calculatedWidth}
-                    height="16"
-                    rx="4"
-                    ry="4"
+                    height="14"
+                    //rx="4"
+                    //ry="4"
                     fill={highlighted ? color.darker() : color}
                     stroke={highlighted ? color.darker() : color}
                     strokeWidth={whichTimespan === "objectDating" ? "1" : "10"}
-                    opacity={highlighted ? "1" : "0.5"}
+                    opacity={highlighted ? "1" : "0.35"}
                 />
                 //if the width of the rect would be 0 because timespan[0] === timespan[1], draw a circle instead
                 : <circle
                     cx={timespan[0]}
-                    cy={index * 20 + 18}
-                    r="8"
+                    cy={index * 25 + 18}
+                    r="7"
                     fill={highlighted ? color.darker() : color}
                     stroke={highlighted ? color.darker() : color}
                     strokeWidth={whichTimespan === "objectDating" ? "1" : "10"}
-                    opacity={highlighted ? "1" : "0.5"}
+                    opacity={highlighted ? "1" : "0.35"}
 
                 />
             }
             <text
-                transform={`translate(${timespan[1]} ${index * 20 + 13})`}
+                transform={`translate(${timespan[1]} ${index * 25 + 15})`}
                 x="0"
                 y="0"
                 fill={color.darker(2)}

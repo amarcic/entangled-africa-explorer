@@ -118,7 +118,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "kopf",
+    searchStr: "wand*",
     projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
         {"projectLabel": "P01", "projectBestandsname": "P01"},
         {"projectLabel": "P02", "projectBestandsname": "P02"},
@@ -134,7 +134,7 @@ const initialInput = {
     boundingBoxCorner1: [],
     boundingBoxCorner2: [],
     drawBBox: false,
-    mapControlsExpanded: true,
+    mapControlsExpanded: false,
     resultsListExpanded: true,
     selectedMarker: undefined,
     timelineSort: "object"
@@ -444,7 +444,7 @@ export const AppContent = () => {
                     </Button>}
                     {input.resultsListExpanded
                         ? (<Grid className="grid-results-list-expanded" item>
-                            {/* Conditions for rendering a table */
+                            {// Conditions for rendering a table
                                 (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
                                     ? <ResultsTable
                                         mapDataObjects={mapDataObjects}
