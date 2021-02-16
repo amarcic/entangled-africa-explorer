@@ -45,7 +45,7 @@ export const ReturnTimelineObject = (props) => {
                 //if the width of the rect would be 0 because timespan[0] === timespan[1], draw a circle instead
                 : <circle
                     cx={timespan[0]}
-                    cy={index * 25 + 18}
+                    cy={index * 25 + 17}
                     r="7"
                     fill={highlighted ? color.darker() : color}
                     stroke={highlighted ? color.darker() : color}
