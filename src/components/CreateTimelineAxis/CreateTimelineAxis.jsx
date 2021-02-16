@@ -13,11 +13,12 @@ export const CreateTimelineAxis = (props) => {
     }
 
     const ticks = useMemo(() => {
+        const width = range[1] - range[0]
         const xScale = d3.scaleLinear()
             .domain(domain)
             .range(range);
-        const pixelsPerTick = 30;
-        const numberOfTicksTarget = Math.max(1, Math.floor(pixelsPerTick));
+        const pixelsPerTick = 100;
+        const numberOfTicksTarget = Math.max(1, Math.floor(width/pixelsPerTick));
         return (
             xScale.ticks(numberOfTicksTarget)
                 .map(value => ({
@@ -59,7 +60,7 @@ export const CreateTimelineAxis = (props) => {
                     <text
                         key={value}
                         style={{
-                            fontSize: "14px",
+                            fontSize: "1em",
                             textAnchor: "middle",
                             transform: position === "top" ? "translateY(-5px)" : "translateY(25px)"
                         }}
