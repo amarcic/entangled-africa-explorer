@@ -8,7 +8,7 @@ import { Button, Divider, Grid, LinearProgress, Tooltip } from "@material-ui/cor
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // Queries
-import { GET_OBJECTS, GET_OBJECT_CONTEXT, GET_ARCHAEOLOGICAL_SITES,GET_SITES_BY_REGION } from "./queries";
+import { searchObjects as GET_OBJECTS, searchObjectContext as GET_OBJECT_CONTEXT, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES, byRegion as GET_SITES_BY_REGION } from "./queries.graphql";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
