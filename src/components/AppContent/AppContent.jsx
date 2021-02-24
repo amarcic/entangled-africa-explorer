@@ -20,7 +20,16 @@ const GET_OBJECT_CONTEXT = gql`
                 name
                 coordinates
             }
-            #is temporal needed here?
+            #are dating stuff and temporal needed here?
+            dating
+            datingSpan
+            onDating
+            datingSets {
+                datingText
+                datingItems
+                datingSpan
+                periodIds
+            }
             temporal {
                 title
                 begin
@@ -52,8 +61,16 @@ const GET_OBJECTS = gql`
             }
             dating
             datingSpan
+            onDating
+            datingSets {
+                datingText
+                datingItems
+                datingSpan
+                periodIds
+            }
             temporal {
                 title
+                identifier
                 types
                 senses(typeOfSense: political) {
                     title
@@ -408,7 +425,7 @@ export const AppContent = () => {
                 {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
 
             </Grid>
-            <Grid className="grid-map" item xs={12} lg={9}>
+            {<Grid className="grid-map" item xs={12} lg={9}>
                 <OurMap
                     handleRelatedObjects={handleRelatedObjects}
                     mapDataObjects={mapDataObjects}
@@ -421,7 +438,7 @@ export const AppContent = () => {
                     renderingConditionSites={renderingConditionSites}
                     renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                 />
-            </Grid>
+            </Grid>}
             {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
                 {<Grid className="grid-results-list" item container direction="column">
                     <Divider/>
