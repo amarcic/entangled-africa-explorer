@@ -9,6 +9,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // Queries
 import { searchObjects as GET_OBJECTS, searchObjectContext as GET_OBJECT_CONTEXT, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES, byRegion as GET_SITES_BY_REGION } from "./queries.graphql";
+import { timelineAdapter } from "../../utils";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -374,6 +375,7 @@ export const AppContent = () => {
                         dispatch={dispatch}
                         input={input}
                         timelineData={dataObjects}
+                        timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />
                     : ""}
                 {/*: "Timeline not available for this mode"}*/}

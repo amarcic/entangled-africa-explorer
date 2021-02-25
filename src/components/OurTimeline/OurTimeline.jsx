@@ -4,6 +4,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
+import { timelineMapper } from "../../utils";
 
 
 export const OurTimeline = (props) => {
@@ -13,34 +14,6 @@ export const OurTimeline = (props) => {
 
     const [sortedTimelineData, setSortedTimelineData] = useState([]);
     const [timeRangeOfTimelineData, setTimeRangeOfTimelineData] = useState([-6000, -500])
-
-    //maps selected fields from deeply nested query result data for easy digestion by timeline
-    const timelineMapper = ( item ) => {
-        const objectDating = item.datingSpan;
-        let periodDating = item.temporal?.map( periodSpan => periodSpan.map( period => {
-            if (period.begin||period.end) {
-                return {
-                    name: period.title,
-                    begin: period.begin,
-                    end: period.end
-                }
-            } else {
-                //checks senses only if no dating is given on the period itself
-                return {
-                    name: period.title,
-                    begin: period.senses?.[0]?.begin,
-                    end: period.senses?.[0]?.end
-                }
-            }
-        }))
-
-        return {
-            itemId: item.identifier,
-            itemName: item.name,
-            objectDating: objectDating,
-            periodDating: periodDating
-        }
-    }
 
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
