@@ -40,22 +40,25 @@ export const OurTimeline = (props) => {
 
     //sort functions for timeline data:
     //sort by identifier in descending order (just a test)
-    const sortByIdentifierDescending = (a, b) => {
+    /*const sortByIdentifierDescending = (a, b) => {
         return b.identifier - a.identifier;
-    }
+    }*/
     //sort by object dating start date
     const sortYearAscending = (itemA, itemB) => {
-        return itemA.timespan[0] - itemB.timespan[0];
+        // sort by "begin" values (index 0) of timespan arrays; if those values are equal, then sort by "end" values (index 1)
+        if (itemA.timespan?.[0] === itemB.timespan?.[0]) return itemA.timespan?.[1] - itemB.timespan?.[1];
+        else return itemA.timespan?.[0] - itemB.timespan?.[0];
     }
     //sort by period start date; TODO: takes into account only the first element in periodSpans
     const sortPeriodAscending = (itemA, itemB) => {
-        //shorten conditions?
         const hasBeginA = itemA?.periodSpans?.[0]?.[0];
         const hasBeginB = itemB?.periodSpans?.[0]?.[0];
-        if (hasBeginA && hasBeginB)
-            return itemA.periodSpans?.[0]?.[0] - itemB.periodSpans?.[0]?.[0]
-        else
-            return 0
+        if (hasBeginA && hasBeginB) {
+            // sort by "begin" values (index 0) of periodSpans arrays; if those values are equal, then sort by "end" values (index 1)
+            if (itemA.periodSpans?.[0]?.[0] === itemB.periodSpans?.[0]?.[0]) return itemA.periodSpans?.[0]?.[1] - itemB.periodSpans?.[0]?.[1];
+            else return itemA.periodSpans?.[0]?.[0] - itemB.periodSpans?.[0]?.[0];
+        }
+        else return 0;
     }
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
