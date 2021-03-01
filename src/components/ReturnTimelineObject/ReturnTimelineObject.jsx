@@ -68,7 +68,12 @@ export const ReturnTimelineObject = (props) => {
                     {name}
                 </tspan>
                 <tspan x="1" dy="1.2em">
-                    {`(${formatDate(timespan[0])} - ${formatDate(timespan[1])})`}
+                    {
+                        //format is either "yearA - yearB", or just one year if timespan[0] === timespan[1]
+                        calculatedWidth !== 0
+                            ? `(${formatDate(timespan[0])} - ${formatDate(timespan[1])})`
+                            : `(${formatDate(timespan[0])})`
+                    }
                 </tspan>
             </text>
         </g>
