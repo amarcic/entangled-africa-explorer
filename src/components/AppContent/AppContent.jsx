@@ -374,7 +374,6 @@ export const AppContent = () => {
                     ? <OurTimeline
                         dispatch={dispatch}
                         input={input}
-                        timelineData={dataObjects}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />
                     : ""}

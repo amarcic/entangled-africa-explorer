@@ -8,7 +8,7 @@ import { timelineMapper, groupByPeriods } from "../../utils";
 
 
 export const OurTimeline = (props) => {
-    const { dispatch, input, timelineData } = props;
+    const { dispatch, input, timelineObjectsData } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -21,18 +21,18 @@ export const OurTimeline = (props) => {
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified
     const filterNoDatingSpan = (element) => {
-        if (element.objectDating?.length > 0) return element;
+        if (element.timespan?.length > 0) return element;
     }
-    //filter out elements that have more than one datingSpan (just temporarily)
+    //filter out elements that have more than one timespan (just temporarily)
     const filterMultipleDatingSpans = (element) => {
-        if (element.objectDating.length === 1) return element;
+        if (element.timespan.length === 1) return element;
     }
     //filter out elements that do not have a period timespan specified
     const filterNoPeriodDating = (element) => {
         //conditions shortened
         //only .begin is checked but later .end is used
         //const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
-        const hasBegin = element?.periodDating?.[0]?.[0]?.begin;
+        const hasBegin = element?.periodSpans?.[0]?.[0];
         if (hasBegin) {
             return element;
         }
@@ -43,19 +43,17 @@ export const OurTimeline = (props) => {
     const sortByIdentifierDescending = (a, b) => {
         return b.identifier - a.identifier;
     }
-    //sort by object dating start date; TODO: is based on datingSpan[0][0], if there is more than one datingSpan given this is not taken into account so far
+    //sort by object dating start date
     const sortYearAscending = (itemA, itemB) => {
-        return itemA.objectDating[0][0] - itemB.objectDating[0][0];
+        return itemA.timespan[0] - itemB.timespan[0];
     }
-    //sort by period start date; TODO: takes into account only the first sense
+    //sort by period start date; TODO: takes into account only the first element in periodSpans
     const sortPeriodAscending = (itemA, itemB) => {
         //shorten conditions?
-        const hasBeginA = itemA?.periodDating?.[0]?.[0]?.begin;
-        const hasBeginB = itemB?.periodDating?.[0]?.[0]?.begin;
+        const hasBeginA = itemA?.periodSpans?.[0]?.[0];
+        const hasBeginB = itemB?.periodSpans?.[0]?.[0];
         if (hasBeginA && hasBeginB)
-        /*if (itemA && itemA.temporal && itemA.temporal[0][0] && itemA.temporal[0].senses && itemA.temporal[0].senses[0] && itemA.temporal[0].senses[0].begin
-            && itemB && itemB.temporal && itemB.temporal[0][0] && itemB.temporal[0].senses && itemB.temporal[0].senses[0] && itemB.temporal[0].senses[0].begin)*/
-            return itemA.periodDating?.[0]?.[0]?.begin - itemB.periodDating?.[0]?.[0]?.begin
+            return itemA.periodSpans?.[0]?.[0] - itemB.periodSpans?.[0]?.[0]
         else
             return 0
     }
@@ -69,58 +67,44 @@ export const OurTimeline = (props) => {
 
         if (sortedTLDataLength > 0 && sortedTLData[0]) {
             if (input.timelineSort === "object") {
-                const first = sortedTLData[0].objectDating[0][0];
-                //const last = sortedTLData[sortedTLDataLength - 1].objectDating[0][1];
-                const last = d3.max(sortedTLData.map(item => parseInt(item.objectDating?.[0]?.[1])))
-                console.log("getTimeRangeOfTimelineData in object sorting mode")
-                console.log(first);
+                const first = sortedTLData[0].timespan[0];
+                const last = d3.max(sortedTLData.map(item => parseInt(item.timespan?.[1])))
                 timeRange = [parseInt(first), parseInt(last)];
             }
             else if (input.timelineSort === "period") {
-                console.log("getTimeRangeOfTimelineData in period sorting mode");
-                console.log(sortedTLData);
                 //thorough checking for valid dates is done, but should not be necessary after filtering
                 //some default values are given in case no reasonable values are available
-                const first = sortedTLData[0].periodDating?.[0]?.[0]?.begin || -6000;
-                //const last = sortedTLData[sortedTLDataLength - 1]?.periodDating?.[0]?.[0]?.end || -500;
-                const last = d3.max(sortedTLData.map(item => parseInt(item.periodDating?.[0]?.[0]?.end))) || -500;
+                const first = sortedTLData[0].periodSpans?.[0]?.[0] || -6000;
+                const last = d3.max(sortedTLData.map(item => parseInt(item.periodSpans?.[0]?.[1])))
                 timeRange = [parseInt(first), parseInt(last)];
             }
         }
         setTimeRangeOfTimelineData(timeRange)
-        //return timeRange;
     }
 
     //apply filters and sorts to transform data as needed/wanted
     const transformTimelineData = (timeLData) => {
         if(!timeLData) return;
 
-        let transformedTimelineData = timeLData.entitiesMultiFilter?.map(timelineMapper).filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
+        let transformedTimelineData = timeLData.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
         if (input.timelineSort === "object") transformedTimelineData = transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
         else if (input.timelineSort === "period") transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
 
-        console.log("timelinedata is being transformed!")
-        //commented out for provisional fix for circular dependency between transformTimeLineData and getTimeRangeOfTimeLineData
-        //timeRangeOfTimelineData = getTimeRangeOfTimelineData();
-        console.log(transformedTimelineData);
+        //console.log("timelineObjectsData is being transformed!")
+        //console.log(transformedTimelineData);
         getTimeRangeOfTimelineData(transformedTimelineData);
         setSortedTimelineData(transformedTimelineData);
-        //return transformedTimelineData;
     }
 
 
-    //put the smallest and largest year in the sortedTimelineData into variable for easier access
-    //let timeRangeOfTimelineData;
-    //if (!timeRangeOfTimelineData) timeRangeOfTimelineData = getTimeRangeOfTimelineData(sortedTimelineData);
-
-
     useEffect(() => {
-        transformTimelineData(timelineData);
-    }, [input.timelineSort, timelineData])
+        transformTimelineData(timelineObjectsData);
+    }, [input.timelineSort, timelineObjectsData])
 
 
-    console.log("sort by:", input.timelineSort)
-    console.log("sortedTimelineData:", sortedTimelineData)
+    //console.log("timelineObjectsData:", timelineObjectsData)
+    //console.log("sort by:", input.timelineSort)
+    //console.log("sortedTimelineData:", sortedTimelineData)
     console.log("timeRangeOfTimelineData:", timeRangeOfTimelineData)
 
 
@@ -141,7 +125,7 @@ export const OurTimeline = (props) => {
                 </Select>
             </FormControl>
             <Grid className="grid-timeline" item xs={12}/* lg={9}*/>
-                {//timelineData ?
+                {//timelineObjectsData ?
                     <svg
                         //viewBox parameters are "min-x min-y width height"
                         viewBox={
@@ -205,7 +189,7 @@ export const OurTimeline = (props) => {
                             </g>}
                     </svg>
                     //: <Skeleton variant="rect" width="100%" height="70%" />
-                    }
+                }
             </Grid>
         </div>
     );

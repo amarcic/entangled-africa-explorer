@@ -2,8 +2,8 @@ import React, { useState } from "react";
 
 
 export const ReturnTimelineObject = (props) => {
-    const { color, index, item, timespan, timespanIndex, whichTimespan } = props;
-    
+    const { color, index, name, timespan, timespanIndex, whichTimespan } = props;
+
     //state used to focus timeline objects
     const [highlighted, setHighlighted] = useState(false);
 
@@ -65,7 +65,7 @@ export const ReturnTimelineObject = (props) => {
                 opacity={highlighted ? "1" : "0"}
             >
                 <tspan x="1">
-                    {whichTimespan === "objectDating" ? item.itemName : item.name}
+                    {name}
                 </tspan>
                 <tspan x="1" dy="1.2em">
                     {`(${formatDate(timespan[0])} - ${formatDate(timespan[1])})`}
