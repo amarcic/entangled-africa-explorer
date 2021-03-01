@@ -26,8 +26,9 @@ const timelineAdapter = ( object ) => {
                 itemId: object.identifier,
                 itemName: object.name,
                 timespan: datingSet.datingSpan,
-                periodName: datingSet.periodIds?.map( periodId => periodData[periodId].periodName ),
-                periodSpan: datingSet.periodIds?.map( periodId => periodData[periodId].periodSpan )
+                periodIds: datingSet.periodIds,
+                periodNames: datingSet.periodIds?.map( periodId => periodData[periodId].periodName ),
+                periodSpans: datingSet.periodIds?.map( periodId => periodData[periodId].periodSpan )
                 //object.temporal?.flat().find( period => period.identifier === datingSet.periodIds?.[0] )?.title
             }
 
