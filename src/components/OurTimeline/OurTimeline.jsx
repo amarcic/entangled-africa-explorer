@@ -4,7 +4,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
-import { timelineMapper } from "../../utils";
+import { timelineMapper, groupByPeriods } from "../../utils";
 
 
 export const OurTimeline = (props) => {
@@ -14,6 +14,9 @@ export const OurTimeline = (props) => {
 
     const [sortedTimelineData, setSortedTimelineData] = useState([]);
     const [timeRangeOfTimelineData, setTimeRangeOfTimelineData] = useState([-6000, -500])
+
+    //example for grouping timeline objects by period names
+    //console.log(props.timelineObjectsData&&groupByPeriods(props.timelineObjectsData));
 
     //filter functions for timeline data:
     //filter out elements that do not have a datingSpan specified

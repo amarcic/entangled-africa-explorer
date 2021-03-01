@@ -45,6 +45,7 @@
     "apollo-client": "^2.6.10",
     "apollo-link-http": "^1.5.17",
     "d3": "^6.2.0",
+    "d3-array": "^2.11.0",
     "graphql": "^14.7.0",
     "graphql-tag": "^2.11.0",
     "i18next": "^19.9.1",

@@ -1,3 +1,4 @@
+import { group } from "d3-array";
 
 const timelineAdapter = ( object ) => {
 
@@ -65,6 +66,9 @@ const timelineMapper = ( item ) => {
         objectDating: objectDating,
         periodDating: periodDating
     }
-}
+};
 
-export { timelineAdapter, timelineMapper };
+const groupByPeriods = ( timelineObject ) =>
+    group( timelineObject, timelineObject => timelineObject.periodNames);
+
+export { timelineAdapter, timelineMapper, groupByPeriods };
