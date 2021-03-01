@@ -69,6 +69,6 @@ const timelineMapper = ( item ) => {
 };
 
 const groupByPeriods = ( timelineObject ) =>
-    group( timelineObject, timelineObject => timelineObject.periodNames);
+    group( timelineObject, timelineObject => timelineObject.periodIds);
 
 export { timelineAdapter, timelineMapper, groupByPeriods };
