@@ -67,7 +67,8 @@ export const OurTimeline = (props) => {
         if (sortedTLDataLength > 0 && sortedTLData[0]) {
             if (input.timelineSort === "object") {
                 const first = sortedTLData[0].objectDating[0][0];
-                const last = sortedTLData[sortedTLDataLength - 1].objectDating[0][1];
+                //const last = sortedTLData[sortedTLDataLength - 1].objectDating[0][1];
+                const last = d3.max(sortedTLData.map(item => parseInt(item.objectDating?.[0]?.[1])))
                 console.log("getTimeRangeOfTimelineData in object sorting mode")
                 console.log(first);
                 timeRange = [parseInt(first), parseInt(last)];
@@ -78,7 +79,8 @@ export const OurTimeline = (props) => {
                 //thorough checking for valid dates is done, but should not be necessary after filtering
                 //some default values are given in case no reasonable values are available
                 const first = sortedTLData[0].periodDating?.[0]?.[0]?.begin || -6000;
-                const last = sortedTLData[sortedTLDataLength - 1]?.periodDating?.[0]?.[0]?.end || -500;
+                //const last = sortedTLData[sortedTLDataLength - 1]?.periodDating?.[0]?.[0]?.end || -500;
+                const last = d3.max(sortedTLData.map(item => parseInt(item.periodDating?.[0]?.[0]?.end))) || -500;
                 timeRange = [parseInt(first), parseInt(last)];
             }
         }
