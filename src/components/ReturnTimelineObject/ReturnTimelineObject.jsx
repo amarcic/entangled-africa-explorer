@@ -13,8 +13,8 @@ export const ReturnTimelineObject = (props) => {
         setHighlighted(input.highlightedTimelineObject === id + "_" + whichTimespan)
     }, [input.highlightedTimelineObject]);
 
-    //TODO: calculate in a better way, because e.g. [-100, 100] would not work right now
-    const calculatedWidth = Math.abs(Math.abs(timespan[0]) - Math.abs(timespan[1]));
+
+    const calculatedWidth = Math.abs(timespan[1] - timespan[0]);
 
     const formatDate = (value) => {
         return value < 0 ? -value + " BC" : value !== 0 ? value + " AD" : 0
