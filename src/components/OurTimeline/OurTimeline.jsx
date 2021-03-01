@@ -62,6 +62,7 @@ export const OurTimeline = (props) => {
     }
 
     //put the smallest and largest year in the sortedTimelineData into variable for easier access
+    //some default values are given in case no reasonable values are available
     const getTimeRangeOfTimelineData = (sortedTLData) => {
         if (!sortedTLData) return;
 
@@ -70,15 +71,14 @@ export const OurTimeline = (props) => {
 
         if (sortedTLDataLength > 0 && sortedTLData[0]) {
             if (input.timelineSort === "object") {
-                const first = sortedTLData[0].timespan[0];
-                const last = d3.max(sortedTLData.map(item => parseInt(item.timespan?.[1])))
+                const first = sortedTLData[0].timespan[0]  || -6000;
+                const last = d3.max(sortedTLData.map(item => parseInt(item.timespan?.[1]))) || -500;
                 timeRange = [parseInt(first), parseInt(last)];
             }
             else if (input.timelineSort === "period") {
                 //thorough checking for valid dates is done, but should not be necessary after filtering
-                //some default values are given in case no reasonable values are available
                 const first = sortedTLData[0].periodSpans?.[0]?.[0] || -6000;
-                const last = d3.max(sortedTLData.map(item => parseInt(item.periodSpans?.[0]?.[1])))
+                const last = d3.max(sortedTLData.map(item => parseInt(item.periodSpans?.[0]?.[1]))) || -500;
                 timeRange = [parseInt(first), parseInt(last)];
             }
         }
