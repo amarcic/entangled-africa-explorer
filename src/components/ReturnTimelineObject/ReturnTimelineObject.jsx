@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 
 
 export const ReturnTimelineObject = (props) => {
-    const { color, index, name, timespan, timespanIndex, whichTimespan } = props;
+    const { color, index, item, timespan, timespanIndex, whichTimespan, dispatch, input } = props;
+
+    const id = whichTimespan === "objectDating" ? item.itemId : item.periodIds[timespanIndex];
 
     //state used to focus timeline objects
-    const [highlighted, setHighlighted] = useState(false);
+    const [highlighted, setHighlighted] = useState(input.highlightedTimelineObject === id + "_" + whichTimespan);
+
+    useEffect( () => {
+        setHighlighted(input.highlightedTimelineObject === id + "_" + whichTimespan)
+    }, [input.highlightedTimelineObject]);
 
     //TODO: calculate in a better way, because e.g. [-100, 100] would not work right now
     const calculatedWidth = Math.abs(Math.abs(timespan[0]) - Math.abs(timespan[1]));
@@ -19,10 +25,20 @@ export const ReturnTimelineObject = (props) => {
         <g
             key={"timespan_" + index + "_" + timespanIndex}
             onMouseOver={
-                () => setHighlighted(!highlighted)
+                () => {
+                    dispatch({
+                        type: "UPDATE_INPUT",
+                        payload: {field: "highlightedTimelineObject", value: id + "_" + whichTimespan}
+                    })
+                }
             }
             onMouseOut={
-                () => setHighlighted(!highlighted)
+                () => {
+                    dispatch({
+                        type: "UPDATE_INPUT",
+                        payload: {field: "highlightedTimelineObject", value: undefined}
+                    })
+                }
             }
         >
             {calculatedWidth !== 0
@@ -65,7 +81,7 @@ export const ReturnTimelineObject = (props) => {
                 opacity={highlighted ? "1" : "0"}
             >
                 <tspan x="1">
-                    {name}
+                    {whichTimespan === "objectDating" ? `${item.itemName} (${id})` : item.periodNames}
                 </tspan>
                 <tspan x="1" dy="1.2em">
                     {

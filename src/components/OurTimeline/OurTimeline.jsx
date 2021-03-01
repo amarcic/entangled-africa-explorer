@@ -108,7 +108,7 @@ export const OurTimeline = (props) => {
     //console.log("timelineObjectsData:", timelineObjectsData)
     //console.log("sort by:", input.timelineSort)
     //console.log("sortedTimelineData:", sortedTimelineData)
-    console.log("timeRangeOfTimelineData:", timeRangeOfTimelineData)
+    //console.log("timeRangeOfTimelineData:", timeRangeOfTimelineData)
 
 
     return (
@@ -119,7 +119,7 @@ export const OurTimeline = (props) => {
                 <Select
                     value={input.timelineSort}
                     onChange={(event) => {
-                        console.log("change sorting to", event.target.value);
+                        //console.log("change sorting to", event.target.value);
                         dispatch({type: "UPDATE_INPUT", payload: {field: "timelineSort", value: event.target.value}});
                     }}
                 >
@@ -163,6 +163,8 @@ export const OurTimeline = (props) => {
                                         color={d3.color("red")}
                                         data={sortedTimelineData}
                                         whichTimespan="periodDating"
+                                        dispatch={dispatch}
+                                        input={input}
                                     />
                                 </g>}
 
@@ -175,6 +177,8 @@ export const OurTimeline = (props) => {
                                         color={d3.color("blue")}
                                         data={sortedTimelineData}
                                         whichTimespan="objectDating"
+                                        dispatch={dispatch}
+                                        input={input}
                                     />
                                 </g>}
                         </g>

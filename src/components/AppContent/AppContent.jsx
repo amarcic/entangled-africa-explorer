@@ -18,7 +18,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "wand*",
+    searchStr: "*kaiserzeitlich*",
     projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
         {"projectLabel": "P01", "projectBestandsname": "P01"},
         {"projectLabel": "P02", "projectBestandsname": "P02"},
@@ -37,7 +37,8 @@ const initialInput = {
     mapControlsExpanded: false,
     resultsListExpanded: true,
     selectedMarker: undefined,
-    timelineSort: "object"
+    timelineSort: "object",
+    highlightedTimelineObject: undefined
 };
 
 
@@ -368,7 +369,7 @@ export const AppContent = () => {
                         </Grid>)
                     }
                 </Grid>}
-            </Grid>}
+            </Grid>*/}
             {<Grid className="grid-timeline" item xs={12}>
                 {input.mode === "objects"
                     ? <OurTimeline
