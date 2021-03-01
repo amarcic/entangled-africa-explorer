@@ -88,10 +88,20 @@ export const OurTimeline = (props) => {
     //apply filters and sorts to transform data as needed/wanted
     const transformTimelineData = (timeLData) => {
         if(!timeLData) return;
-
-        let transformedTimelineData = timeLData.filter(filterNoDatingSpan); //filter out elements where no datingSpan is specified
-        if (input.timelineSort === "object") transformedTimelineData = transformedTimelineData.sort(sortYearAscending); //sort elements by object dating in ascending order
-        else if (input.timelineSort === "period") transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending); //sort elements by period dating in ascending order
+        
+        let transformedTimelineData = timeLData;
+        if (input.timelineSort === "object") {
+            //sort elements by object dating in ascending order
+            //(also sort by period so the order makes sense if object datings are equal)
+            transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending).sort(sortPeriodAscending);
+            //transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending);
+            }
+        else if (input.timelineSort === "period") {
+            //sort elements by period dating in ascending order
+            //(also sort by object so the order makes sense if period datings are equal)
+            transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending).sort(sortYearAscending);
+            //transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending);
+        }
 
         //console.log("timelineObjectsData is being transformed!")
         //console.log(transformedTimelineData);
