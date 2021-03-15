@@ -1,50 +1,43 @@
 import React from "react";
 import { ReturnTimelineObject } from "..";
+import * as d3 from "d3";
 
 export const CreateTimelineObjects = (props) => {
-    const { color, data, whichTimespan } = props;
+    const { color, data, whichTimespan, dispatch, input } = props;
 
-    if (whichTimespan === "datingSpan") {
+    if (whichTimespan === "objectDating") {
         return data && data.map((item, index) => {
-            return item.datingSpan && item.datingSpan.map((ds, dsIndex) => {
-                    return (
-                        ds
-                        && <ReturnTimelineObject
-                            key={"datingSpan_" + index + "_" + dsIndex}
-                            timespan={ds}
-                            timespanIndex={dsIndex}
-                            index={index}
-                            item={item}
-                            color={color}
-                            whichTimespan={whichTimespan}
-                        />
-                    );
-                }
-            )
-        })
+                return (item.timespan
+                    && <ReturnTimelineObject
+                        key={"objectDating_" + index}
+                        timespan={item.timespan}
+                        timespanIndex={0}
+                        index={index}
+                        item={item}
+                        color={color}
+                        whichTimespan={whichTimespan}
+                        dispatch={dispatch}
+                        input={input}
+                    />)
+            }
+        )
     }
-    //TODO: make less messy
-    else if (whichTimespan === "temporal") {
+    else if (whichTimespan === "periodDating") {
         return data && data.map((item, index) => {
-            return item.temporal && item.temporal.map((temporal, temporalIndex) => {
-                    return temporal && temporal.map((temporalItem, temporalItemIndex) => {
-                            return temporalItem.senses && temporalItem.senses.map((sense, senseIndex) => {
-                                return (sense && sense.begin && sense.end
-                                    && <ReturnTimelineObject
-                                        key={"temporal_sense_" + index + "_" + temporalIndex + "_" + temporalItemIndex + "_" + senseIndex}
-                                        timespan={[sense.begin, sense.end]}
-                                        timespanIndex={senseIndex}
-                                        index={index}
-                                        item={temporalItem}
-                                        color={color}
-                                        whichTimespan={whichTimespan}
-                                    />
-                                );
-                            })
-                        }
-                    )
-                }
-            )
+            return item.periodSpans?.map( (periodSpan, spanDex) => {
+                return (periodSpan
+                    && <ReturnTimelineObject
+                        key={"period_" + index + "_" + spanDex}
+                        timespan={periodSpan}
+                        timespanIndex={spanDex}
+                        index={index}
+                        item={item}
+                        color={color}
+                        whichTimespan={whichTimespan}
+                        dispatch={dispatch}
+                        input={input}
+                    />)
+            } )
         })
     }
 }

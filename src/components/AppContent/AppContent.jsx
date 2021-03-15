@@ -7,109 +7,9 @@ import { CollapsedFilters, Filters, OurMap, OurTimeline, ResultsTable } from "..
 import { Button, Divider, Grid, LinearProgress, Tooltip } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
-
 // Queries
-const GET_OBJECT_CONTEXT = gql`
-    query searchObjectContext($arachneId: ID!) {
-        entity(id: $arachneId) {
-            identifier
-            name
-            spatial {
-                identifier
-                name
-                coordinates
-            }
-            #is temporal needed here?
-            temporal {
-                title
-                begin
-                end
-            }
-            related(types: [Einzelobjekte, Bauwerke]) {
-                identifier
-                name
-                type
-                spatial {
-                    identifier
-                    name
-                    coordinates
-                }
-            }
-        }
-    }
-`;
-
-const GET_OBJECTS = gql`
-    query searchObjects ($searchTerm: String, $project: [String], $bbox: [String], $periodTerm: String) {
-        entitiesMultiFilter(searchString: $searchTerm, projects: $project, coordinates: $bbox, period: $periodTerm, entityTypes: [Einzelobjekte]) {
-            identifier
-            name
-            spatial {
-                identifier
-                name
-                coordinates
-            }
-            dating
-            datingSpan
-            temporal {
-                title
-                types
-                senses(typeOfSense: political) {
-                    title
-                    identifier
-                    begin
-                    end
-                }
-            }
-        }
-    }
-`;
-
-const GET_ARCHAEOLOGICAL_SITES = gql`
-    query searchArchaeoSites($searchTerm: String, $bbox: [String]) {
-        archaeologicalSites(searchString: $searchTerm, coordinates: $bbox) {
-            identifier
-            name
-            coordinates
-            types
-            locatedIn {
-                identifier
-                name
-            }
-        }
-    }
-`;
-
-const GET_SITES_BY_REGION = gql`
-    query byRegion($searchTerm: String, $idOfRegion: ID!) {
-        sitesByRegion(searchString: $searchTerm, id: $idOfRegion) {
-            identifier
-            name
-            coordinates
-            types
-            locatedIn {
-                identifier
-                name
-            }
-        }
-    }
-`;
-
-/*const GET_ARCHAEOLOGICAL_SITE_CONTEXT = gql`
-    query searchArchaeoSiteContext($searchTerm: String, $bbox: [String]) {
-        place() {
-            identifier
-            name
-            coordinates
-            types
-            locatedIn {
-                identifier
-                name
-            }
-        }
-    }
-`;*/
+import { searchObjects as GET_OBJECTS, searchObjectContext as GET_OBJECT_CONTEXT, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES, byRegion as GET_SITES_BY_REGION } from "./queries.graphql";
+import { timelineAdapter } from "../../utils";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -118,7 +18,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "kopf",
+    searchStr: "*kaiserzeitlich*",
     projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
         {"projectLabel": "P01", "projectBestandsname": "P01"},
         {"projectLabel": "P02", "projectBestandsname": "P02"},
@@ -134,10 +34,11 @@ const initialInput = {
     boundingBoxCorner1: [],
     boundingBoxCorner2: [],
     drawBBox: false,
-    mapControlsExpanded: true,
+    mapControlsExpanded: false,
     resultsListExpanded: true,
     selectedMarker: undefined,
-    timelineSort: "object"
+    timelineSort: "object",
+    highlightedTimelineObject: undefined
 };
 
 
@@ -408,7 +309,7 @@ export const AppContent = () => {
                 {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
 
             </Grid>
-            <Grid className="grid-map" item xs={12} lg={9}>
+            {<Grid className="grid-map" item xs={12} lg={9}>
                 <OurMap
                     handleRelatedObjects={handleRelatedObjects}
                     mapDataObjects={mapDataObjects}
@@ -421,7 +322,7 @@ export const AppContent = () => {
                     renderingConditionSites={renderingConditionSites}
                     renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                 />
-            </Grid>
+            </Grid>}
             {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
                 {<Grid className="grid-results-list" item container direction="column">
                     <Divider/>
@@ -444,7 +345,7 @@ export const AppContent = () => {
                     </Button>}
                     {input.resultsListExpanded
                         ? (<Grid className="grid-results-list-expanded" item>
-                            {/* Conditions for rendering a table */
+                            {// Conditions for rendering a table
                                 (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
                                     ? <ResultsTable
                                         mapDataObjects={mapDataObjects}
@@ -468,13 +369,13 @@ export const AppContent = () => {
                         </Grid>)
                     }
                 </Grid>}
-            </Grid>}
+            </Grid>*/}
             {<Grid className="grid-timeline" item xs={12}>
                 {input.mode === "objects"
                     ? <OurTimeline
                         dispatch={dispatch}
                         input={input}
-                        timelineData={dataObjects}
+                        timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />
                     : ""}
                 {/*: "Timeline not available for this mode"}*/}
