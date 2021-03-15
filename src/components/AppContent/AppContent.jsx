@@ -369,7 +369,7 @@ export const AppContent = () => {
                         </Grid>)
                     }
                 </Grid>}
-            </Grid>*/}
+            </Grid>}
             {<Grid className="grid-timeline" item xs={12}>
                 {input.mode === "objects"
                     ? <OurTimeline

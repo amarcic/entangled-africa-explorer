@@ -1,4 +1,8 @@
 import { group } from "d3-array";
+import * as d3 from "d3";
+
+
+//TIMELINE HELPER FUNCTIONS
 
 const timelineAdapter = ( object ) => {
 
@@ -71,4 +75,97 @@ const timelineMapper = ( item ) => {
 const groupByPeriods = ( timelineObject ) =>
     group( timelineObject, timelineObject => timelineObject.periodIds);
 
-export { timelineAdapter, timelineMapper, groupByPeriods };
+//filter functions for timeline data:
+//filter out elements that do not have a datingSpan specified
+const filterNoDatingSpan = (element) => {
+    if (element.timespan?.length > 0) return element;
+}
+//filter out elements that have more than one timespan (just temporarily)
+/*const filterMultipleDatingSpans = (element) => {
+    if (element.timespan.length === 1) return element;
+}*/
+//filter out elements that do not have a period timespan specified
+const filterNoPeriodDating = (element) => {
+    //conditions shortened
+    //only .begin is checked but later .end is used
+    //const hasBegin = element?.temporal?.[0]?.[0]?.senses?.[0]?.begin;
+    const hasBegin = element?.periodSpans?.[0]?.[0];
+    if (hasBegin) {
+        return element;
+    }
+}
+
+//sort functions for timeline data:
+//sort by identifier in descending order (just a test)
+/*const sortByIdentifierDescending = (a, b) => {
+    return b.identifier - a.identifier;
+}*/
+//sort by object dating start date
+const sortYearAscending = (itemA, itemB) => {
+    // sort by "begin" values (index 0) of timespan arrays; if those values are equal, then sort by "end" values (index 1)
+    if (itemA.timespan?.[0] === itemB.timespan?.[0]) return itemA.timespan?.[1] - itemB.timespan?.[1];
+    else return itemA.timespan?.[0] - itemB.timespan?.[0];
+}
+//sort by period start date; TODO: takes into account only the first element in periodSpans
+const sortPeriodAscending = (itemA, itemB) => {
+    const hasBeginA = itemA?.periodSpans?.[0]?.[0];
+    const hasBeginB = itemB?.periodSpans?.[0]?.[0];
+    if (hasBeginA && hasBeginB) {
+        // sort by "begin" values (index 0) of periodSpans arrays; if those values are equal, then sort by "end" values (index 1)
+        if (itemA.periodSpans?.[0]?.[0] === itemB.periodSpans?.[0]?.[0]) return itemA.periodSpans?.[0]?.[1] - itemB.periodSpans?.[0]?.[1];
+        else return itemA.periodSpans?.[0]?.[0] - itemB.periodSpans?.[0]?.[0];
+    }
+    else return 0;
+}
+
+//put the smallest and largest year in the sortedTimelineData into variable for easier access
+//some default values are given in case no reasonable values are available
+const getTimeRangeOfTimelineData = (sortedTLData, mode) => {
+    if (!sortedTLData) return;
+
+    let timeRange;
+    const sortedTLDataLength = sortedTLData.length;
+
+    if (sortedTLDataLength > 0 && sortedTLData[0]) {
+        if (mode === "object") {
+            const first = sortedTLData[0].timespan[0]  || -6000;
+            const last = d3.max(sortedTLData.map(item => parseInt(item.timespan?.[1]))) || -500;
+            timeRange = [parseInt(first), parseInt(last)];
+        }
+        else if (mode === "period") {
+            //thorough checking for valid dates is done, but should not be necessary after filtering
+            const first = sortedTLData[0].periodSpans?.[0]?.[0] || -6000;
+            const last = d3.max(sortedTLData.map(item => parseInt(item.periodSpans?.[0]?.[1]))) || -500;
+            timeRange = [parseInt(first), parseInt(last)];
+        }
+    }
+    return timeRange;
+    //setTimeRangeOfTimelineData(timeRange)
+}
+
+//apply filters and sorts to transform data as needed/wanted
+const transformTimelineData = (timeLData, mode) => {
+    if(!timeLData) return;
+
+    let transformedTimelineData = timeLData;
+    if (mode === "object") {
+        //sort elements by object dating in ascending order
+        //(also sort by period so the order makes sense if object datings are equal)
+        transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending).sort(sortPeriodAscending);
+        //transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending);
+    }
+    else if (mode === "period") {
+        //sort elements by period dating in ascending order
+        //(also sort by object so the order makes sense if period datings are equal)
+        transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending).sort(sortYearAscending);
+        //transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending);
+    }
+
+    //console.log("timelineObjectsData is being transformed!")
+    //console.log(transformedTimelineData);
+    //getTimeRangeOfTimelineData(transformedTimelineData);
+    return transformedTimelineData;
+    //setSortedTimelineData(transformedTimelineData);
+}
+
+export { timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData };
