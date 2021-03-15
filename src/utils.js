@@ -118,29 +118,33 @@ const sortPeriodAscending = (itemA, itemB) => {
     else return 0;
 }
 
-//put the smallest and largest year in the sortedTimelineData into variable for easier access
+//put the smallest and largest year in the timelineObjectsData into variable for easier access
 //some default values are given in case no reasonable values are available
-const getTimeRangeOfTimelineData = (sortedTLData, mode) => {
-    if (!sortedTLData) return;
+const getTimeRangeOfTimelineData = (timeLData, mode) => {
+    if (!timeLData) return;
 
     let timeRange;
-    const sortedTLDataLength = sortedTLData.length;
+    const sortedTLDataLength = timeLData.length;
 
-    if (sortedTLDataLength > 0 && sortedTLData[0]) {
+    if (sortedTLDataLength > 0 && timeLData[0]) {
         if (mode === "object") {
-            const first = sortedTLData[0].timespan[0]  || -6000;
-            const last = d3.max(sortedTLData.map(item => parseInt(item.timespan?.[1]))) || -500;
+            //const first = d3.min(timeLData.map(item => parseInt(item.timespan?.[0])) || -6000);
+            const minFirst = d3.min(timeLData.map(item => parseInt(item.timespan?.[0])))
+            const first = minFirst !== undefined ? minFirst : -6000;
+            const maxLast = d3.max(timeLData.map(item => parseInt(item.timespan?.[1])))
+            const last = maxLast !== undefined ? maxLast : -500;
             timeRange = [parseInt(first), parseInt(last)];
         }
         else if (mode === "period") {
             //thorough checking for valid dates is done, but should not be necessary after filtering
-            const first = sortedTLData[0].periodSpans?.[0]?.[0] || -6000;
-            const last = d3.max(sortedTLData.map(item => parseInt(item.periodSpans?.[0]?.[1]))) || -500;
+            const minFirst = d3.min(timeLData.map(item => item.periodSpans?.map(nestedItem => parseInt(nestedItem?.[0]))).flat());
+            const first = minFirst !== undefined ? minFirst : -6000;
+            const maxLast = d3.max(timeLData.map((item) => item.periodSpans?.map((nestedItem) => parseInt(nestedItem?.[1]))).flat());
+            const last = maxLast !== undefined ? maxLast : -500;
             timeRange = [parseInt(first), parseInt(last)];
         }
     }
     return timeRange;
-    //setTimeRangeOfTimelineData(timeRange)
 }
 
 //apply filters and sorts to transform data as needed/wanted
