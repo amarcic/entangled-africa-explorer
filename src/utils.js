@@ -73,7 +73,7 @@ const timelineMapper = ( item ) => {
 };
 
 const groupByPeriods = ( timelineObject ) =>
-    group( timelineObject, timelineObject => timelineObject.periodIds?.[0]);
+    timelineObject && group(timelineObject, timelineObject => timelineObject.periodIds?.[0]);
 
 //filter functions for timeline data:
 //filter out elements that do not have a datingSpan specified
