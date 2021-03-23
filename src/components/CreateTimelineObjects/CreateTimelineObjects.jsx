@@ -26,7 +26,7 @@ export const CreateTimelineObjects = (props) => {
     else if (whichTimespan === "periodDating") {
         if(input.timelineSort === "period") {
             return data && data.map((itemGroup, itemGroupIndex) => {
-                return (itemGroup
+                return (itemGroup && itemGroup[0]?.periodSpans?.[0]
                     && <ReturnTimelineObject
                         key={"period_group_" + itemGroupIndex}
                         timespan={itemGroup[0]?.periodSpans?.[0]}
