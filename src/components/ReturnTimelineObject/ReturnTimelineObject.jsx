@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 export const ReturnTimelineObject = (props) => {
     const { color, index, item, timespan, timespanIndex, whichTimespan, dispatch, input, itemHeight, adjustYPosition } = props;
 
-    const id = whichTimespan === "objectDating" ? item.itemId : item.periodIds[0];
+    const id = whichTimespan === "objectDating" ? item.itemId : item?.periodIds?.[0];
 
     //TODO: rethink positioning stuff, it may be a bit unnecessarily complicated
     const TLRectHeight = 20;
@@ -75,8 +75,8 @@ export const ReturnTimelineObject = (props) => {
                     cx={timespan[0]}
                     cy={
                         adjustYPosition //whichTimespan === "objectDating"
-                            ? adjustYPosition * TLObjectHeight + spaceBetweenTLObjects + TLCircleHeight
-                            : index * TLObjectHeight + spaceBetweenTLObjects + TLCircleHeight
+                            ? adjustYPosition * TLObjectHeight + (spaceBetweenTLObjects / 2) + (TLCircleHeight / 2)
+                            : index * TLObjectHeight + (spaceBetweenTLObjects / 2) + (TLCircleHeight / 2)
                     }
                     r={itemHeight * TLCircleHeight}
                     fill={highlighted ? color.darker() : color}
@@ -89,8 +89,8 @@ export const ReturnTimelineObject = (props) => {
             <text
                 transform={`translate(${timespan[1]} ${
                     adjustYPosition //whichTimespan === "objectDating"
-                        ? index * TLObjectHeight + spaceBetweenTLObjects
-                        : adjustYPosition * TLObjectHeight + spaceBetweenTLObjects
+                        ? adjustYPosition * TLObjectHeight + spaceBetweenTLObjects
+                        : index * TLObjectHeight + spaceBetweenTLObjects
                 })`}
                 x="0"
                 y="0"
