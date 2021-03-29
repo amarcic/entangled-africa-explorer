@@ -18,11 +18,11 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "",
+    searchStr: "*kaiserzeitlich",
     catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
         {"catalogLabel": "Fundplätze im Sudan", "catalogId": 942},],
-    checkedCatalogIds: [942],
-    checkedCatalogLabels: ["Fundplätze im Sudan"],
+    checkedCatalogIds: [],
+    checkedCatalogLabels: [],
     mode: "objects",
     sitesMode: "",
     showSearchResults: true,
@@ -227,7 +227,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showSearchResults
         // at least one relevant input not empty
-        && (input.searchStr || input.catalogIdsList.length!==0 || input.chronOntologyTerm
+        && (input.searchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
         || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
