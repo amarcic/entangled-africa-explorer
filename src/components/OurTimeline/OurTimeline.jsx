@@ -21,8 +21,6 @@ export const OurTimeline = (props) => {
     useEffect(() => {
         setTimeRangeOfTimelineData(getTimeRangeOfTimelineData(timelineObjectsData, input.timelineSort));
         setSortedTimelineData(transformTimelineData(timelineObjectsData, input.timelineSort));
-
-        //transformTimelineData(timelineObjectsData);
     }, [input.timelineSort, timelineObjectsData])
 
 
@@ -75,14 +73,17 @@ export const OurTimeline = (props) => {
                         <g
                             transform="translate(0, 50)"
                         >
-                            {//timeline objects made from iDAI.chronontology periods' data //TODO: not solved well so far
+                            {//timeline objects made from iDAI.chronontology periods' data
                                 sortedTimelineData && <g
                                     //move down along y axis by 50
                                     //transform="translate(0, 50)"
                                 >
                                     <CreateTimelineObjects
                                         color={d3.color("red")}
-                                        data={sortedTimelineData}
+                                        data={input.timelineSort === "period"
+                                            ? [...groupByPeriods(sortedTimelineData).values()] //Array.from(groupByPeriods(sortedTimelineData).values())
+                                            : sortedTimelineData
+                                        }
                                         whichTimespan="periodDating"
                                         dispatch={dispatch}
                                         input={input}

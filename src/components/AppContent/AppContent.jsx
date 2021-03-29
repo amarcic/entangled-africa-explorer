@@ -35,7 +35,7 @@ const initialInput = {
     mapControlsExpanded: false,
     resultsListExpanded: true,
     selectedMarker: undefined,
-    timelineSort: "object",
+    timelineSort: "period",
     highlightedTimelineObject: undefined
 };
 
