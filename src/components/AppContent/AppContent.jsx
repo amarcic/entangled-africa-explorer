@@ -20,7 +20,7 @@ const initialInput = {
     regionTitle: null,
     searchStr: "*kaiserzeitlich",
     catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
-        {"catalogLabel": "Fundplätze im Sudan", "catalogId": 942},],
+        {"catalogLabel": "AAArC - Fundplätze", "catalogId": 942},],
     checkedCatalogIds: [],
     checkedCatalogLabels: [],
     mode: "objects",
