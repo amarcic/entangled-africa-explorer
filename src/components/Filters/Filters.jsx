@@ -209,40 +209,40 @@ export const Filters = (props) => {
                 </FormGroup>
             </Grid>}
 
-            {/*checkboxes for filter by projects; only active in object search mode*/}
+            {/*checkboxes for filter by catalogs; only active in object search mode*/}
             {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
                 <FormGroup>
-                    <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by projects</FormLabel>
-                    {input.projectList && input.projectList.map(project => {
+                    <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by catalogs</FormLabel>
+                    {input.catalogIdsList && input.catalogIdsList.map(project => {
                         return (project
                             && <FormControlLabel
-                                key={project.projectBestandsname}
+                                key={project.catalogId}
                                 control={
                                     <Checkbox
-                                        checked={input.checkedProjects.includes(project.projectBestandsname)}
+                                        checked={input.checkedCatalogIds.includes(project.catalogId)}
                                         onChange={() => {
                                             dispatch({
-                                                type: input.checkedProjects.includes(project.projectBestandsname)
+                                                type: input.checkedCatalogIds.includes(project.catalogId)
                                                     ? "UNCHECK_ITEM"
                                                     : "CHECK_ITEM",
-                                                payload: {field: "checkedProjects", toggledItem: project.projectBestandsname}
+                                                payload: {field: "checkedCatalogIds", toggledItem: project.catalogId}
                                             });
                                             dispatch({
                                                 type: "UPDATE_INPUT",
                                                 payload: {
-                                                    field: "checkedProjectsLabels",
-                                                    value: input.checkedProjectsLabels.includes(project.projectLabel)
-                                                        ? [...input.checkedProjectsLabels.filter(projectLabel => projectLabel !== project.projectLabel)]
-                                                        : [...input.checkedProjectsLabels, project.projectLabel]
+                                                    field: "checkedCatalogLabels",
+                                                    value: input.checkedCatalogLabels.includes(project.catalogLabel)
+                                                        ? [...input.checkedCatalogLabels.filter(catalogLabel => catalogLabel !== project.catalogLabel)]
+                                                        : [...input.checkedCatalogLabels, project.catalogLabel]
                                                 }
                                             })
                                         }}
-                                        name={project.projectBestandsname}
-                                        key={project.projectBestandsname}
+                                        name={String(project.catalogId)}
+                                        key={project.catalogId}
                                         disabled={input.showArchaeoSites}
                                     />
                                 }
-                                label={project.projectLabel}
+                                label={project.catalogLabel}
                             />
                         )
                     })}

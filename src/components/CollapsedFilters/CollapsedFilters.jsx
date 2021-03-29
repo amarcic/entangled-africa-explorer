@@ -35,9 +35,9 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined"
                      label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}/>}
 
-            {/*Chip for filter by projects*/}
-            {input.checkedProjectsLabels.length !== 0
-            && <Chip variant="outlined" label={`Project: ${input.checkedProjectsLabels}`}/>}
+            {/*Chip for filter by catalogs*/}
+            {input.checkedCatalogLabels.length !== 0
+            && <Chip variant="outlined" label={`Project: ${input.checkedCatalogLabels}`}/>}
 
         </Grid>
     )

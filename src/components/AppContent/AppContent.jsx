@@ -18,13 +18,11 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "*kaiserzeitlich*",
-    projectList: [{"projectLabel": "All available SPP 2143 data", "projectBestandsname": "spp2143"},
-        {"projectLabel": "P01", "projectBestandsname": "P01"},
-        {"projectLabel": "P02", "projectBestandsname": "P02"},
-        {"projectLabel": "P03", "projectBestandsname": "P03"}],
-    checkedProjects: [],
-    checkedProjectsLabels: [],
+    searchStr: "",
+    catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
+        {"catalogLabel": "Fundplätze im Sudan", "catalogId": 942},],
+    checkedCatalogIds: [942],
+    checkedCatalogLabels: ["Fundplätze im Sudan"],
     mode: "objects",
     sitesMode: "",
     showSearchResults: true,
@@ -105,7 +103,7 @@ export const AppContent = () => {
         useQuery(GET_OBJECTS, input.mode === "objects"
             ? {
                 variables: {
-                    searchTerm: input.searchStr, project: input.checkedProjects,
+                    searchTerm: input.searchStr, catalogIds: input.checkedCatalogIds,
                     // only send coordinates if entered values have valid format (floats with at least one decimal place)
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
@@ -113,7 +111,7 @@ export const AppContent = () => {
                     periodTerm: input.chronOntologyTerm
                 }
             }
-            : {variables: {searchTerm: "", project: [], bbox: [], periodTerm: ""}});
+            : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: ""}});
 
     const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "archaeoSites"
         ? {
@@ -195,14 +193,14 @@ export const AppContent = () => {
     }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.mode === "objects" && input.showSearchResults && (input.searchStr || input.checkedProjects.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && input.showSearchResults && (input.searchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, input.searchStr, input.checkedProjects, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
+    }, [dataObjects, input.showSearchResults, input.searchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
 
     useEffect( () => {
         if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
@@ -229,7 +227,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showSearchResults
         // at least one relevant input not empty
-        && (input.searchStr || input.projectList.length!==0 || input.chronOntologyTerm
+        && (input.searchStr || input.catalogIdsList.length!==0 || input.chronOntologyTerm
         || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
