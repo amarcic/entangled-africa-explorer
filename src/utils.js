@@ -1,5 +1,31 @@
 import { group } from "d3-array";
 import * as d3 from "d3";
+import {useEffect, useState} from "react";
+
+//DEBOUNCER
+
+// useDebounce hook from https://usehooks.com/useDebounce/ / https://github.com/xnimorz/use-debounce (MIT License)
+const useDebounce = (value, delay) => {
+    // State and setters for debounced value
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(
+        () => {
+            // Update debounced value after delay
+            const handler = setTimeout(() => {
+                setDebouncedValue(value);
+            }, delay);
+
+            // Cancel the timeout if value changes (also on delay change or unmount)
+            // This is how we prevent debounced value from updating if value is changed ...
+            // .. within the delay period. Timeout gets cleared and restarted.
+            return () => {
+                clearTimeout(handler);
+            };
+        },
+        [value, delay] // Only re-call effect if value or delay changes
+    );
+    return debouncedValue;
+}
 
 
 //TIMELINE HELPER FUNCTIONS
@@ -172,4 +198,4 @@ const transformTimelineData = (timeLData, mode) => {
     //setSortedTimelineData(transformedTimelineData);
 }
 
-export { timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData };
+export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData };
