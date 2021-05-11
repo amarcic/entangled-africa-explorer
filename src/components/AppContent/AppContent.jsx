@@ -9,7 +9,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // Queries
 import { searchObjects as GET_OBJECTS, searchObjectContext as GET_OBJECT_CONTEXT, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES, byRegion as GET_SITES_BY_REGION } from "./queries.graphql";
-import { timelineAdapter } from "../../utils";
+import { useDebounce, timelineAdapter } from "../../utils";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -89,6 +89,9 @@ export const AppContent = () => {
 
     const [input, dispatch] = useReducer(inputReducer, initialInput);
 
+    // debounce input.searchStr
+    const debouncedSearchStr = useDebounce(input.searchStr, 500);
+
     const [mapDataContext, setMapDataContext] = useState({});
     const [mapDataObjects, setMapDataObjects] = useState({});
     const [mapDataArchaeoSites, setMapDataArchaeoSites] = useState({});
@@ -103,7 +106,7 @@ export const AppContent = () => {
         useQuery(GET_OBJECTS, input.mode === "objects"
             ? {
                 variables: {
-                    searchTerm: input.searchStr, catalogIds: input.checkedCatalogIds,
+                    searchTerm: debouncedSearchStr, catalogIds: input.checkedCatalogIds,
                     // only send coordinates if entered values have valid format (floats with at least one decimal place)
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
@@ -116,17 +119,18 @@ export const AppContent = () => {
     const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "archaeoSites"
         ? {
             variables: {
-                searchTerm: input.searchStr,
+                searchTerm: debouncedSearchStr,
                 // only send coordinates if entered values have valid format (floats with at least one decimal place)
                 bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                     ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                     : []
             }
         }
-        : {variables: {searchTerm: "", bbox: []}});
+        //: {variables: {searchTerm: "", bbox: []}});
+        : {variables: {searchTerm: "''", bbox: []}});
 
     const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode === "region"
-        ? {variables: {searchTerm: input.searchStr, idOfRegion: input.regionId}}
+        ? {variables: {searchTerm: debouncedSearchStr, idOfRegion: input.regionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
 
@@ -193,32 +197,32 @@ export const AppContent = () => {
     }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.mode === "objects" && input.showSearchResults && (input.searchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && input.showSearchResults && (debouncedSearchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, input.searchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
+    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
 
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
+        if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
             console.log("rerender dataArchaeoSites --> input:", input);
         }
-    }, [dataArchaeoSites, input.showArchaeoSites, input.searchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode, input.mode]);
+    }, [dataArchaeoSites, input.showArchaeoSites, debouncedSearchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode, input.mode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode==="region" && (input.searchStr || input.regionId)) {
+        if (dataSitesByRegion && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode==="region" && (debouncedSearchStr || input.regionId)) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, input.showArchaeoSites, input.searchStr, input.regionId, input.sitesMode, input.mode]);
+    }, [dataSitesByRegion, input.showArchaeoSites, debouncedSearchStr, input.regionId, input.sitesMode, input.mode]);
 
 
     /* Conditions used to determine whether to render certain data (objects, related objects, sites, sites by region) */
@@ -227,7 +231,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showSearchResults
         // at least one relevant input not empty
-        && (input.searchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
+        && (debouncedSearchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
         || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
@@ -244,7 +248,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showArchaeoSites && input.sitesMode!=="region"
         // at least one relevant input not empty
-        && (input.searchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+        && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataArchaeoSites && mapDataArchaeoSites.archaeologicalSites;
 
@@ -252,7 +256,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showArchaeoSites && input.sitesMode==="region"
         // at least one relevant input not empty
-        && (input.searchStr || input.regionId)
+        && (debouncedSearchStr || input.regionId)
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
