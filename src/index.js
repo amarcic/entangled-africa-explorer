@@ -33,11 +33,9 @@ const App = () => {
 
     return(
         <SettingsContext.Provider value={settings}>
-            <CssBaseline />
+            <CssBaseline/>
             <Container maxWidth={"xl"}>
-                <PageHeader />
-                <h1>Entangled Africa Data Explorer</h1>
-                <h2>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>
+                <PageHeader/>
                 <ApolloProvider client={client}>
                     <AppContent/>
                 </ApolloProvider>
