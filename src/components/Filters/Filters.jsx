@@ -24,10 +24,10 @@ export const Filters = (props) => {
 
 
     return (
-        <Grid className="grid-map-controls-expanded" item container direction="row" spacing={2}>
+        <Grid item container direction="column" spacing={2}>
 
             {/*radio buttons for selecting mode*/}
-            <Grid item xs={12} lg={2}>
+            <Grid item xs={12}>
                 <FormGroup>
                     <FormLabel component="legend">Search mode</FormLabel>
                     <RadioGroup
@@ -47,7 +47,7 @@ export const Filters = (props) => {
             </Grid>
 
             {/*input field for string query*/}
-            <Grid item xs={12} lg={2}>
+            <Grid item xs={12}>
                 <FormGroup>
                     <FormLabel component="legend">Filter by search term</FormLabel>
                     <TextField
@@ -75,7 +75,7 @@ export const Filters = (props) => {
             </Grid>
 
             {/*dropdown for filter by period; only active in object search mode*/}
-            {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
+            {!input.showArchaeoSites && <Grid item xs={12}>
                 <FormGroup>
                     <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
                     <Autocomplete
@@ -96,7 +96,7 @@ export const Filters = (props) => {
             </Grid>}
 
             {/*dropdown for filter by region; only active in site search mode*/}
-            {input.showArchaeoSites && <Grid item xs={12} lg={2}>
+            {input.showArchaeoSites && <Grid item xs={12}>
                 <FormGroup>
                     <FormLabel component="legend">Filter by region</FormLabel>
                     <Autocomplete
@@ -125,7 +125,7 @@ export const Filters = (props) => {
             </Grid>}
 
             {/*switch and input fields for filter by coordinates*/}
-            {<Grid item xs={12} lg={2}>
+            {<Grid item xs={12}>
                 <FormGroup>
                     <FormLabel>Filter by coordinates (bounding box)
                         <Tooltip title="Activate the switch to select a bounding box directly on the map. Click the map in two places to select first the north-east corner, then the south-west corner." arrow placement="right-start">
@@ -210,7 +210,7 @@ export const Filters = (props) => {
             </Grid>}
 
             {/*checkboxes for filter by catalogs; only active in object search mode*/}
-            {!input.showArchaeoSites && <Grid item xs={12} lg={2}>
+            {!input.showArchaeoSites && <Grid item xs={12}>
                 <FormGroup>
                     <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by catalogs</FormLabel>
                     {input.catalogIdsList && input.catalogIdsList.map(project => {
@@ -249,7 +249,7 @@ export const Filters = (props) => {
                 </FormGroup>
             </Grid>}
 
-            {<Grid item xs={12} lg={2}>
+            {<Grid item xs={12}>
                 <FormGroup>
                     <FormLabel>Turn on/off marker clustering
                         <Tooltip title="Deactivate the switch to show individual markers instead of clustered circles." arrow placement="right-start">

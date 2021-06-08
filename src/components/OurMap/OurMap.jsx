@@ -28,7 +28,6 @@ export const OurMap = (props) => {
 
     return (
         <div>
-            <h2>{t('Map')}</h2>
             <Map
                 className="markercluster-map"
                 //center={input.mapCenter}

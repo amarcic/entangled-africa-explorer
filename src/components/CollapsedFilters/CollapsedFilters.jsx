@@ -8,7 +8,7 @@ export const CollapsedFilters = (props) => {
 
 
     return (
-        <Grid className="grid-map-controls-collapsed" item>
+        <Grid item>
 
             {/*Chip for mode*/}
             <Chip label={input.mode === "archaeoSites"

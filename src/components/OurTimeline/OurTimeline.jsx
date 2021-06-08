@@ -32,7 +32,6 @@ export const OurTimeline = (props) => {
 
     return (
         <div>
-            <h2>{t('Timeline')}</h2>
             <FormControl>
                 <InputLabel>Sort by</InputLabel>
                 <Select
@@ -46,7 +45,6 @@ export const OurTimeline = (props) => {
                     <MenuItem value={"period"}>Period date</MenuItem>
                 </Select>
             </FormControl>
-            <Grid className="grid-timeline" item xs={12}/* lg={9}*/>
                 {//timelineObjectsData ?
                     <svg
                         //viewBox parameters are "min-x min-y width height"
@@ -55,8 +53,8 @@ export const OurTimeline = (props) => {
                                 ? `${timeRangeOfTimelineData[0] - 100}
                                 0 
                                 ${Math.abs(timeRangeOfTimelineData[0]) + timeRangeOfTimelineData[1] + 150} 
-                                1000`
-                                : "0 0 1000 1000"
+                                500`
+                                : "0 0 1000 500"
                         }
                     >
 
@@ -119,7 +117,6 @@ export const OurTimeline = (props) => {
                     </svg>
                     //: <Skeleton variant="rect" width="100%" height="70%" />
                 }
-            </Grid>
         </div>
     );
 };

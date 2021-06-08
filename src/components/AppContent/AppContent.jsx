@@ -4,7 +4,8 @@ import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import gql from 'graphql-tag';
 import { CollapsedFilters, Filters, OurMap, OurTimeline, ResultsTable } from "..";
-import { Button, Divider, Grid, LinearProgress, Tooltip } from "@material-ui/core";
+import {Button, Card, Divider, Grid, LinearProgress, Tooltip, Typography} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // Queries
@@ -40,8 +41,38 @@ const initialInput = {
 };
 
 
+const useStyles = makeStyles(theme => ({
+    gridBody: {
+        flexGrow: 1,
+        height: '85vh'
+    },
+    gridFullHeightItem: {
+        height: '100%'
+    },
+    gridHalfHeightItem: {
+        height: '50%',
+    },
+    gridHead: {
+        height: '15%'
+    },
+    gridContent: {
+        height: '85%',
+        overflow: 'scroll'
+    },
+    card: {
+        padding: theme.spacing(2),
+        backgroundColor: 'lightgrey',
+        height: '100%',
+        width: '100%'
+    },
+    h3: {
+        textTransform: 'uppercase'
+    }
+}));
 
 export const AppContent = () => {
+    const classes = useStyles();
+
     const { t, i18n } = useTranslation();
 
     // State
@@ -262,125 +293,142 @@ export const AppContent = () => {
 
 
     return (
-        <Grid className="grid-outer" container direction="row" spacing={1}>
-
-            <Grid className="grid-controls" item container direction="column" xs={12}>
-                <Divider/>
-                <Button
-                    size="small"
-                    onClick={() => {
-                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
-                    }}
-                >
-                    <h3>Filters</h3>
-                    {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                </Button>
-                {/* Map controls = filters */}
-                {input.mapControlsExpanded
-                    ? <Filters
-                        chronOntologyTerms={chronOntologyTerms}
-                        dispatch={dispatch}
-                        extendMapBounds={extendMapBounds}
-                        input={input}
-                        regions={regions}
-                    />
-                    : (/*summary of active filters when control panel is closed*/
-                        <CollapsedFilters
-                            input={input}
-                        />
-                    )
-                }
-            </Grid>
-
-            <Grid item className="grid-loading-indicator" xs={12}>
-                {/*{input.showSearchResults && <span>Showing search results</span>}
-                    {input.showRelatedObjects && <span>Showing related objects of </span>}
-                    {input.showRelatedObjects&&mapDataContext&&mapDataContext.entity&&<p>{mapDataContext.entity.name}</p>}
-                    {input.showArchaeoSites && <span>Showing archaeological sites</span>}
-                    {input.showArchaeoSites && mapDataSitesByRegion&& mapDataSitesByRegion.sitesByRegion&&mapDataSitesByRegion.sitesByRegion.length!==0 && <span> (by region)</span>}
-
-                    {loadingContext && <span>...loadingContext</span>}
-                    {errorContext && <span>...errorContext: {errorContext.message}</span> && console.log(errorContext.message)}
-                    {loadingObjects && <span>...loadingObjects</span>}
-                    {errorObjects && <span>...errorObjects</span> && console.log(errorObjects.message)}
-                    {loadingArchaeoSites && <span>...loadingArchaeoSites</span>}
-                    {errorArchaeoSites && <span>...errorArchaeoSites</span> && console.log(errorArchaeoSites.message)}
-                    {loadingSitesByRegion && <span>...loadingSitesByRegion</span>}
-                    {errorSitesByRegion && <span>...errorSitesByRegion</span> && console.log(errorSitesByRegion.message)}*/}
-
+        <Grid container spacing={2} className={classes.gridBody}>
+            {/*GRID: Loading indicator*/}
+            <Grid item xs={12}>
                 {(loadingContext||loadingObjects||loadingArchaeoSites||loadingSitesByRegion) && <LinearProgress />}
-
             </Grid>
-            {<Grid className="grid-map" item xs={12} lg={9}>
-                <OurMap
-                    handleRelatedObjects={handleRelatedObjects}
-                    mapDataObjects={mapDataObjects}
-                    mapDataContext={mapDataContext}
-                    mapDataArchaeoSites={mapDataArchaeoSites}
-                    mapDataSitesByRegion={mapDataSitesByRegion}
-                    reducer={[input, dispatch]}
-                    renderingConditionObjects={renderingConditionObjects}
-                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                    renderingConditionSites={renderingConditionSites}
-                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                />
+
+            {/*GRID: Filters*/}
+            <Grid className={classes.gridFullHeightItem} item container direction="row" xs={2}>
+                <Card className={classes.card}>
+                    <Grid className={classes.gridHead} item>
+                        <Button
+                            onClick={() => {
+                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
+                            }}
+                        >
+                            <h3 className={classes.h3}>{t('Filters')}</h3>
+                            {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                        </Button>
+                    </Grid>
+                    <Grid className={classes.gridContent} item>
+                        {/* Map controls = filters */}
+                        {input.mapControlsExpanded
+                            ? <Filters
+                                chronOntologyTerms={chronOntologyTerms}
+                                dispatch={dispatch}
+                                extendMapBounds={extendMapBounds}
+                                input={input}
+                                regions={regions}
+                            />
+                            : (/*summary of active filters when control panel is closed*/
+                                <CollapsedFilters
+                                    input={input}
+                                />
+                            )
+                        }
+                    </Grid>
+                </Card>
+            </Grid>
+
+            {/*GRID: Map*/}
+            {<Grid className={classes.gridFullHeightItem} item xs={4} container>
+                <Card className={classes.card}>
+                    <Grid className={classes.gridHead} item>
+                        <h3 className={classes.h3}>{t('Map')}</h3>
+                    </Grid>
+                    <Grid className={classes.gridContent} item>
+                        <OurMap
+                            handleRelatedObjects={handleRelatedObjects}
+                            mapDataObjects={mapDataObjects}
+                            mapDataContext={mapDataContext}
+                            mapDataArchaeoSites={mapDataArchaeoSites}
+                            mapDataSitesByRegion={mapDataSitesByRegion}
+                            reducer={[input, dispatch]}
+                            renderingConditionObjects={renderingConditionObjects}
+                            renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                            renderingConditionSites={renderingConditionSites}
+                            renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                        />
+                    </Grid>
+                </Card>
             </Grid>}
-            {<Grid className="grid-results-list-outer" item xs={12} lg={3} container direction="column">
-                {<Grid className="grid-results-list" item container direction="column">
-                    <Divider/>
-                    <Button
-                        size="small"
-                        onClick={() => {
-                            dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
-                        }}
-                    >
-                        <h3>Search Results</h3>
-                        {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                    </Button>
-                    {input.showRelatedObjects && <Button
-                        onClick={() => handleRelatedObjects()}
-                        name="hideRelatedObjects"
-                        variant="contained"
-                        color="primary"
-                        size="small">
-                        Return to search results (hide related objects)
-                    </Button>}
-                    {input.resultsListExpanded
-                        ? (<Grid className="grid-results-list-expanded" item>
-                            {// Conditions for rendering a table
-                                (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
-                                    ? <ResultsTable
-                                        mapDataObjects={mapDataObjects}
-                                        mapDataContext={mapDataContext}
-                                        mapDataArchaeoSites={mapDataArchaeoSites}
-                                        mapDataSitesByRegion={mapDataSitesByRegion}
-                                        renderingConditionObjects={renderingConditionObjects}
-                                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                                        renderingConditionSites={renderingConditionSites}
-                                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                                        openPopup={openPopup}
-                                    />
-                                    : "No results, try changing the filters"
+
+            {/*GRID: Container for results list and timeline*/}
+            {<Grid className={classes.gridFullHeightItem} item xs={6} container direction="row" spacing={2}>
+
+                {/*GRID: Results list*/}
+                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
+                    <Card className={classes.card}>
+                        {<Grid className={classes.gridHead} item xs={12}>
+                            <Button
+                                onClick={() => {
+                                    dispatch({type: "TOGGLE_STATE", payload: {toggledField: "resultsListExpanded"}})
+                                }}
+                            >
+                                <h3 className={classes.h3}>{t('Search Results')}</h3>
+                                {input.resultsListExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
+                            </Button>
+                            {input.showRelatedObjects && <Button
+                                onClick={() => handleRelatedObjects()}
+                                name="hideRelatedObjects"
+                                variant="contained"
+                                color="primary"
+                                size="small">
+                                Return to search results (hide related objects)
+                            </Button>}
+                        </Grid>}
+                        {<Grid className={classes.gridContent} item xs={12} container>
+                            {input.resultsListExpanded
+                                ? (<Grid item xs={12}>
+                                    {// Conditions for rendering a table
+                                        (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion )
+                                            ? <ResultsTable
+                                                mapDataObjects={mapDataObjects}
+                                                mapDataContext={mapDataContext}
+                                                mapDataArchaeoSites={mapDataArchaeoSites}
+                                                mapDataSitesByRegion={mapDataSitesByRegion}
+                                                renderingConditionObjects={renderingConditionObjects}
+                                                renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                                                renderingConditionSites={renderingConditionSites}
+                                                renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                                                openPopup={openPopup}
+                                            />
+                                            : <Grid item>
+                                                No results, try changing the filters
+                                            </Grid>
+                                    }
+                                </Grid>)
+                                : (<Grid item xs={12}>
+                                    {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
+                                    {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
+                                    {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode==="region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                                    {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode!=="region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                                </Grid>)
                             }
-                        </Grid>)
-                        : (<Grid className="grid-results-list-collapsed" item>
-                            {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
-                            {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
-                            {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode==="region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
-                            {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode!=="region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
-                        </Grid>)
-                    }
+                        </Grid>}
+                    </Card>
                 </Grid>}
-            </Grid>}
-            {<Grid className="grid-timeline" item xs={12}>
-                {input.mode === "objects"
-                    ? <OurTimeline
-                        dispatch={dispatch}
-                        input={input}
-                        timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
-                    />
-                    : ""}
-                {/*: "Timeline not available for this mode"}*/}
+
+                {/*GRID: Timeline*/}
+                {<Grid className={classes.gridHalfHeightItem} item xs={12} container>
+                    <Card className={classes.card}>
+                        <Grid className={classes.gridHead} item>
+                            <h3 className={classes.h3}>{t('Timeline')}</h3>
+                        </Grid>
+                        <Grid className={classes.gridContent} item>
+                            {input.mode === "objects"
+                                ? <OurTimeline
+                                    dispatch={dispatch}
+                                    input={input}
+                                    timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
+                                />
+                                : ""}
+                            {/*: "Timeline not available for this mode"}*/}
+                        </Grid>
+                    </Card>
+                </Grid>}
             </Grid>}
         </Grid>
     );
