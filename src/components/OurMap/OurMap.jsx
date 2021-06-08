@@ -2,8 +2,7 @@ import React from "react";
 import { Map, TileLayer, Rectangle, Circle } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
-import {useTranslation} from "react-i18next";
-import {Button} from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';

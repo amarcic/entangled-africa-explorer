@@ -3,8 +3,8 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 
 export const ArachneEntry = (props) => {
-    //itemCoordinates and itemLocation are used if this information is coming from a different field than for most items
-    const { item, itemCoordinates, itemLocation } = props;
+    //itemCoordinates are used if this information is coming from a different field than for most items
+    const { item, itemCoordinates } = props;
 
     return (
         <React.Fragment>

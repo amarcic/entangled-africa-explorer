@@ -8,7 +8,6 @@ import MapIcon from "@material-ui/icons/Map";
 
 
 export const Filters = (props) => {
-    //console.log("Filters...")
     const { chronOntologyTerms, dispatch, extendMapBounds, input, regions } = props;
 
     const updateBBoxValue = (event) => {

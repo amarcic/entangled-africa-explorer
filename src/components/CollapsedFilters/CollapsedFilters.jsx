@@ -3,7 +3,6 @@ import { Chip, Grid } from "@material-ui/core";
 
 
 export const CollapsedFilters = (props) => {
-    //console.log("CollapsedFilters...")
     const { input } = props;
 
 

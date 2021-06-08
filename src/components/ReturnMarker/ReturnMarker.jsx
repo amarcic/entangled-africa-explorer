@@ -4,13 +4,11 @@ import { ReturnPopup } from "..";
 
 
 export const ReturnMarker = (props) => {
-    //console.log("ReturnMarker...")
     const { item, nestedItem, openPopup, handleRelatedObjects, showRelatedObjects } = props;
     const markerRef = useRef(null);
 
     useEffect(() => {
         if (openPopup) {
-            //console.log("Now the popup for marker", item.name, "should open...");
             markerRef.current.leafletElement.openPopup();
         }
     }, [openPopup]);

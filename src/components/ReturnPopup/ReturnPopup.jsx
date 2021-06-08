@@ -4,7 +4,6 @@ import { Button } from "@material-ui/core";
 
 
 export const ReturnPopup = (props) => {
-    //console.log("ReturnPopup...")
     const { item, nestedItem, showRelatedObjects, handleRelatedObjects } = props;
 
 

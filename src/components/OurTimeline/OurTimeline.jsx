@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
-import Skeleton from "@material-ui/lab/Skeleton";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
-import { timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData } from "../../utils";
+import { groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData } from "../../utils";
 
 
 export const OurTimeline = (props) => {
@@ -24,12 +23,6 @@ export const OurTimeline = (props) => {
     }, [input.timelineSort, timelineObjectsData])
 
 
-    //console.log("timelineObjectsData:", timelineObjectsData)
-    //console.log("sort by:", input.timelineSort)
-    //console.log("sortedTimelineData:", sortedTimelineData)
-    //console.log("timeRangeOfTimelineData:", timeRangeOfTimelineData)
-
-
     return (
         <div>
             <FormControl>
@@ -37,7 +30,6 @@ export const OurTimeline = (props) => {
                 <Select
                     value={input.timelineSort}
                     onChange={(event) => {
-                        //console.log("change sorting to", event.target.value);
                         dispatch({type: "UPDATE_INPUT", payload: {field: "timelineSort", value: event.target.value}});
                     }}
                 >
@@ -45,78 +37,78 @@ export const OurTimeline = (props) => {
                     <MenuItem value={"period"}>Period date</MenuItem>
                 </Select>
             </FormControl>
-                {//timelineObjectsData ?
-                    <svg
-                        //viewBox parameters are "min-x min-y width height"
-                        viewBox={
-                            timeRangeOfTimelineData
-                                ? `${timeRangeOfTimelineData[0] - 100}
+            {//timelineObjectsData ?
+                <svg
+                    //viewBox parameters are "min-x min-y width height"
+                    viewBox={
+                        timeRangeOfTimelineData
+                            ? `${timeRangeOfTimelineData[0] - 100}
                                 0 
                                 ${Math.abs(timeRangeOfTimelineData[0]) + timeRangeOfTimelineData[1] + 150} 
                                 500`
-                                : "0 0 1000 500"
-                        }
+                            : "0 0 1000 500"
+                    }
+                >
+
+                    {//top axis
+                        timeRangeOfTimelineData
+                        && <g>
+                            <CreateTimelineAxis
+                                domain={timeRangeOfTimelineData}
+                                range={timeRangeOfTimelineData}
+                                position="top"
+                            />
+                        </g>}
+
+                    <g
+                        transform="translate(0, 50)"
                     >
-
-                        {//top axis
-                            timeRangeOfTimelineData
-                            && <g>
-                                <CreateTimelineAxis
-                                    domain={timeRangeOfTimelineData}
-                                    range={timeRangeOfTimelineData}
-                                    position="top"
-                                />
-                            </g>}
-
-                        <g
-                            transform="translate(0, 50)"
-                        >
-                            {//timeline objects made from iDAI.chronontology periods' data
-                                sortedTimelineData && <g
-                                    //move down along y axis by 50
-                                    //transform="translate(0, 50)"
-                                >
-                                    <CreateTimelineObjects
-                                        color={d3.color("red")}
-                                        data={input.timelineSort === "period"
-                                            ? [...groupByPeriods(sortedTimelineData).values()] //Array.from(groupByPeriods(sortedTimelineData).values())
-                                            : sortedTimelineData
-                                        }
-                                        whichTimespan="periodDating"
-                                        dispatch={dispatch}
-                                        input={input}
-                                    />
-                                </g>}
-
-                            {//timeline objects (rects or circles) made from iDAI.objects entities' data
-                                sortedTimelineData && <g
-                                    //move down along y axis by 50
-                                    //transform="translate(0, 50)"
-                                >
-                                    <CreateTimelineObjects
-                                        color={d3.color("blue")}
-                                        data={sortedTimelineData}
-                                        whichTimespan="objectDating"
-                                        dispatch={dispatch}
-                                        input={input}
-                                    />
-                                </g>}
-                        </g>
-
-                        {//bottom axis
-                            timeRangeOfTimelineData
-                            && <g
-                                transform="translate(0, 950)"
+                        {//timeline objects made from iDAI.chronontology periods' data
+                            sortedTimelineData && <g
+                                //move down along y axis by 50
+                                //transform="translate(0, 50)"
                             >
-                                <CreateTimelineAxis
-                                    domain={timeRangeOfTimelineData}
-                                    range={timeRangeOfTimelineData}
-                                    position="bottom"
+                                <CreateTimelineObjects
+                                    color={d3.color("red")}
+                                    data={input.timelineSort === "period"
+                                        ? [...groupByPeriods(sortedTimelineData).values()] //Array.from(groupByPeriods(sortedTimelineData).values())
+                                        : sortedTimelineData
+                                    }
+                                    whichTimespan="periodDating"
+                                    dispatch={dispatch}
+                                    input={input}
                                 />
                             </g>}
-                    </svg>
-                    //: <Skeleton variant="rect" width="100%" height="70%" />
-                }
+
+                        {//timeline objects (rects or circles) made from iDAI.objects entities' data
+                            sortedTimelineData && <g
+                                //move down along y axis by 50
+                                //transform="translate(0, 50)"
+                            >
+                                <CreateTimelineObjects
+                                    color={d3.color("blue")}
+                                    data={sortedTimelineData}
+                                    whichTimespan="objectDating"
+                                    dispatch={dispatch}
+                                    input={input}
+                                />
+                            </g>}
+                    </g>
+
+                    {//bottom axis
+                        timeRangeOfTimelineData
+                        && <g
+                            transform="translate(0, 950)"
+                        >
+                            <CreateTimelineAxis
+                                domain={timeRangeOfTimelineData}
+                                range={timeRangeOfTimelineData}
+                                position="bottom"
+                            />
+                        </g>}
+                </svg>
+                //: <Skeleton variant="rect" width="100%" height="70%" />
+            }
         </div>
     );
 };

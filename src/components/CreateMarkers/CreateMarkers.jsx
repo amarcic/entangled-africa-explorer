@@ -3,7 +3,6 @@ import { ReturnMarker } from "..";
 
 
 export const CreateMarkers = (props) => {
-    //console.log("CreateMarkers...")
     const { data, selectedMarker, handleRelatedObjects, showRelatedObjects } = props;
 
 

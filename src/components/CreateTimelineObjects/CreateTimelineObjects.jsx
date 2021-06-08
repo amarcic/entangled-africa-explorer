@@ -1,6 +1,5 @@
 import React from "react";
 import { ReturnTimelineObject } from "..";
-import * as d3 from "d3";
 
 export const CreateTimelineObjects = (props) => {
     const { color, data, whichTimespan, dispatch, input } = props;

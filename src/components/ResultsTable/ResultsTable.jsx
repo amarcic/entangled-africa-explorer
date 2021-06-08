@@ -1,6 +1,6 @@
 import React from 'react';
-import {Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
-import {ResultsTableRow} from '..'
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { ResultsTableRow } from '..'
 
 export const ResultsTable = (props) => {
     const {
