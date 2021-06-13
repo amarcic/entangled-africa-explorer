@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import { CollapsedFilters, Filters, OurMap, OurTimeline, ResultsTable } from "..";
-import { Button, Card, Grid, LinearProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Grid, LinearProgress } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 // Queries
-import { searchObjects as GET_OBJECTS, searchObjectContext as GET_OBJECT_CONTEXT, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES, byRegion as GET_SITES_BY_REGION } from "./queries.graphql";
-import { useDebounce, timelineAdapter } from "../../utils";
+import {
+    byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
+    searchObjectContext as GET_OBJECT_CONTEXT, searchObjects as GET_OBJECTS
+} from "./queries.graphql";
+import { timelineAdapter, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
 
 const initialInput = {
@@ -267,35 +269,20 @@ export const AppContent = () => {
         <Grid container spacing={2} className={classes.gridBody}>
             {/*GRID: Filters*/}
             <Grid className={classes.gridFullHeightItem} item container direction="row" xs={2}>
-                <Card className={classes.card}>
-                    <Grid className={classes.gridHead} item>
-                        <Button
-                            onClick={() => {
-                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
-                            }}
-                        >
-                            <h3 className={classes.h3}>{t('Filters')}</h3>
-                            {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                        </Button>
-                    </Grid>
-                    <Grid className={classes.gridContent} item>
-                        {/* Map controls = filters */}
-                        {input.mapControlsExpanded
-                            ? <Filters
-                                chronOntologyTerms={chronOntologyTerms}
-                                dispatch={dispatch}
-                                extendMapBounds={extendMapBounds}
-                                input={input}
-                                regions={regions}
-                            />
-                            : (/*summary of active filters when control panel is closed*/
-                                <CollapsedFilters
-                                    input={input}
-                                />
-                            )
-                        }
-                    </Grid>
-                </Card>
+                {input.mapControlsExpanded
+                    ? <Filters
+                        chronOntologyTerms={chronOntologyTerms}
+                        reducer={[input, dispatch]}
+                        extendMapBounds={extendMapBounds}
+                        input={input}
+                        regions={regions}
+                    />
+                    : (/*summary of active filters when control panel is closed*/
+                        <CollapsedFilters
+                            reducer={[input, dispatch]}
+                        />
+                    )
+                }
             </Grid>
 
             {/*GRID: Map*/}
@@ -320,6 +307,7 @@ export const AppContent = () => {
                 {/*GRID: Results list*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
                     <ResultsTable
+                        handleRelatedObjects={handleRelatedObjects}
                         mapDataObjects={mapDataObjects}
                         mapDataContext={mapDataContext}
                         mapDataArchaeoSites={mapDataArchaeoSites}
@@ -336,8 +324,7 @@ export const AppContent = () => {
                 {/*GRID: Timeline*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container>
                     <OurTimeline
-                        dispatch={dispatch}
-                        input={input}
+                        reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />
                 </Grid>}
