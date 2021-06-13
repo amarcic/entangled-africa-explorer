@@ -1,4 +1,4 @@
-import {Button, Table, TableBody, TableCell, TableRow} from "@material-ui/core";
+import { Button, Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import React from "react";
 
 export const GazetteerEntry = (props) => {

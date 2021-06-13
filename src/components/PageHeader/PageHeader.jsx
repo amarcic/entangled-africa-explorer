@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuList, MenuItem, Paper, Grid, Grow, Popper } from '@material-ui/core';
+import { Button, Grid, Grow, MenuItem, MenuList, Paper, Popper } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';

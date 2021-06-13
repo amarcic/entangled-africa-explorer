@@ -3,11 +3,12 @@ import { Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@material
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
-import { groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData } from "../../utils";
+import { getTimeRangeOfTimelineData, groupByPeriods, transformTimelineData } from "../../utils";
 import { useStyles } from '../../styles';
 
 export const OurTimeline = (props) => {
-    const { dispatch, input, timelineObjectsData } = props;
+    const [input, dispatch] = props.reducer;
+    const { timelineObjectsData } = props;
 
     const { t, i18n } = useTranslation();
 

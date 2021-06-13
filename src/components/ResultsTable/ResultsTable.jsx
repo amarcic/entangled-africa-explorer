@@ -1,18 +1,15 @@
 import React from 'react';
 import { Button, Card, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { ResultsTableRow } from '..'
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useStyles } from '../../styles';
 
 export const ResultsTable = (props) => {
     const [input, dispatch] = props.reducer;
 
     const {
-        renderingConditionObjects, renderingConditionRelatedObjects, renderingConditionSites, renderingConditionSitesByRegion,
-        mapDataObjects, mapDataContext, mapDataArchaeoSites, mapDataSitesByRegion,
-        openPopup
+        handleRelatedObjects, mapDataObjects, mapDataContext, mapDataArchaeoSites, mapDataSitesByRegion, openPopup,
+        renderingConditionObjects, renderingConditionRelatedObjects, renderingConditionSites, renderingConditionSitesByRegion
     } = props;
 
     const { t, i18n } = useTranslation();

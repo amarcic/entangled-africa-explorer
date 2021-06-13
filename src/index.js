@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import {PageHeader, AppContent} from './components/';
-import { LabelsContext, SettingsContext } from './Contexts';
-import { INIT_LABELS, INIT_SETTINGS } from "./INIT_VALUES";
+import { AppContent, PageHeader } from './components/';
+import { SettingsContext } from './Contexts';
+import { INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';

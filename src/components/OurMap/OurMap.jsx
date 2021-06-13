@@ -1,5 +1,5 @@
 import React from "react";
-import { Map, TileLayer, Rectangle, Circle } from 'react-leaflet';
+import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,6 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 
 export const OurMap = (props) => {
     const [input, dispatch] = props.reducer;
-
     const {
         handleRelatedObjects,
         mapDataObjects,
