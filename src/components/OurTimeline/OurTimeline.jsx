@@ -4,40 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
 import { groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData } from "../../utils";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles(theme => ({
-    gridBody: {
-        height: "85vh",
-        justifyContent: "space-between"
-    },
-    gridFullHeightItem: {
-        height: "100%"
-    },
-    gridHalfHeightItem: {
-        height: "50%",
-        justifyContent: "space-between"
-    },
-    gridHead: {
-        minHeight: "15%",
-        justifyContent: "flex-start",
-        alignItems: "center"
-    },
-    gridContent: {
-        maxHeight: "85%",
-        overflow: "scroll"
-    },
-    card: {
-        padding: theme.spacing(2),
-        height: "100%",
-        width: "100%"
-    },
-    h3: {
-        fontSize: "0.95rem",
-        textTransform: "uppercase"
-    }
-}));
-
+import { useStyles } from '../../styles';
 
 export const OurTimeline = (props) => {
     const { dispatch, input, timelineObjectsData } = props;

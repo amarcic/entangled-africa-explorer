@@ -4,43 +4,8 @@ import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
 import { Card, Grid } from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import { useStyles } from '../../styles';
 
-
-const useStyles = makeStyles(theme => ({
-    gridBody: {
-        height: "85vh",
-        justifyContent: "space-between",
-    },
-    gridFullHeightItem: {
-        height: "100%"
-    },
-    gridHalfHeightItem: {
-        height: "50%",
-    },
-    gridHead: {
-        minHeight: "15%"
-    },
-    gridContent: {
-        maxHeight: "85%",
-        overflow: "scroll"
-    },
-    card: {
-        padding: theme.spacing(2),
-        height: "100%",
-        width: "100%"
-    },
-    h1: {
-        fontSize: "1.25rem"
-    },
-    h2: {
-        fontSize: "1rem"
-    },
-    h3: {
-        fontSize: "0.95rem",
-        textTransform: "uppercase"
-    }
-}));
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';

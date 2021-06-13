@@ -4,45 +4,7 @@ import { ResultsTableRow } from '..'
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {useTranslation} from "react-i18next";
-import {makeStyles} from "@material-ui/core/styles";
-
-
-const useStyles = makeStyles(theme => ({
-    gridBody: {
-        height: "85vh",
-        justifyContent: "space-between",
-    },
-    gridFullHeightItem: {
-        height: "100%"
-    },
-    gridHalfHeightItem: {
-        height: "50%",
-    },
-    gridHead: {
-        minHeight: "15%",
-        justifyContent: "flex-start",
-        alignItems: "center"
-    },
-    gridContent: {
-        maxHeight: "85%",
-        overflow: "scroll"
-    },
-    card: {
-        padding: theme.spacing(2),
-        height: "100%",
-        width: "100%"
-    },
-    h1: {
-        fontSize: "1.25rem"
-    },
-    h2: {
-        fontSize: "1rem"
-    },
-    h3: {
-        fontSize: "0.95rem",
-        textTransform: "uppercase"
-    }
-}));
+import { useStyles } from '../../styles';
 
 export const ResultsTable = (props) => {
     const [input, dispatch] = props.reducer;

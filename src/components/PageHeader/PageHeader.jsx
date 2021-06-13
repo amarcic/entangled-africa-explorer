@@ -4,17 +4,15 @@ import { Button, MenuList, MenuItem, Paper, Grid, Grow, Popper } from '@material
 import TranslateIcon from '@material-ui/icons/Translate';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
+import { useStyles } from '../../styles';
 
-const useStyles = makeStyles(theme => ({
-    gridHeader: {
-        flexGrow: 1,
-        justifyContent:'space-between',
-        alignItems:'stretch',
-        height: '15vh'
-    },
-    paper: {
-        marginRight: theme.spacing(2),
-    },
+const localStyles = makeStyles(theme => ({
+    ...useStyles,
+    pageHeader: {
+        justifyContent:"space-between",
+        alignItems:"stretch",
+        height: "12vh"
+    }
 }));
 
 
@@ -25,7 +23,8 @@ export const PageHeader = () => {
         i18n.changeLanguage(lng);
     };
 
-    const classes = useStyles();
+    const classes = localStyles();
+
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
 
@@ -68,11 +67,11 @@ export const PageHeader = () => {
         <Grid
             container
             direction="row"
-            className={classes.gridHeader}
+            className={classes.pageHeader}
         >
             <Grid item xs={10}>
-                <h1>Entangled Africa Data Explorer</h1>
-                <h2>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>
+                <h1 className={classes.h1}>Entangled Africa Data Explorer</h1>
+                <h2 className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>
             </Grid>
             <Grid item xs={1}>
                 <Button
