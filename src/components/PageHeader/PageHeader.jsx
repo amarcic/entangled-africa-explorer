@@ -6,8 +6,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
 import { useStyles } from '../../styles';
 
+// additional styling for this component only
 const localStyles = makeStyles(theme => ({
-    ...useStyles,
     pageHeader: {
         justifyContent:"space-between",
         alignItems:"stretch",
@@ -23,7 +23,8 @@ export const PageHeader = () => {
         i18n.changeLanguage(lng);
     };
 
-    const classes = localStyles();
+    const classes = useStyles();
+    const localClasses = localStyles();
 
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
@@ -67,7 +68,7 @@ export const PageHeader = () => {
         <Grid
             container
             direction="row"
-            className={classes.pageHeader}
+            className={localClasses.pageHeader}
         >
             <Grid item xs={10}>
                 <h1 className={classes.h1}>Entangled Africa Data Explorer</h1>
@@ -83,7 +84,7 @@ export const PageHeader = () => {
                 >
                     <TranslateIcon/> {t('current language')}
                 </Button>
-                <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal placement="bottom-end">
                     {({ TransitionProps, placement }) => (
                         <Grow
                             {...TransitionProps}
