@@ -3,7 +3,44 @@ import { Map, TileLayer, Rectangle, Circle } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
+import { Card, Grid } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 
+
+const useStyles = makeStyles(theme => ({
+    gridBody: {
+        height: "85vh",
+        justifyContent: "space-between",
+    },
+    gridFullHeightItem: {
+        height: "100%"
+    },
+    gridHalfHeightItem: {
+        height: "50%",
+    },
+    gridHead: {
+        minHeight: "15%"
+    },
+    gridContent: {
+        maxHeight: "85%",
+        overflow: "scroll"
+    },
+    card: {
+        padding: theme.spacing(2),
+        height: "100%",
+        width: "100%"
+    },
+    h1: {
+        fontSize: "1.25rem"
+    },
+    h2: {
+        fontSize: "1rem"
+    },
+    h3: {
+        fontSize: "0.95rem",
+        textTransform: "uppercase"
+    }
+}));
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -25,129 +62,136 @@ export const OurMap = (props) => {
 
     const { t, i18n } = useTranslation();
 
+    const classes = useStyles();
+
     return (
-        <div>
-            <Map
-                className="markercluster-map"
-                //center={input.mapCenter}
-                bounds={input.mapBounds}
-                zoom={input.zoomLevel}
-                minZoom={3}
-                zoomSnap={0.5}
-                onClick={(event) => {
-                    if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
-                        dispatch({type: "DRAW_BBOX", payload: event.latlng});
+        <Card className={classes.card}>
+            <Grid className={classes.gridHead} item>
+                <h3 className={classes.h3}>{t('Map')}</h3>
+            </Grid>
+            <Grid className={classes.gridContent} item>
+                <Map
+                    className="markercluster-map"
+                    //center={input.mapCenter}
+                    bounds={input.mapBounds}
+                    zoom={input.zoomLevel}
+                    minZoom={3}
+                    zoomSnap={0.5}
+                    onClick={(event) => {
+                        if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
+                            dispatch({type: "DRAW_BBOX", payload: event.latlng});
+                        }
+                    }}
+                >
+                    <TileLayer
+                        className="map-tiles"
+                        attribution={osmAttr}
+                        url={osmTiles}
+                        noWrap={true}
+                    />
+
+                    {/* Circles and Rectangles used for drawing bounding box */}
+                    {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
+                    &&<Circle
+                        center={input.boundingBoxCorner1}
+                        opacity={0.5}
+                    />}
+                    {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                    &&<Circle
+                        center={input.boundingBoxCorner2}
+                        opacity={0.5}
+                    />}
+                    {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
+                    &&<Rectangle
+                        bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
+                        weight={2}
+                        opacity={0.25}
+                        fillOpacity={0.05}
+                    />}
+
+                    {/* Markers */}
+                    {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
+                    {input.clusterMarkers
+                        ? (
+                            <MarkerClusterGroup
+                                disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
+                            >
+                                {renderingConditionRelatedObjects
+                                && mapDataContext.entity.spatial
+                                && <CreateMarkers
+                                    data={mapDataContext.entity.spatial}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                />}
+                                {renderingConditionRelatedObjects
+                                && mapDataContext.entity.related
+                                && <CreateMarkers
+                                    data={mapDataContext.entity.related}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                    //opacity={0.5}
+                                />}
+                                {renderingConditionObjects
+                                && <CreateMarkers
+                                    data={mapDataObjects.entitiesMultiFilter}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                />}
+                                {renderingConditionSitesByRegion
+                                && <CreateMarkers
+                                    data={mapDataSitesByRegion.sitesByRegion}
+                                    selectedMarker={input.selectedMarker}
+                                />}
+                                {renderingConditionSites
+                                && <CreateMarkers
+                                    data={mapDataArchaeoSites.archaeologicalSites}
+                                    selectedMarker={input.selectedMarker}
+                                />}
+                            </MarkerClusterGroup>
+                        )
+                        : (<div>
+                                {renderingConditionRelatedObjects
+                                && mapDataContext.entity.spatial
+                                && <CreateMarkers
+                                    data={mapDataContext.entity.spatial}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                />}
+                                {renderingConditionRelatedObjects
+                                && mapDataContext.entity.related
+                                && <CreateMarkers
+                                    data={mapDataContext.entity.related}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                    //opacity={0.5}
+                                />}
+                                {renderingConditionObjects
+                                && <CreateMarkers
+                                    data={mapDataObjects.entitiesMultiFilter}
+                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={handleRelatedObjects}
+                                    showRelatedObjects={input.showRelatedObjects}
+                                />}
+                                {renderingConditionSitesByRegion
+                                && <CreateMarkers
+                                    data={mapDataSitesByRegion.sitesByRegion}
+                                    selectedMarker={input.selectedMarker}
+                                />}
+                                {renderingConditionSites
+                                && <CreateMarkers
+                                    data={mapDataArchaeoSites.archaeologicalSites}
+                                    selectedMarker={input.selectedMarker}
+                                />}
+                            </div>
+                        )
                     }
-                }}
-            >
-                <TileLayer
-                    className="map-tiles"
-                    attribution={osmAttr}
-                    url={osmTiles}
-                    noWrap={true}
-                />
-
-                {/* Circles and Rectangles used for drawing bounding box */}
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
-                &&<Circle
-                    center={input.boundingBoxCorner1}
-                    opacity={0.5}
-                />}
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                &&<Circle
-                    center={input.boundingBoxCorner2}
-                    opacity={0.5}
-                />}
-                {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))&&(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
-                &&<Rectangle
-                    bounds={[input.boundingBoxCorner1,input.boundingBoxCorner2]}
-                    weight={2}
-                    opacity={0.25}
-                    fillOpacity={0.05}
-                />}
-
-                {/* Markers */}
-                {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
-                {input.clusterMarkers
-                    ? (
-                        <MarkerClusterGroup
-                            disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
-                        >
-                            {renderingConditionRelatedObjects
-                            && mapDataContext.entity.spatial
-                            && <CreateMarkers
-                                data={mapDataContext.entity.spatial}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                            />}
-                            {renderingConditionRelatedObjects
-                            && mapDataContext.entity.related
-                            && <CreateMarkers
-                                data={mapDataContext.entity.related}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                                //opacity={0.5}
-                            />}
-                            {renderingConditionObjects
-                            && <CreateMarkers
-                                data={mapDataObjects.entitiesMultiFilter}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                            />}
-                            {renderingConditionSitesByRegion
-                            && <CreateMarkers
-                                data={mapDataSitesByRegion.sitesByRegion}
-                                selectedMarker={input.selectedMarker}
-                            />}
-                            {renderingConditionSites
-                            && <CreateMarkers
-                                data={mapDataArchaeoSites.archaeologicalSites}
-                                selectedMarker={input.selectedMarker}
-                            />}
-                        </MarkerClusterGroup>
-                    )
-                    : (<div>
-                            {renderingConditionRelatedObjects
-                            && mapDataContext.entity.spatial
-                            && <CreateMarkers
-                                data={mapDataContext.entity.spatial}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                            />}
-                            {renderingConditionRelatedObjects
-                            && mapDataContext.entity.related
-                            && <CreateMarkers
-                                data={mapDataContext.entity.related}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                                //opacity={0.5}
-                            />}
-                            {renderingConditionObjects
-                            && <CreateMarkers
-                                data={mapDataObjects.entitiesMultiFilter}
-                                selectedMarker={input.selectedMarker}
-                                handleRelatedObjects={handleRelatedObjects}
-                                showRelatedObjects={input.showRelatedObjects}
-                            />}
-                            {renderingConditionSitesByRegion
-                            && <CreateMarkers
-                                data={mapDataSitesByRegion.sitesByRegion}
-                                selectedMarker={input.selectedMarker}
-                            />}
-                            {renderingConditionSites
-                            && <CreateMarkers
-                                data={mapDataArchaeoSites.archaeologicalSites}
-                                selectedMarker={input.selectedMarker}
-                            />}
-                        </div>
-                    )
-                }
-            </Map>
-        </div>
+                </Map>
+            </Grid>
+        </Card>
     )
 }
