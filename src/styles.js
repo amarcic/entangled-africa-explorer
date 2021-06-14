@@ -18,8 +18,9 @@ const useStyles = makeStyles(theme => ({
         height: "100%"
     },
     gridHalfHeightItem: {
-        height: "50%",
-        justifyContent: "space-between"
+        height: "45%",
+        justifyContent: "space-between",
+        alignItems: "center"
     },
     gridHead: {
         minHeight: "15%",
