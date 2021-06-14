@@ -2,10 +2,10 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
-import { CollapsedFilters, Filters, OurMap, OurTimeline, ResultsTable } from "..";
-import { Button, Grid, LinearProgress } from "@material-ui/core";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import {
+    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, OurTimeline, ResultsTable, ShowNext
+} from "..";
+import { Grid, LinearProgress } from "@material-ui/core";
 // Queries
 import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
@@ -13,9 +13,6 @@ import {
 } from "./queries.graphql";
 import { timelineAdapter, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
-import { Sources } from "../Sources/Sources";
-import { ImageContents } from "../DepictedContents/ImageContents";
-import { Histogram } from "../Histogram/Histogram";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -42,7 +39,9 @@ const initialInput = {
     resultsListExpanded: true,
     selectedMarker: undefined,
     timelineSort: "period",
-    highlightedTimelineObject: undefined
+    highlightedTimelineObject: undefined,
+    areaA: 0,
+    areaB: 0
 };
 
 
@@ -307,9 +306,9 @@ export const AppContent = () => {
             {/*GRID: Container for results list and timeline*/}
             {<Grid className={classes.gridFullHeightItem} item xs={6} container direction="row" spacing={2}>
 
-                {/*GRID: Results list*/}
+                {/*GRID: Results list, image contents, data sources*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
-                    <ResultsTable
+                    {input.areaA===0 && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
                         mapDataObjects={mapDataObjects}
                         mapDataContext={mapDataContext}
@@ -321,14 +320,27 @@ export const AppContent = () => {
                         renderingConditionSites={renderingConditionSites}
                         renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                         openPopup={openPopup}
+                    />}
+                    {input.areaA===1 && <ImageContents/>}
+                    {input.areaA===2 && <DataSources/>}
+                    <ShowNext
+                        area={"areaA"}
+                        labels={["Results table", "Image contents", "Data sources"]}
+                        reducer={[input, dispatch]}
                     />
                 </Grid>}
 
-                {/*GRID: Timeline*/}
-                {<Grid className={classes.gridHalfHeightItem} item xs={12} container>
-                    <OurTimeline
+                {/*GRID: Timeline, histogram*/}
+                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row" alignItems="stretch">
+                    {input.areaB===0 && <OurTimeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
+                    />}
+                    {input.areaB===1 && <Histogram/>}
+                    <ShowNext
+                        area={"areaB"}
+                        labels={["Timeline", "Histogram"]}
+                        reducer={[input, dispatch]}
                     />
                 </Grid>}
             </Grid>}
@@ -337,18 +349,6 @@ export const AppContent = () => {
             <Grid item xs={12}>
                 {(loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion) &&
                 <LinearProgress/>}
-            </Grid>
-
-            <Grid item>
-                <Sources/>
-            </Grid>
-
-            <Grid item>
-                <ImageContents/>
-            </Grid>
-
-            <Grid item>
-                <Histogram/>
             </Grid>
         </Grid>
     );

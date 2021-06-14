@@ -14,6 +14,8 @@ export const DataSources = () => {
                 <Grid item>
                     <h3 className={classes.h3}>{t('Data sources')}</h3>
                 </Grid>
+            </Grid>
+            <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
                     Here could be a list maybe...
                     <List>
@@ -25,4 +27,4 @@ export const DataSources = () => {
             </Grid>
         </Card>
     )
-}
+};

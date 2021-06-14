@@ -14,10 +14,12 @@ export const ImageContents = () => {
                 <Grid item>
                     <h3 className={classes.h3}>{t('Image contents')}</h3>
                 </Grid>
+            </Grid>
+            <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    Here could be a word cloud maybe
+                    Here could be a word cloud maybe...
                 </Grid>
             </Grid>
         </Card>
     )
-}
+};

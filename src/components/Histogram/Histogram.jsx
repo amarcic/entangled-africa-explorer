@@ -14,10 +14,12 @@ export const Histogram = () => {
                 <Grid item>
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
                 </Grid>
+            </Grid>
+            <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    Here should be the histogram...
+                    Here will be the histogram...
                 </Grid>
             </Grid>
         </Card>
     )
-}
+};
