@@ -13,6 +13,9 @@ import {
 } from "./queries.graphql";
 import { timelineAdapter, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
+import { Sources } from "../Sources/Sources";
+import { ImageContents } from "../DepictedContents/ImageContents";
+import { Histogram } from "../Histogram/Histogram";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -334,6 +337,18 @@ export const AppContent = () => {
             <Grid item xs={12}>
                 {(loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion) &&
                 <LinearProgress/>}
+            </Grid>
+
+            <Grid item>
+                <Sources/>
+            </Grid>
+
+            <Grid item>
+                <ImageContents/>
+            </Grid>
+
+            <Grid item>
+                <Histogram/>
             </Grid>
         </Grid>
     );
