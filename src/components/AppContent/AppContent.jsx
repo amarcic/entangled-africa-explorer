@@ -273,7 +273,6 @@ export const AppContent = () => {
                     ? <Filters
                         chronOntologyTerms={chronOntologyTerms}
                         reducer={[input, dispatch]}
-                        extendMapBounds={extendMapBounds}
                         input={input}
                         regions={regions}
                     />
@@ -288,6 +287,7 @@ export const AppContent = () => {
             {/*GRID: Map*/}
             {<Grid className={classes.gridFullHeightItem} item xs={4} container>
                 <OurMap
+                    extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
                     mapDataObjects={mapDataObjects}
                     mapDataContext={mapDataContext}

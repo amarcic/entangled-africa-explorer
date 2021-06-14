@@ -3,8 +3,9 @@ import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
-import { Card, Grid } from "@material-ui/core";
+import { Card, FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import { useStyles } from '../../styles';
+import MapIcon from "@material-ui/icons/Map";
 
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -13,6 +14,7 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 export const OurMap = (props) => {
     const [input, dispatch] = props.reducer;
     const {
+        extendMapBounds,
         handleRelatedObjects,
         mapDataObjects,
         mapDataContext,
@@ -30,8 +32,33 @@ export const OurMap = (props) => {
 
     return (
         <Card className={classes.card}>
-            <Grid className={classes.gridHead} item>
-                <h3 className={classes.h3}>{t('Map')}</h3>
+            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
+                <Grid item>
+                    <h3 className={classes.h3}>{t('Map')}</h3>
+                </Grid>
+                <Grid item xs={5}>
+                    <FormLabel>Turn on/off marker clustering
+                        <Tooltip title="Switch between showing individual markers or clustered circles." arrow placement="right-start">
+                            <Switch
+                                name="drawBBox"
+                                checked={input.clusterMarkers}
+                                color="primary"
+                                onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "clusterMarkers"}})}
+                            />
+                        </Tooltip>
+                    </FormLabel>
+                </Grid>
+                <Grid item xs={5}>
+                    <FormLabel
+                        onClick={() => extendMapBounds()}
+                        style={{cursor: "pointer"}}
+                    >
+                        {`Resize map to show all markers\t`}
+                        <Tooltip title="Show all markers" arrow placement="right">
+                            <MapIcon/>
+                        </Tooltip>
+                    </FormLabel>
+                </Grid>
             </Grid>
             <Grid className={classes.gridContent} item>
                 <Map

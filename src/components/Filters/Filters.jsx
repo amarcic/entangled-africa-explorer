@@ -5,7 +5,6 @@ import {
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
-import MapIcon from "@material-ui/icons/Map";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useStyles } from '../../styles';
@@ -14,7 +13,7 @@ import { useTranslation } from "react-i18next";
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { chronOntologyTerms, extendMapBounds, regions } = props;
+    const { chronOntologyTerms, regions } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -268,30 +267,6 @@ export const Filters = (props) => {
                                 })}
                             </FormGroup>
                         </Grid>}
-
-                    {<Grid item xs={12}>
-                        <FormGroup>
-                            <FormLabel>Turn on/off marker clustering
-                                <Tooltip title="Deactivate the switch to show individual markers instead of clustered circles." arrow placement="right-start">
-                                    <Switch
-                                        name="drawBBox"
-                                        checked={input.clusterMarkers}
-                                        color="primary"
-                                        onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "clusterMarkers"}})}
-                                    />
-                                </Tooltip>
-                            </FormLabel>
-                            <FormLabel
-                                onClick={() => extendMapBounds()}
-                                style={{cursor: "pointer"}}
-                            >
-                                {`Resize map to show all markers\t`}
-                                <Tooltip title="Show all markers" arrow placement="right">
-                                    <MapIcon/>
-                                </Tooltip>
-                            </FormLabel>
-                        </FormGroup>
-                    </Grid>}
                 </Grid>
             </Grid>}
         </Card>
