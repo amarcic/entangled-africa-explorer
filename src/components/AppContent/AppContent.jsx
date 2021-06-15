@@ -21,7 +21,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "*kaiserzeitlich",
+    searchStr: "spp2143",
     catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
         {"catalogLabel": "AAArC - Fundplätze", "catalogId": 942},],
     checkedCatalogIds: [],
@@ -40,7 +40,7 @@ const initialInput = {
     selectedMarker: undefined,
     timelineSort: "period",
     highlightedTimelineObject: undefined,
-    areaA: 0,
+    areaA: 1,
     areaB: 0
 };
 
@@ -308,7 +308,8 @@ export const AppContent = () => {
 
                 {/*GRID: Results list, image contents, data sources*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
-                    {input.areaA===0 && <ResultsTable
+                    {input.areaA===0
+                    && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
                         mapDataObjects={mapDataObjects}
                         mapDataContext={mapDataContext}
@@ -321,8 +322,14 @@ export const AppContent = () => {
                         renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                         openPopup={openPopup}
                     />}
-                    {input.areaA===1 && <ImageContents/>}
-                    {input.areaA===2 && <DataSources/>}
+                    {input.areaA===1
+                    && <ImageContents
+                        contents={dataObjects
+                        && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
+                            dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
+                    />}
+                    {input.areaA===2
+                    && <DataSources/>}
                     <ShowNext
                         area={"areaA"}
                         labels={["Results table", "Image contents", "Data sources"]}

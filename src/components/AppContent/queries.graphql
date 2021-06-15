@@ -1,5 +1,6 @@
 query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String) {
-    entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, period: $periodTerm, entityTypes: [Einzelobjekte, Topographien]) {
+    entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, period: $periodTerm,
+        entityTypes: [Einzelobjekte, Topographien, Bilder]) {
         identifier
         name
         spatial {
@@ -27,6 +28,9 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
                 end
             }
         }
+        type
+        categoryOfDepicted
+        materialOfDepicted
     }
 }
 
@@ -53,7 +57,7 @@ query searchObjectContext($arachneId: ID!) {
             begin
             end
         }
-        related(types: [Einzelobjekte, Bauwerke]) {
+        related(types: [Einzelobjekte, Bauwerke, Bilder]) {
             identifier
             name
             type

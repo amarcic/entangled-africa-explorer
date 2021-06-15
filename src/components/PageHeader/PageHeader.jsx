@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Grow, MenuItem, MenuList, Paper, Popper } from '@material-ui/core';
+import { Button, ClickAwayListener, Grid, Grow, MenuItem, MenuList, Paper, Popper } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
 import { useStyles } from '../../styles';
 
@@ -65,11 +64,7 @@ export const PageHeader = () => {
 
 
     return(
-        <Grid
-            container
-            direction="row"
-            className={localClasses.pageHeader}
-        >
+        <Grid container direction="row" className={localClasses.pageHeader}>
             <Grid item xs={10}>
                 <h1 className={classes.h1}>Entangled Africa Data Explorer</h1>
                 <h2 className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>
