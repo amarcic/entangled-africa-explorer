@@ -8,7 +8,9 @@ export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
-    console.log(props.timelineData);
+    const preparedData = prepareHistogramData(props.timelineData).filter( e => e&&e );
+    console.log(preparedData);
+
 
     return (
         <Card className={classes.card}>
