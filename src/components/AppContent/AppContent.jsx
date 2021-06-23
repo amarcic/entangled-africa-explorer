@@ -11,7 +11,7 @@ import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
     searchObjectContext as GET_OBJECT_CONTEXT, searchObjects as GET_OBJECTS
 } from "./queries.graphql";
-import { timelineAdapter, useDebounce } from "../../utils";
+import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
 
 const initialInput = {
@@ -343,7 +343,9 @@ export const AppContent = () => {
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />}
-                    {input.areaB===1 && <Histogram/>}
+                    {input.areaB===1 && <Histogram
+                        timelineData={dataObjects?.entitiesMultiFilter.map(timelineMapper)}
+                    />}
                     <ShowNext
                         area={"areaB"}
                         labels={["Timeline", "Histogram"]}

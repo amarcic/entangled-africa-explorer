@@ -177,17 +177,17 @@ const getTimeRangeOfTimelineData = (timeLData, mode) => {
 const transformTimelineData = (timeLData, mode) => {
     if(!timeLData) return;
 
-    let transformedTimelineData = timeLData;
+    let transformedTimelineData = [];
     if (mode === "object") {
         //sort elements by object dating in ascending order
         //(also sort by period so the order makes sense if object datings are equal)
-        transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending).sort(sortPeriodAscending);
+        transformedTimelineData = timeLData.filter(filterNoDatingSpan).sort(sortYearAscending).sort(sortPeriodAscending);
         //transformedTimelineData = transformedTimelineData.filter(filterNoDatingSpan).sort(sortYearAscending);
     }
     else if (mode === "period") {
         //sort elements by period dating in ascending order
         //(also sort by object so the order makes sense if period datings are equal)
-        transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending).sort(sortYearAscending);
+        transformedTimelineData = timeLData.filter(filterNoPeriodDating).sort(sortPeriodAscending).sort(sortYearAscending);
         //transformedTimelineData = transformedTimelineData.filter(filterNoPeriodDating).sort(sortPeriodAscending);
     }
 
@@ -198,4 +198,95 @@ const transformTimelineData = (timeLData, mode) => {
     //setSortedTimelineData(transformedTimelineData);
 }
 
-export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData };
+//prepare data for use in histogram.
+//timelineData is data previously mapped for use in the timeline (see above).
+const prepareHistogramData = (timelineData) =>
+    timelineData.flatMap( tlObj =>
+        tlObj.objectDating?.map( oDating =>
+            {return {datingSpan: oDating, id: tlObj.itemId}}
+    )
+);
+
+function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
+    //get extent of values to be binned
+    const years = timespanObjects.flatMap( tlo =>
+        tlo.datingSpan
+    ).map( strVal => parseInt(strVal));
+    const yearSpan = d3.extent(years);
+
+    //calculate readable amount and threasholds/width for bins for the given span of years
+    let ticks = d3.ticks(yearSpan[0], yearSpan[1], approxAmountBins);
+    //set start and end bin according to width of the bins
+    const tickStep = ticks[1]-ticks[0];
+    const binLimits = [ticks[0]-tickStep, ...ticks, ticks[ticks.length-1]+tickStep];
+
+    //create an array of bin objects for the given thresholds
+    let binBin = [];
+    const lastBinLim = binLimits.length-1;
+    binLimits.forEach( (y, i) => i<lastBinLim && binBin.push({
+        id:i,
+        lower: y,
+        upper: i<lastBinLim-1? binLimits[i+1]-1 : binLimits[i+1],
+        values:[]
+    }) );
+
+    //put all timespan objects data into the according bins
+    timespanObjects.forEach( tlo =>
+        binBin.forEach( bin =>
+            { if
+            (tlo.datingSpan[1]>=bin.lower
+                &&tlo.datingSpan[0]<=bin.upper)
+            { bin.values.push(tlo.id)}
+            }
+        )
+    );
+
+    return binBin;
+}
+
+function drawHistogram( {histogramData, svgNode} ) {
+    //add a bar with a title to a chart
+    function addChartGroup(element,i, tlo) {
+        d3.select(element)
+            .append('g')
+            .attr('transform', `translate(${i*40},40)`)
+            .classed('bar', true)
+            .call( function(parent) {
+                parent.append('text')
+                    .text(tlo.lower)
+            } )
+            .call( function(parent) {
+                parent.append('rect')
+                    .attr('width', 38)
+                    .attr('height', 5)
+            } )
+            .call( function(parent) {
+                parent.append('title')
+                    .text(`${tlo.values.length} items for ${tlo.lower} till ${tlo.upper}: ${tlo.values}`)
+            } )
+    }
+
+    //add bars for each bin to the svg element
+    histogramData.forEach( (bino, i) =>
+        {addChartGroup(svgNode, i, bino)}
+    );
+
+    //bind the svg bars to the data of the array of bin objects
+    d3.selectAll('rect')
+        .data(histogramData)
+
+    //manipulate the height of the graph bars according to the amount of values in each bin
+    d3.selectAll('rect')
+        .attr('height', d => d.values.length*20)
+
+}
+
+function timespanHistogram( {timespanObjects, approxAmountBins, svgNode} ) {
+
+    const binnedData = binTimespanObjects( {timespanObjects, approxAmountBins} )
+
+    drawHistogram({histogramData:binnedData, svgNode})
+
+}
+
+export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData };

@@ -2,11 +2,13 @@ import React from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
+import {prepareHistogramData} from "../../utils";
 
-export const Histogram = () => {
+export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
+    console.log(props.timelineData);
 
     return (
         <Card className={classes.card}>
