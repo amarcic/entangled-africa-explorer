@@ -17,7 +17,13 @@ export const Histogram = (props) => {
 
     useEffect(() => {
         const svg = select(svgRef.current);
-    }, [])
+        svg.selectAll("circle").data(binnedData).join(
+            enter => enter.append("circle")
+                .attr("r", value => value.values.length)
+                .attr("cy", 15)
+                .attr("cx", (value, index) => index*20)
+        );
+    }, [binnedData])
 
     return (
         <Card className={classes.card}>
