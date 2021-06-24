@@ -200,13 +200,13 @@ const transformTimelineData = (timeLData, mode) => {
 
 //prepare data for use in histogram.
 //timelineData is data previously mapped for use in the timeline (see above).
-const prepareHistogramData = (timelineData) =>
+const prepareHistogramData = (timelineData) => {
     if (!timelineData) return;
-    timelineData.flatMap( tlObj =>
+    return timelineData.flatMap( tlObj =>
         tlObj.objectDating?.map( oDating =>
             {return {datingSpan: oDating, id: tlObj.itemId}}
     )
-);
+);}
 
 function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
     if (!timespanObjects) return;

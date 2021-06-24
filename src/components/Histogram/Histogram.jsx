@@ -9,15 +9,17 @@ export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
-    const preparedData = prepareHistogramData(props.timelineData).filter( e => e&&e );
+    //console.log(props.timelineData);
+    const preparedData = prepareHistogramData(props.timelineData)?.filter( e => e&&e );
     const binnedData = binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
-    console.log(binnedData);
+    //console.log(binnedData);
 
     const svgRef = useRef();
 
     useEffect(() => {
         const svg = select(svgRef.current);
-        svg.selectAll("circle").data(binnedData).join(
+        binnedData
+        &&svg.selectAll("circle").data(binnedData).join(
             enter => enter.append("circle")
                 .attr("r", value => value.values.length)
                 .attr("cy", 15)
