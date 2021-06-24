@@ -10,7 +10,8 @@ const localStyles = makeStyles(theme => ({
     pageHeader: {
         justifyContent:"space-between",
         alignItems:"stretch",
-        height: "12vh"
+        height: "12vh",
+        zIndex: 100
     }
 }));
 
@@ -19,7 +20,7 @@ export const PageHeader = () => {
     const { t, i18n } = useTranslation();
 
     const changeLanguage = lng => {
-        i18n.changeLanguage(lng);
+        i18n.changeLanguage(lng).then();
     };
 
     const classes = useStyles();
