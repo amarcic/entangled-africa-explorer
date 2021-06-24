@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
@@ -15,16 +15,18 @@ export const Histogram = (props) => {
     //console.log(binnedData);
 
     const svgRef = useRef();
+    //const [data, setData] = useState(binnedData);
 
     useEffect(() => {
         const svg = select(svgRef.current);
         binnedData
-        &&svg.selectAll("circle").data(binnedData).join(
-            enter => enter.append("circle")
-                .attr("r", value => value.values.length)
-                .attr("cy", 15)
-                .attr("cx", (value, index) => index*20)
-        );
+        &&svg.selectAll("rect").data(binnedData).join(
+            enter => enter.append("rect")
+        ).attr("height", value => value.values.length*10)
+            .attr("width", 15)
+            .attr("y", 15)
+            .attr("x", (value, index) => index*20)
+        ;
     }, [binnedData])
 
     return (
