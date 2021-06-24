@@ -1,16 +1,23 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import {prepareHistogramData} from "../../utils";
+import { select } from "d3";
+import {prepareHistogramData, binTimespanObjects} from "../../utils";
 
 export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
     const preparedData = prepareHistogramData(props.timelineData).filter( e => e&&e );
-    console.log(preparedData);
+    const binnedData = binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
+    console.log(binnedData);
 
+    const svgRef = useRef();
+
+    useEffect(() => {
+        const svg = select(svgRef.current);
+    }, [])
 
     return (
         <Card className={classes.card}>
@@ -21,7 +28,7 @@ export const Histogram = (props) => {
             </Grid>
             <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    Here will be the histogram...
+                    <svg ref={svgRef}></svg>
                 </Grid>
             </Grid>
         </Card>

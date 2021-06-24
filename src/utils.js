@@ -208,6 +208,8 @@ const prepareHistogramData = (timelineData) =>
 );
 
 function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
+    if (!timespanObjects) return;
+    approxAmountBins = approxAmountBins||10;
     //get extent of values to be binned
     const years = timespanObjects.flatMap( tlo =>
         tlo.datingSpan
@@ -289,4 +291,4 @@ function timespanHistogram( {timespanObjects, approxAmountBins, svgNode} ) {
 
 }
 
-export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData };
+export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData,binTimespanObjects };
