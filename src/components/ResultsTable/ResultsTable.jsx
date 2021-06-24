@@ -20,7 +20,7 @@ export const ResultsTable = (props) => {
         <Card className={classes.card}>
             {<Grid className={classes.gridHead} item xs={12} container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Search Results')}</h3>
+                    <h3 className={classes.h3}>{t('Search results')}</h3>
                 </Grid>
                 <Grid item>
                     {input.showRelatedObjects && <Button

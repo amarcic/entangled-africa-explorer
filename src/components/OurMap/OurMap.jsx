@@ -37,7 +37,7 @@ export const OurMap = (props) => {
                     <h3 className={classes.h3}>{t('Map')}</h3>
                 </Grid>
                 <Grid item xs={5}>
-                    <FormLabel>Turn on/off marker clustering
+                    <FormLabel>{t('Turn on/off marker clustering')}
                         <Tooltip title="Switch between showing individual markers or clustered circles." arrow placement="right-start">
                             <Switch
                                 name="drawBBox"
@@ -53,7 +53,7 @@ export const OurMap = (props) => {
                         onClick={() => extendMapBounds()}
                         style={{cursor: "pointer"}}
                     >
-                        {`Resize map to show all markers\t`}
+                        {`${t('Resize map to show all markers')}\t`}
                         <Tooltip title="Show all markers" arrow placement="right">
                             <MapIcon/>
                         </Tooltip>
