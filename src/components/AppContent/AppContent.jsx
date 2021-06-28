@@ -270,7 +270,7 @@ export const AppContent = () => {
     return (
         <Grid container spacing={2} className={classes.gridBody}>
             {/*GRID: Filters*/}
-            <Grid className={classes.gridFullHeightItem} item container direction="row" xs={2}>
+            <Grid className={classes.gridFullHeightItem} item container direction="row" md={2} sm={6} xs={12}>
                 {input.mapControlsExpanded
                     ? <Filters
                         chronOntologyTerms={chronOntologyTerms}
@@ -287,7 +287,7 @@ export const AppContent = () => {
             </Grid>
 
             {/*GRID: Map*/}
-            {<Grid className={classes.gridFullHeightItem} item xs={4} container>
+            {<Grid className={classes.gridFullHeightItem} item md={4} sm={6} xs={12} container>
                 <OurMap
                     extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
@@ -304,7 +304,7 @@ export const AppContent = () => {
             </Grid>}
 
             {/*GRID: Container for results list and timeline*/}
-            {<Grid className={classes.gridFullHeightItem} item xs={6} container direction="row" spacing={2}>
+            {<Grid className={classes.gridFullHeightItem} item md={6} xs={12} container direction="row" spacing={2}>
 
                 {/*GRID: Results list, image contents, data sources*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
