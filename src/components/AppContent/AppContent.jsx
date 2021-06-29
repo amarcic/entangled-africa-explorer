@@ -176,12 +176,14 @@ export const AppContent = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
+    //TODO: not possible to change map view twice in a row if markers have not changed
     const extendMapBounds = () => {
         let markers;
         if(mapDataContext.entity) markers = mapDataContext.entity;
         else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
         else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
         else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
+        if(!markers) return;
         const newMapBounds = latLngBounds();
         markers.map( (item) => {
             if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());

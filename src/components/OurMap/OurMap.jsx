@@ -54,7 +54,7 @@ export const OurMap = (props) => {
                         style={{cursor: "pointer"}}
                     >
                         {`${t('Resize map to show all markers')}\t`}
-                        <Tooltip title="Show all markers" arrow placement="right">
+                        <Tooltip title="Automatically adjust the size of the map so all markers are visible." arrow placement="right">
                             <MapIcon/>
                         </Tooltip>
                     </FormLabel>
@@ -66,7 +66,7 @@ export const OurMap = (props) => {
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
                     zoom={input.zoomLevel}
-                    minZoom={3}
+                    minZoom={2}
                     zoomSnap={0.5}
                     onClick={(event) => {
                         if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
