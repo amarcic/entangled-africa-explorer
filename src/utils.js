@@ -247,49 +247,5 @@ function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
     return binBin;
 }
 
-function drawHistogram( {histogramData, svgNode} ) {
-    //add a bar with a title to a chart
-    function addChartGroup(element,i, tlo) {
-        d3.select(element)
-            .append('g')
-            .attr('transform', `translate(${i*40},40)`)
-            .classed('bar', true)
-            .call( function(parent) {
-                parent.append('text')
-                    .text(tlo.lower)
-            } )
-            .call( function(parent) {
-                parent.append('rect')
-                    .attr('width', 38)
-                    .attr('height', 5)
-            } )
-            .call( function(parent) {
-                parent.append('title')
-                    .text(`${tlo.values.length} items for ${tlo.lower} till ${tlo.upper}: ${tlo.values}`)
-            } )
-    }
-
-    //add bars for each bin to the svg element
-    histogramData.forEach( (bino, i) =>
-        {addChartGroup(svgNode, i, bino)}
-    );
-
-    //bind the svg bars to the data of the array of bin objects
-    d3.selectAll('rect')
-        .data(histogramData)
-
-    //manipulate the height of the graph bars according to the amount of values in each bin
-    d3.selectAll('rect')
-        .attr('height', d => d.values.length*20)
-
-}
-
-function timespanHistogram( {timespanObjects, approxAmountBins, svgNode} ) {
-
-    const binnedData = binTimespanObjects( {timespanObjects, approxAmountBins} )
-
-    drawHistogram({histogramData:binnedData, svgNode})
-
-}
 
 export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData,binTimespanObjects };

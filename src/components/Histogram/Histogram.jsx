@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select } from "d3";
+import { select, scaleBand, axisBottom } from "d3";
 import {prepareHistogramData, binTimespanObjects} from "../../utils";
 
 export const Histogram = (props) => {
@@ -25,20 +25,30 @@ export const Histogram = (props) => {
     const svg = select(svgRef.current);
     svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",`translate(${margin.left}, ${margin.top})`);
 
     useEffect(() => {
+        if (!binnedData) return;
+        const x = scaleBand()
+            .domain(binnedData.map( bin => bin.lower))
+            .range([0, width])
+            .padding(0.2)
+        ;
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},${height + margin.top })`)
+            .call(axisBottom(x))
+        //console.log(x);
 
         binnedData
-        &&svg.select("g").selectAll("rect").data(binnedData).join(
-            enter => enter.append("rect")
-        ).attr("y", value => height - value.values.length*5)
-            .attr("x", (value, index) => index*20)
-            .attr("height", value => value.values.length*5)
-            .attr("width", 15)
-            .attr("fill", "#69b3a2")
-        ;
+        &&svg.select("g")
+            .attr("transform",`translate(${margin.left}, ${margin.top})`)
+            .selectAll("rect").data(binnedData).join(
+                enter => enter.append("rect")
+            ).attr("y", value => height - value.values.length*5)
+                .attr("x", value => x(value.lower))
+                .attr("height", value => value.values.length*5)
+                .attr("width", x.bandwidth())
+                .attr("fill", "#69b3a2")
+            ;
     }, [binnedData])
 
     return (
@@ -50,7 +60,7 @@ export const Histogram = (props) => {
             </Grid>
             <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    <svg ref={svgRef}></svg>
+                    <svg ref={svgRef}><g></g></svg>
                 </Grid>
             </Grid>
         </Card>

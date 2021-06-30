@@ -21,7 +21,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "spp2143",
+    searchStr: "brosche",
     catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
         {"catalogLabel": "AAArC - Fundplätze", "catalogId": 942},],
     checkedCatalogIds: [],
