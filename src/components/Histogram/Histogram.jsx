@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select, scaleBand, axisBottom } from "d3";
+import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
 import {prepareHistogramData, binTimespanObjects} from "../../utils";
 
 export const Histogram = (props) => {
@@ -16,7 +16,7 @@ export const Histogram = (props) => {
 
     //svg dimensions
     //todo: make flexible for different screen and card sizes
-    const margin = {top: 10, right: 20, left: 20, bottom: 30};
+    const margin = {top: 5, right: 20, left: 20, bottom: 30};
     const width = 400 - margin.left - margin.right,
           height = 100 - margin.top - margin.bottom;
 
@@ -27,28 +27,46 @@ export const Histogram = (props) => {
         .attr("height", height + margin.top + margin.bottom)
 
     useEffect(() => {
+
         if (!binnedData) return;
+
+        //calculate scale for x axis
         const x = scaleBand()
             .domain(binnedData.map( bin => bin.lower))
+            //.domain(binnedData.map( bin => `${bin.lower} bis ${bin.upper}`))
             .range([0, width])
-            .padding(0.2)
-        ;
+            .padding(0.2);
+
+        //calculate scale for y axis
+        const y = scaleLinear()
+            .domain([0,max(binnedData.map( bin => bin.values.length))])
+            .range([height, 0]);
+
+        //append x axis and rotate labels
+        //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
         svg.append("g")
             .attr("transform", `translate(${margin.left},${height + margin.top })`)
             .call(axisBottom(x))
-        //console.log(x);
+            .selectAll("text")
+                .attr("transform", "translate(-10,0)rotate(-45)")
+                .style("text-anchor", "end");
 
-        binnedData
-        &&svg.select("g")
+        //append y axis
+        svg.append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`)
+            .call(axisLeft(y));
+
+        //calculate and append bars
+        svg.select("g")
             .attr("transform",`translate(${margin.left}, ${margin.top})`)
             .selectAll("rect").data(binnedData).join(
                 enter => enter.append("rect")
-            ).attr("y", value => height - value.values.length*5)
+            ).attr("y", value => y(value.values.length))
                 .attr("x", value => x(value.lower))
-                .attr("height", value => value.values.length*5)
+                //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
+                .attr("height", value => height - y(value.values.length))
                 .attr("width", x.bandwidth())
-                .attr("fill", "#69b3a2")
-            ;
+                .attr("fill", "#69b3a2");
     }, [binnedData])
 
     return (
