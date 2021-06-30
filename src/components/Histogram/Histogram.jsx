@@ -30,6 +30,8 @@ export const Histogram = (props) => {
 
         if (!binnedData) return;
 
+        const maxYValue = max(binnedData.map( bin => bin.values.length));
+
         //calculate scale for x axis
         const x = scaleBand()
             .domain(binnedData.map( bin => bin.lower))
@@ -39,33 +41,42 @@ export const Histogram = (props) => {
 
         //calculate scale for y axis
         const y = scaleLinear()
-            .domain([0,max(binnedData.map( bin => bin.values.length))])
+            .domain([0,maxYValue])
             .range([height, 0]);
+        
+        /* unused color scale
+        const colorScale = scaleLinear()
+            .domain([0,maxYValue])
+            .range(["#69b3a2","red"]);
+        */
 
-        //append x axis and rotate labels
+        //add x axis to svg and rotate labels
         //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},${height + margin.top })`)
+        svg.select(".xAxis")
+            .attr("transform", `translate(0,${height})`)
             .call(axisBottom(x))
             .selectAll("text")
                 .attr("transform", "translate(-10,0)rotate(-45)")
                 .style("text-anchor", "end");
 
-        //append y axis
-        svg.append("g")
-            .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        //add y axis to svg
+        svg.select(".yAxis")
             .call(axisLeft(y));
 
-        //calculate and append bars
-        svg.select("g")
+        //calculate and append histogram bars for each bin
+        svg.select(".bars")
             .attr("transform",`translate(${margin.left}, ${margin.top})`)
             .selectAll("rect").data(binnedData).join(
                 enter => enter.append("rect")
-            ).attr("y", value => y(value.values.length))
+            ).attr("class","bar")
+                //.attr("y", value => y(value.values.length))
+                .attr("y", height*-1)
                 .attr("x", value => x(value.lower))
                 //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
-                .attr("height", value => height - y(value.values.length))
+                .style("transform", "scale(1,-1)")
                 .attr("width", x.bandwidth())
+                .transition()
+                .attr("height", value => height - y(value.values.length))
                 .attr("fill", "#69b3a2");
     }, [binnedData])
 
@@ -78,7 +89,12 @@ export const Histogram = (props) => {
             </Grid>
             <Grid className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    <svg ref={svgRef}><g></g></svg>
+                    <svg ref={svgRef}>
+                        <g className="bars">
+                            <g className="xAxis"></g>
+                            <g className="yAxis"></g>
+                        </g>
+                    </svg>
                 </Grid>
             </Grid>
         </Card>
