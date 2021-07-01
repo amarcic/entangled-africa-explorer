@@ -9,16 +9,18 @@ export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
+
     //console.log(props.timelineData);
     const preparedData = prepareHistogramData(props.timelineData)?.filter( e => e&&e );
+    //console.log(preparedData);
     const binnedData = binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
-    console.log(binnedData);
+    //console.log(binnedData);
 
     //svg dimensions
     //todo: make flexible for different screen and card sizes
     const margin = {top: 5, right: 20, left: 20, bottom: 30};
-    const width = 400 - margin.left - margin.right,
-          height = 100 - margin.top - margin.bottom;
+    const width = 500 - margin.left - margin.right,
+          height = 150 - margin.top - margin.bottom;
 
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
@@ -28,7 +30,12 @@ export const Histogram = (props) => {
 
     useEffect(() => {
 
-        if (!binnedData) return;
+        if (!binnedData||preparedData.length===0) {
+            svg.select(".bars")
+                //.append("text")
+                //.text("hier gibt es nichts zu sehen")
+                .selectAll(".bar").remove()
+        } else {
 
         const maxYValue = max(binnedData.map( bin => bin.values.length));
 
@@ -43,7 +50,7 @@ export const Histogram = (props) => {
         const y = scaleLinear()
             .domain([0,maxYValue])
             .range([height, 0]);
-        
+
         /* unused color scale
         const colorScale = scaleLinear()
             .domain([0,maxYValue])
@@ -78,6 +85,7 @@ export const Histogram = (props) => {
                 .transition()
                 .attr("height", value => height - y(value.values.length))
                 .attr("fill", "#69b3a2");
+        }
     }, [binnedData])
 
     return (
