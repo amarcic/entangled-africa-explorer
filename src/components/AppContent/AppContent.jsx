@@ -41,7 +41,7 @@ const initialInput = {
     timelineSort: "period",
     highlightedTimelineObject: undefined,
     areaA: 1,
-    areaB: 1
+    areaB: 0
 };
 
 

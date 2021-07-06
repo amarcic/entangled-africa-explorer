@@ -16,75 +16,83 @@ export const Histogram = (props) => {
     const binnedData = binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
     //console.log(binnedData);
 
-    //svg dimensions
-    //todo: make flexible for different screen and card sizes
-    const margin = {top: 5, right: 20, left: 20, bottom: 30};
-    const width = 500 - margin.left - margin.right,
-          height = 150 - margin.top - margin.bottom;
-
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
     const svg = select(svgRef.current);
-    svg.attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+
+
 
     useEffect(() => {
 
+        //svg dimensions
+        const containerHeight = parseInt(select("#histogramContainer").style("height")),
+            containerWidth = parseInt(select("#histogramContainer").style("width"));
+        console.log(cardHeight);
+        //todo: make flexible for different screen and card sizes
+        const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
+        const width = containerWidth - margin.left - margin.right,
+            height = containerHeight - margin.top - margin.bottom;
+
+        svg.attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+
+        //remove previously rendered histogram bars in the case there is no current data from the current search
         if (!binnedData||preparedData.length===0) {
             svg.select(".bars")
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
                 .selectAll(".bar").remove()
         } else {
+            //maximum value on y axis
+            const maxYValue = max(binnedData.map( bin => bin.values.length));
 
-        const maxYValue = max(binnedData.map( bin => bin.values.length));
+            //calculate scale for x axis
+            const x = scaleBand()
+                .domain(binnedData.map( bin => bin.lower))
+                //.domain(binnedData.map( bin => `${bin.lower} bis ${bin.upper}`))
+                .range([0, width])
+                .padding(0.2);
 
-        //calculate scale for x axis
-        const x = scaleBand()
-            .domain(binnedData.map( bin => bin.lower))
-            //.domain(binnedData.map( bin => `${bin.lower} bis ${bin.upper}`))
-            .range([0, width])
-            .padding(0.2);
+            //calculate scale for y axis
+            const y = scaleLinear()
+                .domain([0,maxYValue])
+                .range([height, 0]);
 
-        //calculate scale for y axis
-        const y = scaleLinear()
-            .domain([0,maxYValue])
-            .range([height, 0]);
+            /* unused color scale
+            const colorScale = scaleLinear()
+                .domain([0,maxYValue])
+                .range(["#69b3a2","red"]);
+            */
 
-        /* unused color scale
-        const colorScale = scaleLinear()
-            .domain([0,maxYValue])
-            .range(["#69b3a2","red"]);
-        */
+            //add x axis to svg and rotate labels
+            //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
+            svg.select(".xAxis")
+                .attr("transform", `translate(0,${height})`)
+                .call(axisBottom(x))
+                .selectAll("text")
+                    .attr("transform", "translate(-10,0)rotate(-45)")
+                    .style("text-anchor", "end");
 
-        //add x axis to svg and rotate labels
-        //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
-        svg.select(".xAxis")
-            .attr("transform", `translate(0,${height})`)
-            .call(axisBottom(x))
-            .selectAll("text")
-                .attr("transform", "translate(-10,0)rotate(-45)")
-                .style("text-anchor", "end");
+            //add y axis to svg
+            svg.select(".yAxis")
+                .call(axisLeft(y));
 
-        //add y axis to svg
-        svg.select(".yAxis")
-            .call(axisLeft(y));
-
-        //calculate and append histogram bars for each bin
-        svg.select(".bars")
-            .attr("transform",`translate(${margin.left}, ${margin.top})`)
-            .selectAll("rect").data(binnedData).join(
-                enter => enter.append("rect")
-            ).attr("class","bar")
-                //.attr("y", value => y(value.values.length))
-                .attr("y", height*-1)
-                .attr("x", value => x(value.lower))
-                //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
-                .style("transform", "scale(1,-1)")
-                .attr("width", x.bandwidth())
-                .transition()
-                .attr("height", value => height - y(value.values.length))
-                .attr("fill", "#69b3a2");
+            //calculate and append histogram bars for each bin
+            svg.select(".bars")
+                .attr("transform",`translate(${margin.left}, ${margin.top})`)
+                .selectAll("rect").data(binnedData).join(
+                    enter => enter.append("rect")
+                ).attr("class","bar")
+                    //.attr("y", value => y(value.values.length))
+                    .attr("y", height*-1)
+                    .attr("x", value => x(value.lower))
+                    //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
+                    .style("transform", "scale(1,-1)")
+                    .attr("width", x.bandwidth())
+                    .transition()
+                    .attr("height", value => height - y(value.values.length))
+                    .attr("fill", "#69b3a2");
         }
     }, [binnedData])
 
@@ -95,7 +103,7 @@ export const Histogram = (props) => {
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
                 </Grid>
             </Grid>
-            <Grid className={classes.gridContent} item container direction="column" spacing={2}>
+            <Grid id="histogramContainer" className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
                     <svg ref={svgRef}>
                         <g className="bars">
