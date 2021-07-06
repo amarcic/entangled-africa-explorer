@@ -89,17 +89,20 @@ export const Histogram = (props) => {
                     .on("mouseenter", (event, value) => {
                         const element = svg.selectAll(".bar").nodes();
                         const index = element.indexOf(event.target);
-                        console.log(value);
+                        //console.log(value);
                         svg
                             .selectAll(".tooltip")
                             .data([value])
                             .join("text")
                             .attr("class","tooltip")
                             .text(`${value.lower}-${value.upper}: ${value.values.length}`)
+                            .attr("text-anchor","middle")
+                            .transition()
                             .attr("x", x(value.lower)+x.bandwidth())
                             .attr("y", y(value.values.length)+3)
-                            .attr("text-anchor","middle")
+
                     })
+                    //.on("mouseleave", () => svg.select(".tooltip").remove())
                     .transition()
                     .attr("height", value => height - y(value.values.length))
                     .attr("fill", "#69b3a2");
