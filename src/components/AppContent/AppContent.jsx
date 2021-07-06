@@ -361,4 +361,4 @@ export const AppContent = () => {
             </Grid>
         </Grid>
     );
-};
+}

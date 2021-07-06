@@ -19,9 +19,6 @@ export const Histogram = (props) => {
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
 
-
-
-
     useEffect(() => {
         const svg = select(svgRef.current);
         //svg dimensions
@@ -89,6 +86,20 @@ export const Histogram = (props) => {
                     //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
                     .style("transform", "scale(1,-1)")
                     .attr("width", x.bandwidth())
+                    .on("mouseenter", (event, value) => {
+                        const element = svg.selectAll(".bar").nodes();
+                        const index = element.indexOf(event.target);
+                        console.log(value);
+                        svg
+                            .selectAll(".tooltip")
+                            .data([value])
+                            .join("text")
+                            .attr("class","tooltip")
+                            .text(`${value.lower}-${value.upper}: ${value.values.length}`)
+                            .attr("x", x(value.lower)+x.bandwidth())
+                            .attr("y", y(value.values.length)+3)
+                            .attr("text-anchor","middle")
+                    })
                     .transition()
                     .attr("height", value => height - y(value.values.length))
                     .attr("fill", "#69b3a2");
