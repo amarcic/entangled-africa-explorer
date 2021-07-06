@@ -27,8 +27,7 @@ export const Histogram = (props) => {
         //svg dimensions
         const containerHeight = parseInt(select("#histogramContainer").style("height")),
             containerWidth = parseInt(select("#histogramContainer").style("width"));
-        console.log(cardHeight);
-        //todo: make flexible for different screen and card sizes
+
         const margin = {top: 5, right: 20, left: 20, bottom: 30};
 
         const width = containerWidth - margin.left - margin.right,
