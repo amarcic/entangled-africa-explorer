@@ -18,12 +18,12 @@ export const Histogram = (props) => {
 
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
-    const svg = select(svgRef.current);
+
 
 
 
     useEffect(() => {
-
+        const svg = select(svgRef.current);
         //svg dimensions
         const containerHeight = parseInt(select("#histogramContainer").style("height")),
             containerWidth = parseInt(select("#histogramContainer").style("width"));
