@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
         justifyContent: "space-between"
     },
     gridContent: {
-        maxHeight: "85%",
+        height: "85%",
         overflow: "scroll"
     },
     gridFullHeightItem: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center"
     },
     gridHead: {
-        minHeight: "15%",
+        maxHeight: "15%",
         justifyContent: "flex-start",
         alignItems: "center"
     },

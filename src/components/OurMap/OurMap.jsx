@@ -1,4 +1,4 @@
-import  React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
@@ -29,16 +29,10 @@ export const OurMap = (props) => {
 
     const { t, i18n } = useTranslation();
 
-    const ref = useRef(null);
-    const [height, setHeight] = useState(1000)
-    useEffect(() => {
-        setHeight(ref.current.clientHeight)
-    }, [ref.current, ref.current?ref.current.clientHeight:0])
-
     // additional styling for this component only
     const localStyles = makeStyles(theme => ({
         leafletContainer: {
-            minHeight: `${height}px` //set height (because Leaflet requires it to be set) to fit available space
+            height: "100%"
         }
     }));
 
@@ -75,7 +69,7 @@ export const OurMap = (props) => {
                     </FormLabel>
                 </Grid>
             </Grid>
-            <Grid ref={ref} className={classes.gridContent} item>
+            <Grid className={classes.gridContent} item>
                 <Map
                     className={`markercluster-map ${localClasses.leafletContainer}`}
                     //center={input.mapCenter}
