@@ -25,13 +25,13 @@ export const Histogram = (props) => {
     useEffect(() => {
 
         //svg dimensions
-        const containerHeight = parseInt(select("#histogramContainer").style("height")),
-            containerWidth = parseInt(select("#histogramContainer").style("width"));
+        const itemHeight = parseInt(select("#histogramItem").style("height")),
+            itemWidth = parseInt(select("#histogramItem").style("width"));
 
         const margin = {top: 5, right: 20, left: 20, bottom: 30};
 
-        const width = containerWidth - margin.left - margin.right,
-            height = containerHeight - margin.top - margin.bottom;
+        const width = itemWidth - margin.left - margin.right,
+            height = itemHeight - margin.top - margin.bottom;
 
         svg.attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -102,8 +102,8 @@ export const Histogram = (props) => {
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
                 </Grid>
             </Grid>
-            <Grid id="histogramContainer" className={classes.gridContent} item container direction="column" spacing={2}>
-                <Grid item>
+            <Grid className={classes.gridContent} item container direction="column" spacing={2}>
+                <Grid item id="histogramItem">
                     <svg ref={svgRef}>
                         <g className="bars">
                             <g className="xAxis"></g>
