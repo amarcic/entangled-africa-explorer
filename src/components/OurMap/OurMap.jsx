@@ -1,4 +1,4 @@
-import React from "react";
+import  React, { useEffect, useRef, useState } from "react";
 import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Card, FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import { useStyles } from '../../styles';
 import MapIcon from "@material-ui/icons/Map";
+import { makeStyles } from "@material-ui/core/styles";
 
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -28,6 +29,20 @@ export const OurMap = (props) => {
 
     const { t, i18n } = useTranslation();
 
+    const ref = useRef(null);
+    const [height, setHeight] = useState(1000)
+    useEffect(() => {
+        setHeight(ref.current.clientHeight)
+    }, [ref.current, ref.current?ref.current.clientHeight:0])
+
+    // additional styling for this component only
+    const localStyles = makeStyles(theme => ({
+        leafletContainer: {
+            minHeight: `${height}px` //set height (because Leaflet requires it to be set) to fit available space
+        }
+    }));
+
+    const localClasses = localStyles();
     const classes = useStyles();
 
     return (
@@ -60,9 +75,9 @@ export const OurMap = (props) => {
                     </FormLabel>
                 </Grid>
             </Grid>
-            <Grid className={classes.gridContent} item>
+            <Grid ref={ref} className={classes.gridContent} item>
                 <Map
-                    className="markercluster-map"
+                    className={`markercluster-map ${localClasses.leafletContainer}`}
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
                     zoom={input.zoomLevel}
