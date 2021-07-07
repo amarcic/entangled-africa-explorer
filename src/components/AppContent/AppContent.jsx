@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, OurTimeline, ResultsTable, ShowNext
+    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, Timeline, OurTimeline, ResultsTable, ShowNext
 } from "..";
 import { Grid, LinearProgress } from "@material-ui/core";
 // Queries
@@ -339,7 +339,7 @@ export const AppContent = () => {
 
                 {/*GRID: Timeline, histogram*/}
                 {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row" alignItems="stretch">
-                    {input.areaB===0 && <OurTimeline
+                    {input.areaB===0 && <Timeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />}
