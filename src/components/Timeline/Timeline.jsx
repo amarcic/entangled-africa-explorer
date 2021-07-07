@@ -3,7 +3,7 @@ import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
-import {getTimeRangeOfTimelineData, groupByPeriods, prepareHistogramData, binTimespanObjects} from "../../utils";
+import {getTimeRangeOfTimelineData, groupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
     const { t, i18n } = useTranslation();
@@ -11,7 +11,8 @@ export const Timeline = (props) => {
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
-    console.log(timelineObjectsData);
+    const byPeriodData = groupByPeriods(timelineObjectsData);
+    console.log(byPeriodData);
 
     //console.log(props.timelineData);
     const preparedData = []// prepareHistogramData(props.timelineData)?.filter( e => e&&e );
@@ -38,78 +39,52 @@ export const Timeline = (props) => {
             .attr("height", height + margin.top + margin.bottom)
 
         //remove previously rendered histogram bars in the case there is no current data from the current search
-        if (!binnedData||preparedData.length===0) {
+        if (!timelineObjectsData||!binnedData) {
             svg.select(".bars")
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
                 .selectAll(".bar").remove()
         } else {
+            const periodIds = [...byPeriodData.keys()];
 
-            //calculate scale for x axis
-            const x = scaleBand()
-                .domain(binnedData.map( bin => bin.lower))
-                //.domain(binnedData.map( bin => `${bin.lower} bis ${bin.upper}`))
-                .range([0, width])
-                .padding(0.2);
+            const xScale = scaleLinear()
+                .domain(getTimeRangeOfTimelineData(timelineObjectsData,"period"))
+                .range([0,width])
 
-            //calculate scale for y axis
-            const y = scaleLinear()
-                .domain([0,maxYValue])
-                .range([height, 0]);
+            const yScale = scaleBand()
+                .domain(periodIds)
+                .range([height,0])
+                .padding(0.2)
+            //console.log(yScale("nKJfE4h8ViFn"));
 
-            /* unused color scale
-            const colorScale = scaleLinear()
-                .domain([0,maxYValue])
-                .range(["#69b3a2","red"]);
-            */
 
-            //add x axis to svg and rotate labels
+            //add x axis to svg
             //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
             svg.select(".xAxis")
                 .attr("transform", `translate(0,${height})`)
-                .call(axisBottom(x))
-                .selectAll("text")
-                    .attr("transform", "translate(-10,0)rotate(-45)")
-                    .style("text-anchor", "end");
+                .call(axisBottom(xScale))
 
             //add y axis to svg
             svg.select(".yAxis")
-                .call(axisLeft(y));
+                .call(axisLeft(yScale));
 
             //calculate and append histogram bars for each bin
             svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
-                .selectAll("rect").data(binnedData).join(
+                .selectAll("rect").data([...byPeriodData.values()]).join(
                     enter => enter.append("rect")
                 ).attr("class","bar")
                     //.attr("y", value => y(value.values.length))
-                    .attr("y", height*-1)
-                    .attr("x", value => x(value.lower))
+                    .attr("y", value => yScale(value[0].periodIds?.[0]))
+                    .attr("x", value => xScale(value[0].periodSpans?.[0]?.[0]))
                     //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
-                    .style("transform", "scale(1,-1)")
-                    .attr("width", x.bandwidth())
-                    .on("mouseenter", (event, value) => {
-                        const element = svg.selectAll(".bar").nodes();
-                        const index = element.indexOf(event.target);
-                        //console.log(value);
-                        svg
-                            .selectAll(".tooltip")
-                            .data([value])
-                            .join("text")
-                            .attr("class","tooltip")
-                            .text(`${value.lower}-${value.upper}: ${value.values.length}`)
-                            .attr("text-anchor","middle")
-                            .transition()
-                            .attr("x", x(value.lower)+x.bandwidth())
-                            .attr("y", y(value.values.length)+3)
-
-                    })
-                    //.on("mouseleave", () => svg.select(".tooltip").remove())
+                    //.style("transform", "scale(1,-1)")
+                    .attr("width", value => xScale(Math.abs(value[0].periodSpans?.[0]?.[0]-value[0].periodSpan?.[0]?.[1])||0))
+                    .attr("height", yScale.bandwidth())
                     .transition()
-                    .attr("height", value => height - y(value.values.length))
                     .attr("fill", "#69b3a2");
         }
-    }, [binnedData, props.go])
+    }, [byPeriodData])
 
     return (
         <Card className={classes.card}>

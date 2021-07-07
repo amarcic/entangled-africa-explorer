@@ -20,4 +20,5 @@ export { ResultsTableRow } from './ResultsTableRow/ResultsTableRow'
 export { ReturnMarker } from './ReturnMarker/ReturnMarker';
 export { ReturnPopup } from './ReturnPopup/ReturnPopup';
 export { ReturnTimelineObject } from './ReturnTimelineObject/ReturnTimelineObject';
-export { ShowNext } from './ShowNext/ShowNext.jsx'
+export { ShowNext } from './ShowNext/ShowNext.jsx';
+export { Timeline } from './Timeline/Timeline.jsx';

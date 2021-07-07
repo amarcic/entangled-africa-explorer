@@ -107,7 +107,7 @@ export const Histogram = (props) => {
                     .attr("height", value => height - y(value.values.length))
                     .attr("fill", "#69b3a2");
         }
-    }, [binnedData, props.go])
+    }, [binnedData])
 
     return (
         <Card className={classes.card}>
