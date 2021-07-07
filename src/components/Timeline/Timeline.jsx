@@ -3,7 +3,7 @@ import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
-import {getTimeRangeOfTimelineData, groupByPeriods} from "../../utils";
+import {getTimeRangeOfTimelineData, groupByPeriods, newGroupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
     const { t, i18n } = useTranslation();
@@ -37,6 +37,8 @@ export const Timeline = (props) => {
 
         svg.attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
+
+        console.log(newGroupByPeriods(timelineObjectsData));
 
         //remove previously rendered histogram bars in the case there is no current data from the current search
         if (!timelineObjectsData||!binnedData) {

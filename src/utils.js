@@ -101,6 +101,34 @@ const timelineMapper = ( item ) => {
 const groupByPeriods = ( timelineObject ) =>
     timelineObject && group(timelineObject, timelineObject => timelineObject.periodIds?.[0]);
 
+const newGroupByPeriods = ( timelineObject ) => {
+    //todo: make sure timelineObject has array for periodSpans/periodNames and periodIds in parallel
+    if (!timelineObject) return;
+
+    const periods = new Map();
+
+    //add keys to map and set values to object with timespan and empty array for timeline items
+    timelineObject.forEach( obj => obj.periodIds?.forEach( (periodId, index) => {
+        //todo: prevent items from repeated injection, check why timespan is not always present
+        const thisPeriod = periods.get(periodId);
+        const currentItem = {id: obj.itemId, name: obj.itemName, spanDated: obj.timespan}
+        const previousItems = thisPeriod?.items||[];
+        periods.set(periodId,{
+            periodSpan: obj.periodSpans?.[index]||undefined,
+            periodName: obj.periodNames?.[index],
+            items: [currentItem, ...previousItems]
+        })
+        }
+    ));
+
+    //
+    timelineObject.forEach( obj => obj.periodIds?.forEach( periodId =>
+        periods.set(periodId.items, [{id: periodId, spanDated: obj.timespan}])
+    ));
+
+    return periods;
+}
+
 //filter functions for timeline data:
 //filter out elements that do not have a datingSpan specified
 const filterNoDatingSpan = (element) => {
@@ -248,4 +276,4 @@ function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
 }
 
 
-export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData,binTimespanObjects };
+export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, newGroupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData,binTimespanObjects };
