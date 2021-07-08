@@ -105,25 +105,22 @@ const newGroupByPeriods = ( timelineObject ) => {
     //todo: make sure timelineObject has array for periodSpans/periodNames and periodIds in parallel
     if (!timelineObject) return;
 
+    const data = timelineObject.filter(filterNoPeriodDating);
     const periods = new Map();
 
     //add keys to map and set values to object with timespan and empty array for timeline items
-    timelineObject.forEach( obj => obj.periodIds?.forEach( (periodId, index) => {
-        //todo: prevent items from repeated injection, check why timespan is not always present
+    data.forEach( obj => obj.periodIds?.forEach( (periodId, index) => {
+        //todo: prevent items from repeated injection into the same map entry, check why timespan is not always present
         const thisPeriod = periods.get(periodId);
         const currentItem = {id: obj.itemId, name: obj.itemName, spanDated: obj.timespan}
         const previousItems = thisPeriod?.items||[];
         periods.set(periodId,{
-            periodSpan: obj.periodSpans?.[index]||undefined,
+            //span and name are rewritten every time; check if they can diverge (because span is taken from sense if not found)
+            periodSpan: obj.periodSpans?.[index],
             periodName: obj.periodNames?.[index],
             items: [currentItem, ...previousItems]
-        })
+        });
         }
-    ));
-
-    //
-    timelineObject.forEach( obj => obj.periodIds?.forEach( periodId =>
-        periods.set(periodId.items, [{id: periodId, spanDated: obj.timespan}])
     ));
 
     return periods;

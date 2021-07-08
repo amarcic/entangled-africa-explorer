@@ -3,7 +3,7 @@ import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
-import {getTimeRangeOfTimelineData, groupByPeriods, newGroupByPeriods} from "../../utils";
+import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
     const { t, i18n } = useTranslation();
@@ -11,15 +11,10 @@ export const Timeline = (props) => {
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
-    const byPeriodData = groupByPeriods(timelineObjectsData);
+    const byPeriodData = newGroupByPeriods(timelineObjectsData);
     console.log(byPeriodData);
 
     //console.log(props.timelineData);
-    const preparedData = []// prepareHistogramData(props.timelineData)?.filter( e => e&&e );
-    //console.log(preparedData);
-    const binnedData = [];//binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
-    //console.log(binnedData);
-    const maxYValue = "";
 
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
@@ -38,10 +33,8 @@ export const Timeline = (props) => {
         svg.attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
 
-        console.log(newGroupByPeriods(timelineObjectsData));
-
         //remove previously rendered histogram bars in the case there is no current data from the current search
-        if (!timelineObjectsData||!binnedData) {
+        if (!timelineObjectsData||!byPeriodData||byPeriodData.size===0) {
             svg.select(".bars")
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
@@ -68,7 +61,9 @@ export const Timeline = (props) => {
 
             //add y axis to svg
             svg.select(".yAxis")
-                .call(axisLeft(yScale));
+                .call(axisLeft(yScale))
+                .selectAll("text")
+                    .text( value => value&&byPeriodData.get(value).periodName )
 
             //calculate and append histogram bars for each bin
             svg.select(".bars")
@@ -76,14 +71,11 @@ export const Timeline = (props) => {
                 .selectAll("rect").data([...byPeriodData.values()]).join(
                     enter => enter.append("rect")
                 ).attr("class","bar")
-                    //.attr("y", value => y(value.values.length))
-                    .attr("y", value => yScale(value[0].periodIds?.[0]))
-                    .attr("x", value => xScale(value[0].periodSpans?.[0]?.[0]))
-                    //.attr("x", value => x(`${value.lower} bis ${value.upper}`))
-                    //.style("transform", "scale(1,-1)")
-                    .attr("width", value => xScale(Math.abs(value[0].periodSpans?.[0]?.[0]-value[0].periodSpan?.[0]?.[1])||0))
+                    .attr("y", (value,index) => yScale(periodIds[index]))
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("height", yScale.bandwidth())
                     .transition()
+                    .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
                     .attr("fill", "#69b3a2");
         }
     }, [byPeriodData])
