@@ -7,6 +7,7 @@ import { Card, FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import { useStyles } from '../../styles';
 import MapIcon from "@material-ui/icons/Map";
 import { makeStyles } from "@material-ui/core/styles";
+import { latLngBounds } from "leaflet";
 
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -15,7 +16,6 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 export const OurMap = (props) => {
     const [input, dispatch] = props.reducer;
     const {
-        extendMapBounds,
         handleRelatedObjects,
         mapDataObjects,
         mapDataContext,
@@ -41,6 +41,30 @@ export const OurMap = (props) => {
 
     const mapRef = useRef(null);
 
+
+    const resetMapBounds = () => {
+        let markers;
+        if(mapDataContext.entity) markers = mapDataContext.entity;
+        else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
+        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
+        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
+        if(!markers) return;
+
+        const newMapBounds = latLngBounds();
+        markers.map( (item) => {
+            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
+            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
+                nestedItem && nestedItem.coordinates &&
+                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
+        });
+
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
+    }
+
+    useEffect(() => {
+        mapRef.current.leafletElement.fitBounds(input.mapBounds);
+    },[input.mapBounds])
+
     useEffect(() => {
         //this is needed to let the map adjust to its changed container size by loading more tiles and panning
         mapRef.current.leafletElement.invalidateSize();
@@ -55,7 +79,7 @@ export const OurMap = (props) => {
                     <h3 className={classes.h3}>{t('Map')}</h3>
                 </Grid>
                 <Grid item xs={5}>
-                    <FormLabel>{t('Turn on/off marker clustering')}
+                    <FormLabel>{t('Cluster nearby markers')}
                         <Tooltip title="Switch between showing individual markers or clustered circles." arrow placement="right-start">
                             <Switch
                                 name="drawBBox"
@@ -68,10 +92,10 @@ export const OurMap = (props) => {
                 </Grid>
                 <Grid item xs={5}>
                     <FormLabel
-                        onClick={() => extendMapBounds()}
+                        onClick={() => resetMapBounds()}
                         style={{cursor: "pointer"}}
                     >
-                        {`${t('Resize map to show all markers')}\t`}
+                        {`${t('Resize map on markers')}\t`}
                         <Tooltip title="Automatically adjust the size of the map so all markers are visible." arrow placement="right">
                             <MapIcon/>
                         </Tooltip>

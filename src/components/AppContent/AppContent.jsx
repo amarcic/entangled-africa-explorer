@@ -178,24 +178,6 @@ export const AppContent = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
-    //TODO: not possible to change map view twice in a row if markers have not changed
-    const extendMapBounds = () => {
-        let markers;
-        if(mapDataContext.entity) markers = mapDataContext.entity;
-        else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
-        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
-        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
-        if(!markers) return;
-        const newMapBounds = latLngBounds();
-        markers.map( (item) => {
-            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
-            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
-                nestedItem &&
-                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
-        });
-        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
-    }
-
 
     useEffect( () => {
         if(dataContext && input.mode === "objects" && input.showRelatedObjects) {
@@ -304,7 +286,6 @@ export const AppContent = () => {
             {/*GRID: Map*/}
             {<Grid className={input.defaultLayout ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.defaultLayout ? 4 : 12} md={input.defaultLayout ? 6 : 12} sm={input.defaultLayout ? 6 : 12} xs={12} container>
                 <OurMap
-                    extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
                     mapDataObjects={mapDataObjects}
                     mapDataContext={mapDataContext}
