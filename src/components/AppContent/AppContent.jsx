@@ -253,6 +253,31 @@ export const AppContent = () => {
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
 
+    const getMapData = () => {
+        let mapData;
+
+        if(renderingConditionObjects) mapData = mapDataObjects?.entitiesMultiFilter;
+        else if(renderingConditionRelatedObjects) mapData = {original: mapDataContext?.entity?.spatial, related: mapDataContext?.entity?.related};
+        else if(renderingConditionSites) mapData = mapDataArchaeoSites?.archaeologicalSites;
+        else if(renderingConditionSitesByRegion) mapData = mapDataSitesByRegion?.sitesByRegion;
+
+        return mapData;
+    }
+
+    const getMapDataType = () => {
+        let type = null;
+        let handler = false;
+
+        if(renderingConditionObjects) handler = true;
+        else if(renderingConditionRelatedObjects) {
+            type = "related";
+            handler = true;
+        }
+
+        return {type: type, handler: handler};
+    }
+
+
     return (
         <Grid className={classes.gridBody} container direction="row" spacing={2} >
             {/*GRID: Filters*/}
@@ -287,15 +312,9 @@ export const AppContent = () => {
             {<Grid className={input.defaultLayout ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.defaultLayout ? 4 : 12} md={input.defaultLayout ? 6 : 12} sm={input.defaultLayout ? 6 : 12} xs={12} container>
                 <OurMap
                     handleRelatedObjects={handleRelatedObjects}
-                    mapDataObjects={mapDataObjects}
-                    mapDataContext={mapDataContext}
-                    mapDataArchaeoSites={mapDataArchaeoSites}
-                    mapDataSitesByRegion={mapDataSitesByRegion}
+                    data={getMapData()}
+                    dataType={getMapDataType()}
                     reducer={[input, dispatch]}
-                    renderingConditionObjects={renderingConditionObjects}
-                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                    renderingConditionSites={renderingConditionSites}
-                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                 />
             </Grid>}
 

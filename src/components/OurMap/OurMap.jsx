@@ -17,15 +17,12 @@ export const OurMap = (props) => {
     const [input, dispatch] = props.reducer;
     const {
         handleRelatedObjects,
-        mapDataObjects,
-        mapDataContext,
-        mapDataArchaeoSites,
-        mapDataSitesByRegion,
-        renderingConditionObjects,
-        renderingConditionRelatedObjects,
-        renderingConditionSites,
-        renderingConditionSitesByRegion
+        data,
+        dataType
     } = props;
+
+    let markers = data;
+    if(dataType.type === "related") markers = data.original;
 
     const { t, i18n } = useTranslation();
 
@@ -43,11 +40,6 @@ export const OurMap = (props) => {
 
 
     const resetMapBounds = () => {
-        let markers;
-        if(mapDataContext.entity) markers = mapDataContext.entity;
-        else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
-        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
-        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
         if(!markers) return;
 
         const newMapBounds = latLngBounds();
@@ -69,7 +61,6 @@ export const OurMap = (props) => {
         //this is needed to let the map adjust to its changed container size by loading more tiles and panning
         mapRef.current.leafletElement.invalidateSize();
     },[input.defaultLayout])
-
 
 
     return (
@@ -150,76 +141,37 @@ export const OurMap = (props) => {
                             <MarkerClusterGroup
                                 disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
                             >
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.spatial
-                                && <CreateMarkers
-                                    data={mapDataContext.entity.spatial}
+                                {<CreateMarkers
+                                    data={markers}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                 />}
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.related
+                                {dataType.type === "related"
                                 && <CreateMarkers
-                                    data={mapDataContext.entity.related}
+                                    data={data.related}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                    //opacity={0.5}
-                                />}
-                                {renderingConditionObjects
-                                && <CreateMarkers
-                                    data={mapDataObjects.entitiesMultiFilter}
-                                    selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                />}
-                                {renderingConditionSitesByRegion
-                                && <CreateMarkers
-                                    data={mapDataSitesByRegion.sitesByRegion}
-                                    selectedMarker={input.selectedMarker}
-                                />}
-                                {renderingConditionSites
-                                && <CreateMarkers
-                                    data={mapDataArchaeoSites.archaeologicalSites}
-                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
+                                    opacity={0.5}
                                 />}
                             </MarkerClusterGroup>
                         )
-                        : (<div>
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.spatial
-                                && <CreateMarkers
-                                    data={mapDataContext.entity.spatial}
+                        : (
+                            <div>
+                                {<CreateMarkers
+                                    data={markers}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                 />}
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.related
+                                {dataType.type === "related"
                                 && <CreateMarkers
-                                    data={mapDataContext.entity.related}
+                                    data={data.related}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                    //opacity={0.5}
-                                />}
-                                {renderingConditionObjects
-                                && <CreateMarkers
-                                    data={mapDataObjects.entitiesMultiFilter}
-                                    selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                />}
-                                {renderingConditionSitesByRegion
-                                && <CreateMarkers
-                                    data={mapDataSitesByRegion.sitesByRegion}
-                                    selectedMarker={input.selectedMarker}
-                                />}
-                                {renderingConditionSites
-                                && <CreateMarkers
-                                    data={mapDataArchaeoSites.archaeologicalSites}
-                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
+                                    opacity={0.5}
                                 />}
                             </div>
                         )
