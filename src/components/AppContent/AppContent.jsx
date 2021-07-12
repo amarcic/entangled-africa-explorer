@@ -272,7 +272,7 @@ export const AppContent = () => {
     return (
         <Grid container spacing={2} className={classes.gridBody}>
             {/*GRID: Filters*/}
-            <Grid className={classes.gridFullHeightItem} item container direction="row" md={2} sm={6} xs={12}>
+            <Grid item xs={12} container direction="column">
                 {input.mapControlsExpanded
                     ? <Filters
                         chronOntologyTerms={chronOntologyTerms}
