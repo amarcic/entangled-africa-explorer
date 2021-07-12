@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
         overflow: "scroll"
     },
     gridFullHeightItem: {
-        height: "100%"
+        height: "90%"
     },
     gridHalfHeightItem: {
         height: "45%",

@@ -5,7 +5,8 @@ import { useQuery } from "@apollo/react-hooks";
 import {
     CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, OurTimeline, ResultsTable, ShowNext
 } from "..";
-import { Grid, LinearProgress } from "@material-ui/core";
+import { Grid, IconButton, LinearProgress, Tooltip } from "@material-ui/core";
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
 // Queries
 import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
@@ -42,9 +43,7 @@ const initialInput = {
     highlightedTimelineObject: undefined,
     areaA: 1,
     areaB: 0,
-    areaADefaultSize: true,
-    areaBDefaultSize: true,
-    areaCDefaultSize: true
+    defaultLayout: true
 };
 
 
@@ -271,16 +270,11 @@ export const AppContent = () => {
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
-    const setWidth = () => window.innerWidth
-    const setOneTwelfthWidth = () => setWidth() / 12
-
-    window.addEventListener('resize', setOneTwelfthWidth)
-
 
     return (
         <Grid className={classes.gridBody} container direction="row" spacing={2} >
             {/*GRID: Filters*/}
-            <Grid item xs={12} container direction="column">
+            <Grid item sm={11} xs={12} container direction="column">
                 {input.mapControlsExpanded
                     ? <Filters
                         chronOntologyTerms={chronOntologyTerms}
@@ -296,8 +290,19 @@ export const AppContent = () => {
                 }
             </Grid>
 
+            <Grid item sm={1} xs={12} style={{textAlign: "center"}}>
+                <Tooltip title="Change layout" arrow>
+                    <IconButton
+                        onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "defaultLayout"}})}
+                        style={{backgroundColor: "rgba(171,134,97,0.18)", color: "black"}}
+                    >
+                        <ViewModuleIcon/>
+                    </IconButton>
+                </Tooltip>
+            </Grid>
+
             {/*GRID: Map*/}
-            {<Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.areaCDefaultSize ? 4 : 12} md={input.areaCDefaultSize ? 6 : 12} sm={input.areaCDefaultSize ? 6 : 12} xs={12} container>
+            {<Grid className={input.defaultLayout ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.defaultLayout ? 4 : 12} md={input.defaultLayout ? 6 : 12} sm={input.defaultLayout ? 6 : 12} xs={12} container>
                 <OurMap
                     extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
@@ -314,10 +319,10 @@ export const AppContent = () => {
             </Grid>}
 
             {/*GRID: Container for results list and timeline*/}
-            <Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridOneThirdHeightItem} item lg={input.areaCDefaultSize ? 8 : 12} md={input.areaCDefaultSize ? 6 : 12} xs={12} container direction={input.areaCDefaultSize ? "row" : "column"} spacing={2}>
+            <Grid className={input.defaultLayout ? classes.gridFullHeightItem : classes.gridOneThirdHeightItem} item lg={input.defaultLayout ? 8 : 12} md={input.defaultLayout ? 6 : 12} xs={12} container direction={input.defaultLayout ? "row" : "column"} spacing={2}>
 
                 {/*GRID: Results list, image contents, data sources*/}
-                {<Grid className={input.areaCDefaultSize ? classes.gridOneThirdHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row">
+                {<Grid className={input.defaultLayout ? classes.gridOneThirdHeightItem : classes.gridFullHeightItem} item md={input.defaultLayout ? 12 : 6} xs={12} container direction="row">
                     {input.areaA===0
                     && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
@@ -348,7 +353,7 @@ export const AppContent = () => {
                 </Grid>}
 
                 {/*GRID: Timeline, histogram*/}
-                {<Grid className={input.areaCDefaultSize ? classes.gridTwoThirdsHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row" alignItems="stretch">
+                {<Grid className={input.defaultLayout ? classes.gridTwoThirdsHeightItem : classes.gridFullHeightItem} item md={input.defaultLayout ? 12 : 6} xs={12} container direction="row" alignItems="stretch">
                     {input.areaB===0 && <OurTimeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}

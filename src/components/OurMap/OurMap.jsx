@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
-import { Card, FormLabel, Grid, IconButton, Switch, Tooltip } from "@material-ui/core";
+import { Card, FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import { useStyles } from '../../styles';
 import MapIcon from "@material-ui/icons/Map";
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import { makeStyles } from "@material-ui/core/styles";
 
 
@@ -44,22 +42,14 @@ export const OurMap = (props) => {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        mapRef.current.leafletElement.invalidateSize()
-    },[input.areaCDefaultSize])
+        //this is needed to let the map adjust to its changed container size by loading more tiles and panning
+        mapRef.current.leafletElement.invalidateSize();
+    },[input.defaultLayout])
+
+
 
     return (
         <Card className={classes.card}>
-            {/*TODO: find good position for this button*/}
-            <IconButton
-                onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaCDefaultSize"}})
-                }
-                style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", right: "-90%", top: "0%"}}
-            >
-                {input.areaCDefaultSize
-                    ? <ZoomInIcon/>
-                    : <ZoomOutIcon/>
-                }
-            </IconButton>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Map')}</h3>
