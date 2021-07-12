@@ -22,8 +22,18 @@ const useStyles = makeStyles(theme => ({
         justifyContent: "space-between",
         alignItems: "center"
     },
+    gridOneThirdHeightItem: {
+        height: "30%",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
+    gridTwoThirdsHeightItem: {
+        height: "60%",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     gridHead: {
-        maxHeight: "15%",
+        //minHeight: "5%",
         justifyContent: "flex-start",
         alignItems: "center"
     },
@@ -34,7 +44,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: "1rem"
     },
     h3: {
-        fontSize: "0.95rem",
+        fontSize: "0.8rem",
         textTransform: "uppercase"
     },
     paper: {

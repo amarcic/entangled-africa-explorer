@@ -41,7 +41,10 @@ const initialInput = {
     timelineSort: "period",
     highlightedTimelineObject: undefined,
     areaA: 1,
-    areaB: 0
+    areaB: 0,
+    areaADefaultSize: true,
+    areaBDefaultSize: true,
+    areaCDefaultSize: true
 };
 
 
@@ -268,9 +271,14 @@ export const AppContent = () => {
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
+    const setWidth = () => window.innerWidth
+    const setOneTwelfthWidth = () => setWidth() / 12
+
+    window.addEventListener('resize', setOneTwelfthWidth)
+
 
     return (
-        <Grid container spacing={2} className={classes.gridBody}>
+        <Grid className={classes.gridBody} container direction="row" spacing={2} >
             {/*GRID: Filters*/}
             <Grid item xs={12} container direction="column">
                 {input.mapControlsExpanded
@@ -289,7 +297,7 @@ export const AppContent = () => {
             </Grid>
 
             {/*GRID: Map*/}
-            {<Grid className={classes.gridFullHeightItem} item md={4} sm={6} xs={12} container>
+            {<Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.areaCDefaultSize ? 4 : 12} md={input.areaCDefaultSize ? 6 : 12} sm={input.areaCDefaultSize ? 6 : 12} xs={12} container>
                 <OurMap
                     extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
@@ -306,10 +314,10 @@ export const AppContent = () => {
             </Grid>}
 
             {/*GRID: Container for results list and timeline*/}
-            {<Grid className={classes.gridFullHeightItem} item md={6} xs={12} container direction="row" spacing={2}>
+            <Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridOneThirdHeightItem} item lg={input.areaCDefaultSize ? 8 : 12} md={input.areaCDefaultSize ? 6 : 12} xs={12} container direction={input.areaCDefaultSize ? "row" : "column"} spacing={2}>
 
                 {/*GRID: Results list, image contents, data sources*/}
-                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
+                {<Grid className={input.areaCDefaultSize ? classes.gridOneThirdHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row">
                     {input.areaA===0
                     && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
@@ -340,7 +348,7 @@ export const AppContent = () => {
                 </Grid>}
 
                 {/*GRID: Timeline, histogram*/}
-                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row" alignItems="stretch">
+                {<Grid className={input.areaCDefaultSize ? classes.gridTwoThirdsHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row" alignItems="stretch">
                     {input.areaB===0 && <OurTimeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
@@ -352,7 +360,7 @@ export const AppContent = () => {
                         reducer={[input, dispatch]}
                     />
                 </Grid>}
-            </Grid>}
+            </Grid>
 
             {/*GRID: Loading indicator*/}
             <Grid item xs={12}>
