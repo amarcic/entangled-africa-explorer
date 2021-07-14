@@ -114,9 +114,15 @@ export const Timeline = (props) => {
                             ).attr("class","bar")
                             .attr("x", value => xScaleDetail(value.spanDated?.[0]))
                             .attr("y", (value,index) => yScaleDetail(index))
-                            .attr("width", value => Math.abs(xScale(value.spanDated?.[0])-xScale(value.spanDated?.[1]))+1||0)
+                            .attr("width", value => Math.abs(xScaleDetail(value.spanDated?.[0])-xScaleDetail(value.spanDated?.[1]))+1||0)
                             .attr("height", 5)
 
+                        svg.select(".background")
+                            .append("rect")
+                            .attr("width", Math.abs(xScaleDetail(value.periodSpan?.[0])-xScaleDetail(value.periodSpan?.[1]))||0)
+                            .attr("height", height)
+                            .attr("x", xScaleDetail(value.periodSpan[0]))
+                            .attr("opacity", 0.3)
                     })
                     .transition()
                     .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
@@ -138,6 +144,7 @@ export const Timeline = (props) => {
                             <g className="xAxis"></g>
                             <g className="yAxis"></g>
                         </g>
+                        <g className="background" />
                     </svg>
                 </Grid>
             </Grid>
