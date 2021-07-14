@@ -39,6 +39,7 @@ export const Timeline = (props) => {
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
                 .selectAll(".bar").remove()
+            svg.select(".background").selectAll("rect").remove();
         } else {
             const periodIds = [...byPeriodData.keys()];
 
@@ -51,7 +52,8 @@ export const Timeline = (props) => {
                 .range([height,0])
                 .padding(0.2)
             //console.log(yScale("nKJfE4h8ViFn"));
-
+            //todo: remove this temporary cleanup of the background svg group
+            svg.select(".background").selectAll("rect").remove();
 
             //add x axis to svg
             //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
@@ -100,6 +102,8 @@ export const Timeline = (props) => {
                         //remove axis
                         svg.select(".xAxis").selectAll("*").remove();
                         svg.select(".yAxis").selectAll("*").remove();
+                        //remove backgruond
+                        svg.select(".background").selectAll("rect").remove();
 
                         svg.select(".xAxis")
                             .attr("transform", `translate(0,${height})`)
