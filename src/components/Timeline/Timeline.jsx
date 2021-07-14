@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
+import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
@@ -74,6 +74,50 @@ export const Timeline = (props) => {
                     .attr("y", (value,index) => yScale(periodIds[index]))
                     .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("height", yScale.bandwidth())
+                    /*.on("click", function(event, value) {
+                        svg.select(this)
+                            .style("fill", "orange")
+                    })*/
+                    .on("click", (event, value) => {
+                        console.log(value)
+
+                        const element = svg.selectAll(".bar").nodes(),
+                            index = element.indexOf(event.currentTarget);
+
+                        const itemDatingMin = min(value.items, item => item.spanDated?.[0]),
+                            itemDatingMax = max(value.items, item => item.spanDated?.[1]);
+
+                        const xScaleDetail = scaleLinear()
+                            .domain([itemDatingMin,itemDatingMax])
+                            .range([0,width])
+
+                        const yScaleDetail = scaleLinear()
+                            .domain([0, value.items.length])
+                            .range([height,0]);
+
+                        //remove bars
+                        svg.select(".bars").selectAll(".bar").remove();
+                        //remove axis
+                        svg.select(".xAxis").selectAll("*").remove();
+                        svg.select(".yAxis").selectAll("*").remove();
+
+                        svg.select(".xAxis")
+                            .attr("transform", `translate(0,${height})`)
+                            .call(axisBottom(xScaleDetail))
+
+                        svg.select(".yAxis")
+                            .call(axisLeft(yScaleDetail))
+
+                        svg.select(".bars")
+                            .selectAll("rect").data(value.items).join(
+                                enter => enter.append("rect")
+                            ).attr("class","bar")
+                            .attr("x", value => xScaleDetail(value.spanDated?.[0]))
+                            .attr("y", (value,index) => yScaleDetail(index))
+                            .attr("width", value => Math.abs(xScale(value.spanDated?.[0])-xScale(value.spanDated?.[1]))+1||0)
+                            .attr("height", 5)
+
+                    })
                     .transition()
                     .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
                     .attr("fill", "#69b3a2");
