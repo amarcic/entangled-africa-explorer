@@ -40,11 +40,11 @@ export const OurMap = (props) => {
 
 
     const resetMapBounds = () => {
-        if(!markers) return;
+        if(markers.length === 0) return;
 
         const newMapBounds = latLngBounds();
         markers.map( (item) => {
-            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
+            if (item?.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
             else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
                 nestedItem && nestedItem.coordinates &&
                 newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
@@ -100,7 +100,7 @@ export const OurMap = (props) => {
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
                     zoom={input.zoomLevel}
-                    minZoom={2}
+                    minZoom={1}
                     zoomSnap={0.5}
                     onClick={(event) => {
                         if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
