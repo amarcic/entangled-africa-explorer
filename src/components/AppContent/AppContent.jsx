@@ -5,7 +5,9 @@ import { useQuery } from "@apollo/react-hooks";
 import {
     CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, OurTimeline, ResultsTable, ShowNext
 } from "..";
-import { Grid, LinearProgress } from "@material-ui/core";
+import { Grid, IconButton, LinearProgress } from "@material-ui/core";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 // Queries
 import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
@@ -42,9 +44,9 @@ const initialInput = {
     highlightedTimelineObject: undefined,
     areaA: 1,
     areaB: 0,
-    areaADefaultSize: true,
-    areaBDefaultSize: true,
-    areaCDefaultSize: true
+    areaAIsBig: false,
+    areaBIsBig: false,
+    areaCIsBig: false
 };
 
 
@@ -297,7 +299,20 @@ export const AppContent = () => {
             </Grid>
 
             {/*GRID: Map*/}
-            {<Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridTwoThirdsHeightItem} item lg={input.areaCDefaultSize ? 4 : 12} md={input.areaCDefaultSize ? 6 : 12} sm={input.areaCDefaultSize ? 6 : 12} xs={12} container>
+            {<Grid className={classes.fullHeightTile}
+                   item lg={input.areaCIsBig ? 12 : 4} sm={input.areaCIsBig ? 12: 6} xs={12}
+                   container>
+                {/*TODO: find good position for this button*/}
+                <IconButton
+                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaCIsBig"}})
+                    }
+                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
+                >
+                    {input.areaCIsBig
+                        ? <ZoomOutIcon/>
+                        : <ZoomInIcon/>
+                    }
+                </IconButton>
                 <OurMap
                     extendMapBounds={extendMapBounds}
                     handleRelatedObjects={handleRelatedObjects}
@@ -314,10 +329,27 @@ export const AppContent = () => {
             </Grid>}
 
             {/*GRID: Container for results list and timeline*/}
-            <Grid className={input.areaCDefaultSize ? classes.gridFullHeightItem : classes.gridOneThirdHeightItem} item lg={input.areaCDefaultSize ? 8 : 12} md={input.areaCDefaultSize ? 6 : 12} xs={12} container direction={input.areaCDefaultSize ? "row" : "column"} spacing={2}>
+            <Grid className={(input.areaAIsBig || input.areaBIsBig) ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.fullHeightTile)}
+                  item lg={input.areaCIsBig ? 12 : 8} md={input.areaCIsBig ? 12 : 6} xs={12}
+                  container direction={(input.areaAIsBig || input.areaBIsBig) ? "row" : (input.areaCIsBig ? "column" : "row")} spacing={2}
+            >
 
                 {/*GRID: Results list, image contents, data sources*/}
-                {<Grid className={input.areaCDefaultSize ? classes.gridOneThirdHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row">
+                {<Grid className={input.areaAIsBig ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.mediumTile)}
+                       item md={input.areaCIsBig ? 6 : 12} xs={12}
+                       container direction="row"
+                >
+                    {/*TODO: find good position for this button*/}
+                    <IconButton
+                        onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaAIsBig"}})
+                        }
+                        style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
+                    >
+                        {input.areaAIsBig
+                            ? <ZoomOutIcon/>
+                            : <ZoomInIcon/>
+                        }
+                    </IconButton>
                     {input.areaA===0
                     && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
@@ -348,7 +380,21 @@ export const AppContent = () => {
                 </Grid>}
 
                 {/*GRID: Timeline, histogram*/}
-                {<Grid className={input.areaCDefaultSize ? classes.gridTwoThirdsHeightItem : classes.gridFullHeightItem} item md={input.areaCDefaultSize ? 12 : 6} xs={12} container direction="row" alignItems="stretch">
+                {<Grid className={input.areaBIsBig ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.mediumTile)}
+                       item md={input.areaCIsBig ? 6 : 12} xs={12}
+                       container direction="row" alignItems="stretch"
+                >
+                    {/*TODO: find good position for this button*/}
+                    <IconButton
+                        onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaBIsBig"}})
+                        }
+                        style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
+                    >
+                        {input.areaBIsBig
+                            ? <ZoomOutIcon/>
+                            : <ZoomInIcon/>
+                        }
+                    </IconButton>
                     {input.areaB===0 && <OurTimeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
