@@ -7,30 +7,27 @@ const useStyles = makeStyles(theme => ({
         width: "100%"
     },
     gridBody: {
-        height: "85vh",
-        justifyContent: "space-between"
+        height: "85vh"
     },
     gridContent: {
         height: "85%",
         overflow: "scroll"
     },
+    "gridBody || fullHeightTile || mediumTile || shortTile || tallTile": {
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     fullHeightTile: {
-        height: "100%"
+        height: "100vh"
     },
     mediumTile: {
-        height: "45%",
-        justifyContent: "space-between",
-        alignItems: "center"
+        height: "45vh"
     },
     shortTile: {
-        height: "30%",
-        justifyContent: "space-between",
-        alignItems: "center"
+        height: "30vh"
     },
     tallTile: {
-        height: "60%",
-        justifyContent: "space-between",
-        alignItems: "center"
+        height: "75vh"
     },
     gridHead: {
         //minHeight: "5%",

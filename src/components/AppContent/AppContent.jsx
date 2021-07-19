@@ -330,7 +330,7 @@ export const AppContent = () => {
 
             {/*GRID: Container for results list and timeline*/}
             <Grid className={(input.areaAIsBig || input.areaBIsBig) ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.fullHeightTile)}
-                  item lg={input.areaCIsBig ? 12 : 8} md={input.areaCIsBig ? 12 : 6} xs={12}
+                  item lg={input.areaCIsBig ? 12 : 8} sm={input.areaCIsBig ? 12 : 6} xs={12}
                   container direction={(input.areaAIsBig || input.areaBIsBig) ? "row" : (input.areaCIsBig ? "column" : "row")} spacing={2}
             >
 
@@ -382,7 +382,7 @@ export const AppContent = () => {
                 {/*GRID: Timeline, histogram*/}
                 {<Grid className={input.areaBIsBig ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.mediumTile)}
                        item md={input.areaCIsBig ? 6 : 12} xs={12}
-                       container direction="row" alignItems="stretch"
+                       container direction="row"
                 >
                     {/*TODO: find good position for this button*/}
                     <IconButton
