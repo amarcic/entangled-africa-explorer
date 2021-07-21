@@ -11,7 +11,10 @@ export const Timeline = (props) => {
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
-    const byPeriodData = newGroupByPeriods(timelineObjectsData);
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.length>0&&datapoint);
+    const byPeriodData = newGroupByPeriods(filteredTimelineData);
+    console.log(timelineObjectsData);
+    console.log(filteredTimelineData);
     console.log(byPeriodData);
 
     //console.log(props.timelineData);
@@ -39,7 +42,9 @@ export const Timeline = (props) => {
             svg.select(".bars")
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
-                .selectAll("*").remove()
+                .selectAll(".bar").remove()
+            svg.select(".bars")
+                .selectAll(".label").remove()
             svg.select(".background").selectAll("rect").remove();
         } else {
             const periodIds = [...byPeriodData.keys()];
@@ -69,10 +74,39 @@ export const Timeline = (props) => {
                 .selectAll("text")
                     .text( value => value&&byPeriodData.get(value).periodName )*/
 
-            //calculate and append histogram bars for each bin
-            const bars = svg.select(".bars")
+            const barGroups =
+                svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
-                .selectAll("rect").data([...byPeriodData.values()]).join(
+                .selectAll(".barGroup")
+                .data([...byPeriodData.values()]/*, (data,index) => periodIds[index]*/);
+
+            const barGroup = barGroups
+                .join("g")
+                .attr("class", ".barGroup")
+                .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`);
+
+            const bars = barGroup
+                .append("rect")
+                .attr("class", "bar")
+                .attr("height", yScale.bandwidth());
+
+                bars.transition()
+                .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
+                .attr("fill", "#69b3a2");
+
+            const labels = barGroup
+                .append("text")
+                .attr("class", "label")
+                .text(value => value.periodName)
+                //.attr("y", (value, index) => yScale(periodIds[index]))
+
+
+            //calculate and append histogram bars for each bin
+            /*const bars = svg.select(".bars")
+                .attr("transform",`translate(${margin.left}, ${margin.top})`)
+                //todo: this should not connect to rect, since the rect are nested with text in groups
+                .selectAll(".barGroup")
+                    .data([...byPeriodData.values()], (data,index) => periodIds[index]).join(
                     enter => enter.append("g").attr("class", "barGroup")
                         .append("text")
                         .attr("class", "label")
@@ -81,7 +115,7 @@ export const Timeline = (props) => {
                 ).attr("class","bar")
                     .attr("y", (value,index) => yScale(periodIds[index]))
                     .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("height", yScale.bandwidth())
+                    .attr("height", yScale.bandwidth())*/
                     /*.selectAll("text")
                         .text( value => value&&byPeriodData.get(value).periodName )*/
                     /*.on("click", function(event, value) {
@@ -108,20 +142,17 @@ export const Timeline = (props) => {
                         .domain([0, value.items.length])
                         .range([height,0]);
 
-                    //remove bars
-                    svg.select(".bars").selectAll(".bar").remove();
+                    //remove bars and labels
+                    svg.select(".bars").selectAll("*").remove();
                     //remove axis
                     svg.select(".xAxis").selectAll("*").remove();
-                    svg.select(".yAxis").selectAll("*").remove();
+                    //svg.select(".yAxis").selectAll("*").remove();
                     //remove background
                     svg.select(".background").selectAll("rect").remove();
 
                     svg.select(".xAxis")
                         .attr("transform", `translate(0,${height})`)
                         .call(axisBottom(xScaleDetail))
-
-                    /*svg.select(".yAxis")
-                        .call(axisLeft(yScaleDetail))*/
 
                     svg.select(".bars")
                         .selectAll("rect").data(value.items).join(
@@ -142,15 +173,15 @@ export const Timeline = (props) => {
                         .attr("opacity", 0.3)
                 })
 
-                bars.transition()
+                /*bars.transition()
                 .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
-                .attr("fill", "#69b3a2");
+                .attr("fill", "#69b3a2");*/
 
-            svg.selectAll(".label")
+            /*svg.selectAll(".label")
                     .text( value => value.periodName)
                     .attr("y", (value, index) => yScale(periodIds[index]))
                     .attr("x", value => xScale(value.periodSpan?.[0]))
-            console.log(bars);
+            console.log(bars);*/
         }
     }, [byPeriodData])
 
