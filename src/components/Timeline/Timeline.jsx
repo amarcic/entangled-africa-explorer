@@ -39,7 +39,7 @@ export const Timeline = (props) => {
             svg.select(".bars")
                 //.append("text")
                 //.text("hier gibt es nichts zu sehen")
-                .selectAll(".bar").remove()
+                .selectAll("*").remove()
             svg.select(".background").selectAll("rect").remove();
         } else {
             const periodIds = [...byPeriodData.keys()];
@@ -73,7 +73,11 @@ export const Timeline = (props) => {
             const bars = svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
                 .selectAll("rect").data([...byPeriodData.values()]).join(
-                    enter => enter.append("g").attr("class", "barGroup").append("rect")
+                    enter => enter.append("g").attr("class", "barGroup")
+                        .append("text")
+                        .attr("class", "label")
+                        .select( function() {return this.parentNode} )
+                            .append("rect")
                 ).attr("class","bar")
                     .attr("y", (value,index) => yScale(periodIds[index]))
                     .attr("x", value => xScale(value.periodSpan?.[0]))
@@ -85,7 +89,7 @@ export const Timeline = (props) => {
                             .style("fill", "orange")
                     })*/
 
-            const barGroups = bars.select( function() {return this.parentNode} );
+            //const barGroups = bars.select( function() {return this.parentNode} );
 
             bars.on("click", (event, value) => {
                     console.log(value)
@@ -142,8 +146,7 @@ export const Timeline = (props) => {
                 .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
                 .attr("fill", "#69b3a2");
 
-            barGroups
-                .append("text")
+            svg.selectAll(".label")
                     .text( value => value.periodName)
                     .attr("y", (value, index) => yScale(periodIds[index]))
                     .attr("x", value => xScale(value.periodSpan?.[0]))
