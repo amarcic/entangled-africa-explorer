@@ -78,10 +78,36 @@ export const Timeline = (props) => {
 
             const barGroups = timelineCanvas
                 .selectAll(".barGroup")
-                .data([...byPeriodData.values()], (data,index) => periodIds[index]);
+                .data([...byPeriodData.values()]/*, (data,index) => periodIds[index]*/);
             console.log(barGroups);
 
-            const barGroup = barGroups
+            const newAndUpdatedGroups = barGroups
+                .join(
+                    enter => {
+                        let group = enter
+                            .append("g");
+                        group.attr("class","barGroup");
+                        group
+                            .append("rect")
+                            .attr("class", "bar")
+                        group
+                            .append("text")
+                            .attr("class","label");
+                        return group;
+                    }
+                )
+                .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`)
+
+                const bar = newAndUpdatedGroups.selectAll(".bar")
+                    .attr("height", yScale.bandwidth())
+                    .attr("fill", "#69b3a2")
+                    .transition()
+                    .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0);
+
+                const labels = newAndUpdatedGroups.selectAll(".label")
+                    .text(value => value.periodName);
+
+            /*const barGroup = barGroups
                 .join("g")
                 .attr("class", "barGroup")
                 .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`);
@@ -97,11 +123,18 @@ export const Timeline = (props) => {
                 .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
                 .attr("fill", "#69b3a2");
 
-            const labels = barGroups.enter()
+                const labels = barGroups//.enter()
+                    .selectAll(".barGroup")
+                    .data(value => [value])
+                    .join("text")
+                    .attr("class", "label")
+                    .text(value => value.periodName)*/
+
+            /*const labels = barGroups.enter()
                 .selectAll(".barGroup")
                 .append("text")
                 .attr("class", "label")
-                .text(value => value.periodName)
+                .text(value => value.periodName)*/
                 //.attr("y", (value, index) => yScale(periodIds[index]))
 
 
@@ -129,7 +162,7 @@ export const Timeline = (props) => {
 
             //const barGroups = bars.select( function() {return this.parentNode} );
 
-            bars.on("click", (event, value) => {
+            /*bars.on("click", (event, value) => {
                     //console.log(value)
 
                     const element = svg.selectAll(".bar").nodes(),
@@ -175,7 +208,7 @@ export const Timeline = (props) => {
                         .attr("x", xScaleDetail(value.periodSpan[0]))
                         .transition()
                         .attr("opacity", 0.3)
-                })
+                })*/
 
                 /*bars.transition()
                 .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
