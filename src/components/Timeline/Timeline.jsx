@@ -59,11 +59,10 @@ export const Timeline = (props) => {
                 .padding(0.2)
 
             //console.log(yScale("nKJfE4h8ViFn"));
-            //todo: remove this temporary cleanup of the background svg group
+            //todo: replace this temporary cleanup of the background svg group
             svg.select(".background").selectAll("rect").remove();
 
             //add x axis to svg
-            //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
             svg.select(".xAxis")
                 .attr("transform", `translate(0,${height})`)
                 .call(axisBottom(xScale))
@@ -74,18 +73,22 @@ export const Timeline = (props) => {
                 .selectAll("text")
                     .text( value => value&&byPeriodData.get(value).periodName )*/
 
-            const barGroups =
-                svg.select(".bars")
+            const timelineCanvas = svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
+
+            const barGroups = timelineCanvas
                 .selectAll(".barGroup")
-                .data([...byPeriodData.values()]/*, (data,index) => periodIds[index]*/);
+                .data([...byPeriodData.values()], (data,index) => periodIds[index]);
+            console.log(barGroups);
 
             const barGroup = barGroups
                 .join("g")
-                .attr("class", ".barGroup")
+                .attr("class", "barGroup")
                 .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`);
+            console.log(barGroup)
 
-            const bars = barGroup
+            const bars = barGroups.enter()
+                .selectAll(".barGroup")
                 .append("rect")
                 .attr("class", "bar")
                 .attr("height", yScale.bandwidth());
@@ -94,7 +97,8 @@ export const Timeline = (props) => {
                 .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
                 .attr("fill", "#69b3a2");
 
-            const labels = barGroup
+            const labels = barGroups.enter()
+                .selectAll(".barGroup")
                 .append("text")
                 .attr("class", "label")
                 .text(value => value.periodName)
@@ -126,7 +130,7 @@ export const Timeline = (props) => {
             //const barGroups = bars.select( function() {return this.parentNode} );
 
             bars.on("click", (event, value) => {
-                    console.log(value)
+                    //console.log(value)
 
                     const element = svg.selectAll(".bar").nodes(),
                         index = element.indexOf(event.currentTarget);
@@ -145,7 +149,7 @@ export const Timeline = (props) => {
                     //remove bars and labels
                     svg.select(".bars").selectAll("*").remove();
                     //remove axis
-                    svg.select(".xAxis").selectAll("*").remove();
+                    //svg.select(".xAxis").selectAll("*").remove();
                     //svg.select(".yAxis").selectAll("*").remove();
                     //remove background
                     svg.select(".background").selectAll("rect").remove();
@@ -183,7 +187,7 @@ export const Timeline = (props) => {
                     .attr("x", value => xScale(value.periodSpan?.[0]))
             console.log(bars);*/
         }
-    }, [byPeriodData])
+    }, [filteredTimelineData])
 
     return (
         <Card className={classes.card}>
