@@ -21,6 +21,8 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
             title
             identifier
             types
+            begin
+            end
             senses(typeOfSense: political) {
                 title
                 identifier

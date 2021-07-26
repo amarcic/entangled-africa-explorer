@@ -23,8 +23,10 @@ export const Timeline = (props) => {
     //const [data, setData] = useState(binnedData);
     const [scale, setScale] = useState();
 
+    const svg = select(svgRef.current);
+
     useEffect(() => {
-        const svg = select(svgRef.current);
+
         //svg dimensions
         const containerHeight = parseInt(select("#timelineContainer").style("height")),
             containerWidth = parseInt(select("#timelineContainer").style("width"));
@@ -78,7 +80,7 @@ export const Timeline = (props) => {
 
             const barGroups = timelineCanvas
                 .selectAll(".barGroup")
-                .data([...byPeriodData.values()]/*, (data,index) => periodIds[index]*/);
+                .data([...byPeriodData.values()], (data,index) => console.log(periodIds[index])&&periodIds[index]);
             console.log(barGroups);
 
             const newAndUpdatedGroups = barGroups
@@ -103,9 +105,11 @@ export const Timeline = (props) => {
                     .attr("fill", "#69b3a2")
                     .transition()
                     .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0);
-
+                console.log(newAndUpdatedGroups)
                 const labels = newAndUpdatedGroups.selectAll(".label")
                     .text(value => value.periodName);
+            console.log(newAndUpdatedGroups)
+
 
             /*const barGroup = barGroups
                 .join("g")
