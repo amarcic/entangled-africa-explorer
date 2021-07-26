@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, OurTimeline, ResultsTable, ShowNext
+    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, Layout, OurMap, OurTimeline, ResultsTable,
+    ShowNext
 } from "..";
-import { Grid, IconButton, LinearProgress } from "@material-ui/core";
+import { IconButton, LinearProgress } from "@material-ui/core";
 import ZoomInIcon from "@material-ui/icons/ZoomIn";
 import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 // Queries
@@ -279,30 +280,82 @@ export const AppContent = () => {
     window.addEventListener('resize', setOneTwelfthWidth)
 
 
-    return (
-        <Grid className={classes.gridBody} container direction="row" spacing={2} >
-            {/*GRID: Filters*/}
-            <Grid item xs={12} container direction="column">
-                {input.mapControlsExpanded
-                    ? <Filters
-                        chronOntologyTerms={chronOntologyTerms}
-                        reducer={[input, dispatch]}
-                        input={input}
-                        regions={regions}
-                    />
-                    : (/*summary of active filters when control panel is closed*/
-                        <CollapsedFilters
-                            reducer={[input, dispatch]}
-                        />
-                    )
-                }
-            </Grid>
+    {/*TODO: find good position for the IconButtons,
+        toggle other areas back to default size if an area is enlarged while another currently already is enlarged */}
+    const renderAreaA = () => {
+        return (
+            <>
+                <IconButton
+                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaAIsBig"}})
+                    }
+                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
+                >
+                    {input.areaAIsBig
+                        ? <ZoomOutIcon/>
+                        : <ZoomInIcon/>
+                    }
+                </IconButton>
+                {input.areaA===0
+                && <ResultsTable
+                    handleRelatedObjects={handleRelatedObjects}
+                    mapDataObjects={mapDataObjects}
+                    mapDataContext={mapDataContext}
+                    mapDataArchaeoSites={mapDataArchaeoSites}
+                    mapDataSitesByRegion={mapDataSitesByRegion}
+                    reducer={[input, dispatch]}
+                    renderingConditionObjects={renderingConditionObjects}
+                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                    renderingConditionSites={renderingConditionSites}
+                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                    openPopup={openPopup}
+                />}
+                {input.areaA===1
+                && <ImageContents
+                    contents={dataObjects
+                    && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
+                        dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
+                />}
+                {input.areaA===2
+                && <DataSources/>}
+                <ShowNext
+                    area={"areaA"}
+                    labels={["Results table", "Image contents", "Data sources"]}
+                    reducer={[input, dispatch]}
+                />
+            </>
+        )
+    }
 
-            {/*GRID: Map*/}
-            {<Grid className={classes.fullHeightTile}
-                   item lg={input.areaCIsBig ? 12 : 4} sm={input.areaCIsBig ? 12: 6} xs={12}
-                   container>
-                {/*TODO: find good position for this button*/}
+    const renderAreaB = () => {
+        return (
+            <>
+                <IconButton
+                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaBIsBig"}})
+                    }
+                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
+                >
+                    {input.areaBIsBig
+                        ? <ZoomOutIcon/>
+                        : <ZoomInIcon/>
+                    }
+                </IconButton>
+                {input.areaB===0 && <OurTimeline
+                    reducer={[input, dispatch]}
+                    timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
+                />}
+                {input.areaB===1 && <Histogram/>}
+                <ShowNext
+                    area={"areaB"}
+                    labels={["Timeline", "Histogram"]}
+                    reducer={[input, dispatch]}
+                />
+            </>
+        )
+    }
+
+    const renderAreaC = () => {
+        return (
+            <>
                 <IconButton
                     onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaCIsBig"}})
                     }
@@ -326,93 +379,66 @@ export const AppContent = () => {
                     renderingConditionSites={renderingConditionSites}
                     renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                 />
-            </Grid>}
+            </>
+        )
+    }
 
-            {/*GRID: Container for results list and timeline*/}
-            <Grid className={(input.areaAIsBig || input.areaBIsBig) ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.fullHeightTile)}
-                  item lg={input.areaCIsBig ? 12 : 8} sm={input.areaCIsBig ? 12 : 6} xs={12}
-                  container direction={(input.areaAIsBig || input.areaBIsBig) ? "row" : (input.areaCIsBig ? "column" : "row")} spacing={2}
-            >
+    return (
+        /* Layout schema:
+            F = filters, M = map, A = area A, B = area B; two rows = 100% height, four columns = 100 % width
 
-                {/*GRID: Results list, image contents, data sources*/}
-                {<Grid className={input.areaAIsBig ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.mediumTile)}
-                       item md={input.areaCIsBig ? 6 : 12} xs={12}
-                       container direction="row"
-                >
-                    {/*TODO: find good position for this button*/}
-                    <IconButton
-                        onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaAIsBig"}})
-                        }
-                        style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
-                    >
-                        {input.areaAIsBig
-                            ? <ZoomOutIcon/>
-                            : <ZoomInIcon/>
-                        }
-                    </IconButton>
-                    {input.areaA===0
-                    && <ResultsTable
-                        handleRelatedObjects={handleRelatedObjects}
-                        mapDataObjects={mapDataObjects}
-                        mapDataContext={mapDataContext}
-                        mapDataArchaeoSites={mapDataArchaeoSites}
-                        mapDataSitesByRegion={mapDataSitesByRegion}
-                        reducer={[input, dispatch]}
-                        renderingConditionObjects={renderingConditionObjects}
-                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                        renderingConditionSites={renderingConditionSites}
-                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                        openPopup={openPopup}
-                    />}
-                    {input.areaA===1
-                    && <ImageContents
-                        contents={dataObjects
-                        && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
-                            dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
-                    />}
-                    {input.areaA===2
-                    && <DataSources/>}
-                    <ShowNext
-                        area={"areaA"}
-                        labels={["Results table", "Image contents", "Data sources"]}
+            Size md/lg:
+            default:      |    big c:        |    big a:        |    big b:        |    with expanded filters: (?)
+            ------------------------------------------------------------------------------------------------------
+            F             |    F             |    F             |    F             |    F  F  F  F
+            M  M  A  A    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |    ...
+            M  M  B  B    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |
+                          |    A  A  B  B    |    M  M  B  B    |    M  M  A  A    |
+                          |                  |    M  M          |    M  M          |
+            Size xs:
+            default: (?)  |   with expanded filters: (?)
+            --------------------------------------------
+            F  .  .  .    |    F  F  F  F
+            M  M  M  M    |    F  F  F  F
+            M  M  M  M    |    M  M  M  M
+            A  A  A  A    |    M  M  M  M
+            A  A  A  A    |    A  A  A  A
+            B  B  B  B    |    A  A  A  A
+            B  B  B  B    |    B  B  B  B
+                          |    B  B  B  B
+        */
+
+        <Layout
+            menu={input.mapControlsExpanded
+                ? <Filters
+                    chronOntologyTerms={chronOntologyTerms}
+                    reducer={[input, dispatch]}
+                    input={input}
+                    regions={regions}
+                />
+                : (
+                    <CollapsedFilters
                         reducer={[input, dispatch]}
                     />
-                </Grid>}
-
-                {/*GRID: Timeline, histogram*/}
-                {<Grid className={input.areaBIsBig ? classes.fullHeightTile : (input.areaCIsBig ? classes.tallTile : classes.mediumTile)}
-                       item md={input.areaCIsBig ? 6 : 12} xs={12}
-                       container direction="row"
-                >
-                    {/*TODO: find good position for this button*/}
-                    <IconButton
-                        onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaBIsBig"}})
-                        }
-                        style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
-                    >
-                        {input.areaBIsBig
-                            ? <ZoomOutIcon/>
-                            : <ZoomInIcon/>
-                        }
-                    </IconButton>
-                    {input.areaB===0 && <OurTimeline
-                        reducer={[input, dispatch]}
-                        timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
-                    />}
-                    {input.areaB===1 && <Histogram/>}
-                    <ShowNext
-                        area={"areaB"}
-                        labels={["Timeline", "Histogram"]}
-                        reducer={[input, dispatch]}
-                    />
-                </Grid>}
-            </Grid>
-
-            {/*GRID: Loading indicator*/}
-            <Grid item xs={12}>
-                {(loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion) &&
-                <LinearProgress/>}
-            </Grid>
-        </Grid>
-    );
+                )
+            }
+            bigTile={
+                (input.areaAIsBig && renderAreaA()) || (input.areaBIsBig && renderAreaB()) || (input.areaCIsBig && renderAreaC())
+            }
+            leftOrTopTile={
+                !input.areaCIsBig && renderAreaC()
+            }
+            topRightOrMiddleTile={
+                !input.areaAIsBig ? renderAreaA() : renderAreaB()
+            }
+            bottomRightOrBottomTile={
+                !input.areaAIsBig && !input.areaBIsBig && renderAreaB()
+            }
+            loadingIndicator={
+                (loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion)
+                && <LinearProgress/>
+            }
+            rightTileIsMovedToBottomInstead={input.areaCIsBig ? "true" : false}
+        />
+    )
 };

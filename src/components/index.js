@@ -7,11 +7,12 @@ export { CollapsedFilters } from './CollapsedFilters/CollapsedFilters'
 export { CreateMarkers } from './CreateMarkers/CreateMarkers';
 export { CreateTimelineAxis } from './CreateTimelineAxis/CreateTimelineAxis';
 export { CreateTimelineObjects } from './CreateTimelineObjects/CreateTimelineObjects';
-export { DataSources } from './DataSources/DataSources.jsx'
+export { DataSources } from './DataSources/DataSources'
 export { Filters } from './Filters/Filters'
 export { GazetteerEntry } from './GazetteerEntry/GazetteerEntry'
-export { Histogram } from './Histogram/Histogram.jsx'
+export { Histogram } from './Histogram/Histogram'
 export { ImageContents } from './ImageContents/ImageContents'
+export { Layout } from './Layout/Layout'
 export { OurMap } from './OurMap/OurMap';
 export { OurTimeline } from './OurTimeline/OurTimeline'
 export { PageHeader } from './PageHeader/PageHeader';
@@ -20,4 +21,4 @@ export { ResultsTableRow } from './ResultsTableRow/ResultsTableRow'
 export { ReturnMarker } from './ReturnMarker/ReturnMarker';
 export { ReturnPopup } from './ReturnPopup/ReturnPopup';
 export { ReturnTimelineObject } from './ReturnTimelineObject/ReturnTimelineObject';
-export { ShowNext } from './ShowNext/ShowNext.jsx'
+export { ShowNext } from './ShowNext/ShowNext'
