@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Button, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { ResultsTableRow } from '..'
 import { useTranslation } from "react-i18next";
 import { useStyles } from '../../styles';
@@ -17,7 +17,7 @@ export const ResultsTable = (props) => {
     const classes = useStyles();
 
     return (
-        <Card className={classes.card}>
+        <>
             {<Grid className={classes.gridHead} item xs={12} container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Search results')}</h3>
@@ -180,6 +180,6 @@ export const ResultsTable = (props) => {
                         </Table>}
                 </Grid>}
             </Grid>}
-        </Card>
+        </>
     )
 }

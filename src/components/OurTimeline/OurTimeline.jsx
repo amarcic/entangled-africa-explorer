@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
@@ -27,7 +27,7 @@ export const OurTimeline = (props) => {
 
 
     return (
-        <Card className={classes.card}>
+        <>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Timeline')}</h3>
@@ -122,6 +122,6 @@ export const OurTimeline = (props) => {
                     //: <Skeleton variant="rect" width="100%" height="70%" />
                 }
             </Grid>}
-        </Card>
+        </>
     );
 };

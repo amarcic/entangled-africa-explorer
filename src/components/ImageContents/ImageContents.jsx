@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { Card, Grid, List, ListItem } from "@material-ui/core";
+import { Grid, List, ListItem } from "@material-ui/core";
 
 export const ImageContents = (props) => {
     const { contents } = props;
@@ -23,7 +23,7 @@ export const ImageContents = (props) => {
     }
 
     return (
-        <Card className={classes.card}>
+        <>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Image contents')}</h3>
@@ -53,6 +53,6 @@ export const ImageContents = (props) => {
                     )}
                 </Grid>
             </Grid>
-        </Card>
+        </>
     )
 };

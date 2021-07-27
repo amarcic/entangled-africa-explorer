@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 
@@ -9,7 +9,7 @@ export const Histogram = () => {
     const classes = useStyles();
 
     return (
-        <Card className={classes.card}>
+        <>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
@@ -20,6 +20,6 @@ export const Histogram = () => {
                     Here will be the histogram...
                 </Grid>
             </Grid>
-        </Card>
+        </>
     )
 };

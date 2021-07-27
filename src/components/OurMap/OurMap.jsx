@@ -3,10 +3,8 @@ import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers } from '..'
 import { useTranslation } from "react-i18next";
-import { Card, FormLabel, Grid, IconButton, Switch, Tooltip } from "@material-ui/core";
+import { FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import { useStyles } from '../../styles';
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -48,7 +46,7 @@ export const OurMap = (props) => {
     },[input.areaCIsBig])
 
     return (
-        <Card className={classes.card}>
+        <>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Map')}</h3>
@@ -201,6 +199,6 @@ export const OurMap = (props) => {
                     }
                 </Map>
             </Grid>
-        </Card>
+        </>
     )
 }
