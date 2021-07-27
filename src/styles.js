@@ -14,14 +14,14 @@ const useStyles = makeStyles(theme => ({
         overflow: "scroll"
     },
     fullHeightTile: {
-        height: "100vh"
+        height: "calc(100vh - 35px)" //35px is the height of the ShowNext bar
     },
     halfHeightTile: {
-        height: "45vh"
+        height: "calc(45vh - 35px)" //35px is the height of the ShowNext bar
     },
     "gridBody || fullHeightTile || halfHeightTile": {
-        justifyContent: "space-between",
-        alignItems: "center"
+        //justifyContent: "space-between",
+        //alignItems: "center"
     },
     gridHead: {
         //minHeight: "5%",

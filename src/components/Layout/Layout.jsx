@@ -50,8 +50,8 @@ export const Layout = (props) => {
                 lg={12}
 
                 container
-                direction="column"
-                spacing={2}
+                direction="row"
+                spacing={0}
             >
                 {
                     // whichever tile was enlarged by the user
@@ -85,8 +85,8 @@ export const Layout = (props) => {
                 lg={rightTileIsMovedToBottomInstead ? 12 : 8}
 
                 container
-                direction={rightTileIsMovedToBottomInstead ? "column" : "row"}
-                spacing={2}
+                direction={rightTileIsMovedToBottomInstead ? /*TODO: needs something like 'if not small screen' && */"column" : "row"}
+                spacing={0}
             >
 
                 <Grid
@@ -100,7 +100,7 @@ export const Layout = (props) => {
                     direction="row"
                 >
                     {
-                        // areaA (if not enlarged, in that case: areaB)
+                        // areaA (if not enlarged, in that case areaB moves here)
                         topRightOrMiddleTile
                     }
                 </Grid>
