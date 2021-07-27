@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, Layout, OurMap, OurTimeline, ResultsTable,
-    ShowNext
+    CollapsedFilters, DashboardTile, DataSources, Filters, Histogram, ImageContents, Layout, OurMap, OurTimeline,
+    ResultsTable, ShowNext
 } from "..";
-import { IconButton, LinearProgress } from "@material-ui/core";
-import ZoomInIcon from "@material-ui/icons/ZoomIn";
-import ZoomOutIcon from "@material-ui/icons/ZoomOut";
+import { LinearProgress } from "@material-ui/core";
 // Queries
 import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
@@ -283,103 +281,92 @@ export const AppContent = () => {
     {/*TODO: find good position for the IconButtons,
         toggle other areas back to default size if an area is enlarged while another currently already is enlarged */}
     const renderAreaA = () => {
-        return (
-            <>
-                <IconButton
-                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaAIsBig"}})
-                    }
-                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
-                >
-                    {input.areaAIsBig
-                        ? <ZoomOutIcon/>
-                        : <ZoomInIcon/>
-                    }
-                </IconButton>
-                {input.areaA===0
-                && <ResultsTable
-                    handleRelatedObjects={handleRelatedObjects}
-                    mapDataObjects={mapDataObjects}
-                    mapDataContext={mapDataContext}
-                    mapDataArchaeoSites={mapDataArchaeoSites}
-                    mapDataSitesByRegion={mapDataSitesByRegion}
-                    reducer={[input, dispatch]}
-                    renderingConditionObjects={renderingConditionObjects}
-                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                    renderingConditionSites={renderingConditionSites}
-                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                    openPopup={openPopup}
-                />}
-                {input.areaA===1
-                && <ImageContents
-                    contents={dataObjects
-                    && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
-                        dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
-                />}
-                {input.areaA===2
-                && <DataSources/>}
-                <ShowNext
-                    area={"areaA"}
-                    labels={["Results table", "Image contents", "Data sources"]}
-                    reducer={[input, dispatch]}
-                />
-            </>
+        const area = "areaA";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    input[area]===0 && <ResultsTable
+                        handleRelatedObjects={handleRelatedObjects}
+                        mapDataObjects={mapDataObjects}
+                        mapDataContext={mapDataContext}
+                        mapDataArchaeoSites={mapDataArchaeoSites}
+                        mapDataSitesByRegion={mapDataSitesByRegion}
+                        reducer={[input, dispatch]}
+                        renderingConditionObjects={renderingConditionObjects}
+                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                        renderingConditionSites={renderingConditionSites}
+                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                        openPopup={openPopup}
+                    />
+                    || input[area]===1 && <ImageContents
+                        contents={dataObjects
+                        && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
+                            dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
+                    />
+                    || input[area]===2 && <DataSources/>
+                }
+                showNext={
+                    <ShowNext
+                        area={area}
+                        labels={["Results table", "Image contents", "Data sources"]}
+                        reducer={[input, dispatch]}
+                    />
+                }
+            />
         )
     }
 
     const renderAreaB = () => {
-        return (
-            <>
-                <IconButton
-                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaBIsBig"}})
-                    }
-                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
-                >
-                    {input.areaBIsBig
-                        ? <ZoomOutIcon/>
-                        : <ZoomInIcon/>
-                    }
-                </IconButton>
-                {input.areaB===0 && <OurTimeline
-                    reducer={[input, dispatch]}
-                    timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
-                />}
-                {input.areaB===1 && <Histogram/>}
-                <ShowNext
-                    area={"areaB"}
-                    labels={["Timeline", "Histogram"]}
-                    reducer={[input, dispatch]}
-                />
-            </>
+        const area = "areaB";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    input[area]===0 && <OurTimeline
+                        reducer={[input, dispatch]}
+                        timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
+                    />
+                    || input[area]===1 && <Histogram/>
+                }
+                showNext={
+                    <ShowNext
+                        area={area}
+                        labels={["Timeline", "Histogram"]}
+                        reducer={[input, dispatch]}
+                    />
+                }
+            />
         )
     }
 
     const renderAreaC = () => {
-        return (
-            <>
-                <IconButton
-                    onClick={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "areaCIsBig"}})
-                    }
-                    style={{backgroundColor: "rgba(171,134,97,0.18)", position: "relative", left: "20px", top: "70px"}}
-                >
-                    {input.areaCIsBig
-                        ? <ZoomOutIcon/>
-                        : <ZoomInIcon/>
-                    }
-                </IconButton>
-                <OurMap
-                    extendMapBounds={extendMapBounds}
-                    handleRelatedObjects={handleRelatedObjects}
-                    mapDataObjects={mapDataObjects}
-                    mapDataContext={mapDataContext}
-                    mapDataArchaeoSites={mapDataArchaeoSites}
-                    mapDataSitesByRegion={mapDataSitesByRegion}
-                    reducer={[input, dispatch]}
-                    renderingConditionObjects={renderingConditionObjects}
-                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                    renderingConditionSites={renderingConditionSites}
-                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                />
-            </>
+        const area = "areaC";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    <OurMap
+                        extendMapBounds={extendMapBounds}
+                        handleRelatedObjects={handleRelatedObjects}
+                        mapDataObjects={mapDataObjects}
+                        mapDataContext={mapDataContext}
+                        mapDataArchaeoSites={mapDataArchaeoSites}
+                        mapDataSitesByRegion={mapDataSitesByRegion}
+                        reducer={[input, dispatch]}
+                        renderingConditionObjects={renderingConditionObjects}
+                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
+                        renderingConditionSites={renderingConditionSites}
+                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
+                    />
+                }
+            />
         )
     }
 

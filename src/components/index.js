@@ -7,6 +7,7 @@ export { CollapsedFilters } from './CollapsedFilters/CollapsedFilters'
 export { CreateMarkers } from './CreateMarkers/CreateMarkers';
 export { CreateTimelineAxis } from './CreateTimelineAxis/CreateTimelineAxis';
 export { CreateTimelineObjects } from './CreateTimelineObjects/CreateTimelineObjects';
+export { DashboardTile } from './DashboardTile/DashboardTile'
 export { DataSources } from './DataSources/DataSources'
 export { Filters } from './Filters/Filters'
 export { GazetteerEntry } from './GazetteerEntry/GazetteerEntry'
