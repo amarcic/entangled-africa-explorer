@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
         overflow: "scroll"
     },
     fullHeightTile: {
-        height: "calc(100vh - 35px)" //35px is the height of the ShowNext bar
+        height: "calc(100vh - 35px)", //35px is the height of the ShowNext bar
+        padding: theme.spacing(2),
     },
     halfHeightTile: {
         height: "calc(45vh - 35px)" //35px is the height of the ShowNext bar
@@ -25,8 +26,8 @@ const useStyles = makeStyles(theme => ({
     },
     gridHead: {
         //minHeight: "5%",
-        justifyContent: "flex-start",
-        alignItems: "center"
+        //justifyContent: "flex-start",
+        //alignItems: "center"
     },
     h1: {
         fontSize: "1.25rem"

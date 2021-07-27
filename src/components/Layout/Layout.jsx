@@ -77,7 +77,7 @@ export const Layout = (props) => {
 
             {/*container for the right or bottom area (= areaA and areaB)*/}
             <Grid
-                className={rightTileIsMovedToBottomInstead ? classes.halfHeightTile : classes.fullHeightTile}
+                //className={rightTileIsMovedToBottomInstead ? classes.halfHeightTile : classes.fullHeightTile}
 
                 item
                 xs={12}
@@ -85,8 +85,8 @@ export const Layout = (props) => {
                 lg={rightTileIsMovedToBottomInstead ? 12 : 8}
 
                 container
-                direction={rightTileIsMovedToBottomInstead ? /*TODO: needs something like 'if not small screen' && */"column" : "row"}
-                spacing={0}
+                direction={/*TODO: needs something like 'if not small screen' && */"row"}
+                spacing={rightTileIsMovedToBottomInstead ? 2 : 0}
             >
 
                 <Grid
@@ -126,6 +126,8 @@ export const Layout = (props) => {
                   xs={12}
                   md={12}
                   lg={12}
+
+                  style={{height: "12px"}}
             >
                 {
                     // loading symbol (if current query result is still loading)
