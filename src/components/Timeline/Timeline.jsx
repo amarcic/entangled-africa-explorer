@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min} from "d3";
+import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
@@ -11,46 +11,66 @@ export const Timeline = (props) => {
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
-    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.length>0&&datapoint);
-    const byPeriodData = newGroupByPeriods(filteredTimelineData);
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
+    //const data = newGroupByPeriods(filteredTimelineData);
+    const xDomain = getTimeRangeOfTimelineData(timelineObjectsData,"period");
+
     console.log(timelineObjectsData);
     console.log(filteredTimelineData);
-    console.log(byPeriodData);
+    //console.log(byPeriodData);
 
     //console.log(props.timelineData);
 
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
-    const [scale, setScale] = useState();
+    //const [scale, setScale] = useState();
+
+    const [data, setData] = useState();
 
     const svg = select(svgRef.current);
 
+    const sortPeriods = () =>
+        setData(newGroupByPeriods(filteredTimelineData.sort( (a, b) => a.periodSpans[0] - b.periodSpans[0] )));
+
+    const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
+    useEffect( () => {
+        if (timelineObjectsData||filteredTimelineData) {
+            setData(newGroupByPeriods(filteredTimelineData));
+            data&&data.size>0&&console.log([...data.values()].sort( (a,b) => a.periodSpan?.[0]-b.periodSpan?.[0] ));
+        }
+        //const byPeriodData = newGroupByPeriods(filteredTimelineData)
+
+        }, [props.timelineObjectsData]
+    )
+
     useEffect(() => {
+        //setData(byPeriodData);
 
         //svg dimensions
         const containerHeight = parseInt(select("#timelineContainer").style("height")),
             containerWidth = parseInt(select("#timelineContainer").style("width"));
 
-        const margin = {top: 5, right: 20, left: 20, bottom: 30};
-
         const width = containerWidth - margin.left - margin.right,
             height = containerHeight - margin.top - margin.bottom;
 
         svg.attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("height", height + margin.top + margin.bottom);
 
         //remove previously rendered timeline bars in the case there is no current data from the current search
-        if (!timelineObjectsData||!byPeriodData||byPeriodData.size===0) {
+        //if (!timelineObjectsData||!byPeriodData||byPeriodData.size===0) {
+        if (!data||data.size===0) {
+            console.log("data", data);
             svg.select(".bars")
                 .selectAll(".bar").remove()
             svg.select(".bars")
                 .selectAll(".label").remove()
             svg.select(".background").selectAll("rect").remove();
         } else {
-            const periodIds = [...byPeriodData.keys()];
+            const periodIds = [...data.keys()];
 
             const xScale = scaleLinear()
-                .domain(getTimeRangeOfTimelineData(timelineObjectsData,"period"))
+                .domain(xDomain)
                 .range([0,width])
 
             const yScale = scaleBand()
@@ -73,7 +93,7 @@ export const Timeline = (props) => {
             //sync svg groups for bars and labels to the values of the data (map grouped by periods)
             const barGroups = timelineCanvas
                 .selectAll(".barGroup")
-                .data([...byPeriodData.values()], (data,index) => periodIds[index]);
+                .data([...data.values()], (data,index) => periodIds[index]);
             console.log(barGroups);
 
             //instructions for joining the synced data and group elements: add svg g, rect and text elements on enter
@@ -108,63 +128,12 @@ export const Timeline = (props) => {
             //add period names as text labels to the groups
             const labels = newAndUpdatedGroups.selectAll(".label")
                 .text(value => value.periodName);
-            console.log(newAndUpdatedGroups)
+            console.log(newAndUpdatedGroups);
 
-
-            /*const barGroup = barGroups
-                .join("g")
-                .attr("class", "barGroup")
-                .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`);
-            console.log(barGroup)
-
-            const bars = barGroups.enter()
-                .selectAll(".barGroup")
-                .append("rect")
-                .attr("class", "bar")
-                .attr("height", yScale.bandwidth());
-
-                bars.transition()
-                .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
-                .attr("fill", "#69b3a2");
-
-                const labels = barGroups//.enter()
-                    .selectAll(".barGroup")
-                    .data(value => [value])
-                    .join("text")
-                    .attr("class", "label")
-                    .text(value => value.periodName)*/
-
-            /*const labels = barGroups.enter()
-                .selectAll(".barGroup")
-                .append("text")
-                .attr("class", "label")
-                .text(value => value.periodName)*/
-                //.attr("y", (value, index) => yScale(periodIds[index]))
-
-
-            //calculate and append histogram bars for each bin
-            /*const bars = svg.select(".bars")
-                .attr("transform",`translate(${margin.left}, ${margin.top})`)
-                //todo: this should not connect to rect, since the rect are nested with text in groups
-                .selectAll(".barGroup")
-                    .data([...byPeriodData.values()], (data,index) => periodIds[index]).join(
-                    enter => enter.append("g").attr("class", "barGroup")
-                        .append("text")
-                        .attr("class", "label")
-                        .select( function() {return this.parentNode} )
-                            .append("rect")
-                ).attr("class","bar")
-                    .attr("y", (value,index) => yScale(periodIds[index]))
-                    .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("height", yScale.bandwidth())*/
-                    /*.selectAll("text")
-                        .text( value => value&&byPeriodData.get(value).periodName )*/
-                    /*.on("click", function(event, value) {
-                        svg.select(this)
-                            .style("fill", "orange")
-                    })*/
-
-            //const barGroups = bars.select( function() {return this.parentNode} );
+            select(".sortButton").on("click", () =>
+                svg.selectAll(".barGroup").sort( (a,b) => ascending(parseInt(a.periodSpan?.[0]),parseInt(b.periodSpan?.[0])) )
+                    .attr("transform", (value, index) => `translate(${xScale(value.periodSpan?.[0])},${yScale(periodIds[index])})`)
+            );
 
             //on click show detailed view of items for a period
             newAndUpdatedGroups.on("click", (event, value) => {
@@ -190,10 +159,12 @@ export const Timeline = (props) => {
 
                     svg.select(".background").selectAll("rect").remove();
 
+                    //attach x axis
                     svg.select(".xAxis")
                         .attr("transform", `translate(0,${height})`)
                         .call(axisBottom(xScaleDetail))
 
+                    //join svg rect elements with array of item datings
                     svg.select(".bars")
                         .selectAll("rect").data(value.items).join(
                             enter => enter.append("rect")
@@ -204,6 +175,7 @@ export const Timeline = (props) => {
                         .transition()
                         .attr("width", value => Math.abs(xScaleDetail(value.spanDated?.[0])-xScaleDetail(value.spanDated?.[1]))+1||0)
 
+                    //paint on the background a rect representing the temporal extension of the period
                     svg.select(".background")
                         .selectAll("rect").data([value]).join("rect")
                         .attr("width", Math.abs(xScaleDetail(value.periodSpan?.[0])-xScaleDetail(value.periodSpan?.[1]))||0)
@@ -213,23 +185,15 @@ export const Timeline = (props) => {
                         .attr("opacity", 0.3)
                 })
 
-                /*bars.transition()
-                .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
-                .attr("fill", "#69b3a2");*/
-
-            /*svg.selectAll(".label")
-                    .text( value => value.periodName)
-                    .attr("y", (value, index) => yScale(periodIds[index]))
-                    .attr("x", value => xScale(value.periodSpan?.[0]))
-            console.log(bars);*/
         }
-    }, [filteredTimelineData])
+    }, [data])
 
     return (
         <Card className={classes.card}>
             <Grid className={classes.gridHead} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
+                    <span><h3 className={classes.h3}>{t('Temporal distribution')}</h3>
+                    <button className="sortButton">sort</button></span>
                 </Grid>
             </Grid>
             <Grid id="timelineContainer" className={classes.gridContent} item container direction="column" spacing={2}>
