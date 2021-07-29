@@ -33,7 +33,7 @@ export const Filters = (props) => {
 
     return (
         <Card className={classes.card}>
-            <Grid className={classes.gridHead} item>
+            <Grid className={classes.dashboardTileHeader} item>
                 <Button
                     onClick={() => {
                         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
@@ -43,7 +43,7 @@ export const Filters = (props) => {
                     {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
                 </Button>
             </Grid>
-            {<Grid className={classes.gridContent} item container direction="column" spacing={2}>
+            {<Grid className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item container direction="row" spacing={2}>
                     {/*radio buttons for selecting mode*/
                         <Grid item>

@@ -28,7 +28,7 @@ export const OurTimeline = (props) => {
 
     return (
         <>
-            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
+            <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Timeline')}</h3>
                 </Grid>
@@ -48,7 +48,7 @@ export const OurTimeline = (props) => {
                 </Grid>
             </Grid>
             {input.mode === "objects"
-            && <Grid className={classes.gridContent} item>
+            && <Grid className={classes.dashboardTileContent} item>
                 {//timelineObjectsData ?
                     <svg
                         //viewBox parameters are "min-x min-y width height"

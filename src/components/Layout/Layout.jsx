@@ -1,11 +1,13 @@
 import React from 'react';
 import { Grid } from '@material-ui/core'
 import { useStyles } from '../../styles';
-
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export const Layout = (props) => {
     const {menu, bigTile, leftOrTopTile, topRightOrMiddleTile, bottomRightOrBottomTile, loadingIndicator, rightTileIsMovedToBottomInstead} = props;
 
+    const theme = useTheme();
     const classes = useStyles();
 
     /* Default breakpoints (inclusive-exclusive):
@@ -16,10 +18,28 @@ export const Layout = (props) => {
              xl = extra-large: 1920px-...
     */
 
+    const containerForTwoTiles = (tiles) => {
+        return (
+            useMediaQuery(theme.breakpoints.up('md')) && !rightTileIsMovedToBottomInstead
+                ? <Grid
+                    item
+                    xs={12}
+                    md={rightTileIsMovedToBottomInstead ? 12 : 6}
+                    lg={rightTileIsMovedToBottomInstead ? 12 : 8}
+
+                    container
+                    direction="row"
+                    spacing={rightTileIsMovedToBottomInstead ? 2 : 0}
+                >
+                    {tiles}
+                </Grid>
+                : tiles
+        )
+    }
+
     return (
-        // container for dashboard
         <Grid
-            className={classes.gridBody}
+            className={classes.dashboardBody}
 
             container
             direction="row"
@@ -75,59 +95,49 @@ export const Layout = (props) => {
                 }
             </Grid>}
 
-            {/*container for the right or bottom area (= areaA and areaB)*/}
-            <Grid
-                //className={rightTileIsMovedToBottomInstead ? classes.halfHeightTile : classes.fullHeightTile}
+            {/* if areaA and areaB are supposed to be shown as two tiles next to the map, put a container Grid around them to accomplish this */}
+            {containerForTwoTiles(
+                <>
+                    <Grid
+                        className={classes.halfHeightTile}
 
+                        item
+                        xs={12}
+                        md={rightTileIsMovedToBottomInstead ? 6 : 12}
+
+                        container
+                        direction="row"
+                    >
+                        {
+                            // areaA (if not enlarged, in that case areaB moves here)
+                            topRightOrMiddleTile
+                        }
+                    </Grid>
+
+                    <Grid
+                        className={classes.halfHeightTile}
+
+                        item
+                        xs={12}
+                        md={rightTileIsMovedToBottomInstead ? 6 : 12}
+
+                        container
+                        direction="row"
+                    >
+                        {
+                            // areaB (if not enlarged)
+                            bottomRightOrBottomTile
+                        }
+                    </Grid>
+                </>
+            )}
+
+            <Grid
+                className={classes.dashboardFooter}
                 item
                 xs={12}
-                md={rightTileIsMovedToBottomInstead ? 12 : 6}
-                lg={rightTileIsMovedToBottomInstead ? 12 : 8}
-
-                container
-                direction={/*TODO: needs something like 'if not small screen' && */"row"}
-                spacing={rightTileIsMovedToBottomInstead ? 2 : 0}
-            >
-
-                <Grid
-                    className={classes.halfHeightTile}
-
-                    item
-                    xs={12}
-                    md={rightTileIsMovedToBottomInstead ? 6 : 12}
-
-                    container
-                    direction="row"
-                >
-                    {
-                        // areaA (if not enlarged, in that case areaB moves here)
-                        topRightOrMiddleTile
-                    }
-                </Grid>
-
-                <Grid
-                    className={classes.halfHeightTile}
-
-                    item
-                    xs={12}
-                    md={rightTileIsMovedToBottomInstead ? 6 : 12}
-
-                    container
-                    direction="row"
-                >
-                    {
-                        // areaB (if not enlarged)
-                        bottomRightOrBottomTile
-                    }
-                </Grid>
-            </Grid>
-
-            <Grid item
-                  xs={12}
-                  md={12}
-                  lg={12}
-
-                  style={{height: "12px"}}
+                md={12}
+                lg={12}
             >
                 {
                     // loading symbol (if current query result is still loading)

@@ -18,7 +18,7 @@ export const ResultsTable = (props) => {
 
     return (
         <>
-            {<Grid className={classes.gridHead} item xs={12} container direction="row" spacing={2}>
+            {<Grid className={classes.dashboardTileHeader} item xs={12} container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Search results')}</h3>
                 </Grid>
@@ -39,7 +39,7 @@ export const ResultsTable = (props) => {
                     {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode !== "region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
                 </Grid>
             </Grid>}
-            {<Grid className={classes.gridContent} item xs={12} container>
+            {<Grid className={classes.dashboardTileContent} item xs={12} container>
                 {<Grid item xs={12}>
                     {// Conditions for rendering a table
                         (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion)

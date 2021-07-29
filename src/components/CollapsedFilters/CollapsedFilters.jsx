@@ -15,7 +15,7 @@ export const CollapsedFilters = (props) => {
 
     return (
         <Card className={classes.card}>
-            <Grid className={classes.gridHead} item>
+            <Grid className={classes.dashboardTileHeader} item>
                 <Button
                     onClick={() => {
                         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})

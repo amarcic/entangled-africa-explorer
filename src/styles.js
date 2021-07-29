@@ -1,34 +1,51 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-    card: {
-        padding: theme.spacing(2),
-        height: "100%",
-        width: "100%"
+    dashboardHeader: {
+        justifyContent:"space-between",
+        alignItems:"stretch",
+        height: "12vh",
+        zIndex: 100
     },
-    gridBody: {
-        height: "85vh"
+    dashboardBody: {
+        height: "calc(100vh - 12vh - 12px)"
     },
-    gridContent: {
-        height: "85%",
-        overflow: "scroll"
+    dashboardFooter: {
+        height: "12px"
     },
-    fullHeightTile: {
-        height: "calc(100vh - 35px)", //35px is the height of the ShowNext bar
-        padding: theme.spacing(2),
-    },
-    halfHeightTile: {
-        height: "calc(45vh - 35px)" //35px is the height of the ShowNext bar
-    },
-    "gridBody || fullHeightTile || halfHeightTile": {
-        //justifyContent: "space-between",
-        //alignItems: "center"
-    },
-    gridHead: {
+
+    dashboardTileHeader: {
         //minHeight: "5%",
         //justifyContent: "flex-start",
         //alignItems: "center"
     },
+    dashboardTileContent: {
+        height: "85%",
+        overflow: "scroll"
+    },
+    cardOfTileWithShowNext: {
+        padding: theme.spacing(2),
+        height: "calc(100% - 35px)", //35px is the height of the ShowNext bar
+        width: "100%"
+    },
+    cardOfTileWithoutShowNext: {
+        padding: theme.spacing(2),
+        height: "100% ",
+        width: "100%"
+    },
+
+    fullHeightTile: {
+        height: "calc(100vh - 12vh - 12px)",
+        //padding: theme.spacing(2)
+    },
+    halfHeightTile: {
+        height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
+    },
+    "dashboardBody || fullHeightTile || halfHeightTile": {
+        //justifyContent: "space-between",
+        //alignItems: "center"
+    },
+
     h1: {
         fontSize: "1.25rem"
     },

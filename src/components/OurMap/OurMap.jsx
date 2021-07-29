@@ -47,7 +47,7 @@ export const OurMap = (props) => {
 
     return (
         <>
-            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
+            <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Map')}</h3>
                 </Grid>
@@ -75,7 +75,7 @@ export const OurMap = (props) => {
                     </FormLabel>
                 </Grid>
             </Grid>
-            <Grid className={classes.gridContent} item>
+            <Grid className={classes.dashboardTileContent} item>
                 <Map
                     ref={mapRef}
                     className={`markercluster-map ${localClasses.leafletContainer}`}
