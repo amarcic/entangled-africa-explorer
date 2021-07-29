@@ -43,9 +43,7 @@ const initialInput = {
     highlightedTimelineObject: undefined,
     areaA: 1,
     areaB: 0,
-    areaAIsBig: false,
-    areaBIsBig: false,
-    areaCIsBig: false
+    bigTileArea: ""
 };
 
 
@@ -278,8 +276,6 @@ export const AppContent = () => {
     window.addEventListener('resize', setOneTwelfthWidth)
 
 
-    {/*TODO: find good position for the IconButtons,
-        toggle other areas back to default size if an area is enlarged while another currently already is enlarged */}
     const renderAreaA = () => {
         const area = "areaA";
 
@@ -375,7 +371,7 @@ export const AppContent = () => {
             F = filters, M = map, A = area A, B = area B; two rows = 100% height, four columns = 100 % width
 
             Size md/lg:
-            default:      |    big c:        |    big a:        |    big b:        |    with expanded filters: (?)
+            default:      |    big M:        |    big A:        |    big B:        |    with expanded filters: (?)
             ------------------------------------------------------------------------------------------------------
             F             |    F             |    F             |    F             |    F  F  F  F
             M  M  A  A    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |    ...
@@ -410,22 +406,26 @@ export const AppContent = () => {
                 )
             }
             bigTile={
-                (input.areaAIsBig && renderAreaA()) || (input.areaBIsBig && renderAreaB()) || (input.areaCIsBig && renderAreaC())
+                (input.bigTileArea === "areaA" && renderAreaA())
+                || (input.bigTileArea === "areaB" && renderAreaB())
+                || (input.bigTileArea === "areaC" && renderAreaC())
             }
             leftOrTopTile={
-                !input.areaCIsBig && renderAreaC()
+                input.bigTileArea !== "areaC" && renderAreaC()
             }
             topRightOrMiddleTile={
-                !input.areaAIsBig ? renderAreaA() : renderAreaB()
+                input.bigTileArea !== "areaA"
+                    ? renderAreaA()
+                    : renderAreaB()
             }
             bottomRightOrBottomTile={
-                !input.areaAIsBig && !input.areaBIsBig && renderAreaB()
+                input.bigTileArea !== "areaA" && input.bigTileArea !== "areaB" && renderAreaB()
             }
             loadingIndicator={
                 (loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion)
                 && <LinearProgress/>
             }
-            rightTileIsMovedToBottomInstead={input.areaCIsBig ? "true" : false}
+            rightTileIsMovedToBottomInstead={input.bigTileArea === "areaC" ? "true" : false}
         />
     )
 };
