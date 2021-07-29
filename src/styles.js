@@ -40,6 +40,10 @@ const useStyles = makeStyles(theme => ({
     },
     halfHeightTile: {
         height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
+        // this class will take the same height as fullHeightTile if the screen is size "xs":
+        [theme.breakpoints.down("xs")]: {
+            height: "calc(100vh - 12vh - 12px)",
+        }
     },
     "dashboardBody || fullHeightTile || halfHeightTile": {
         //justifyContent: "space-between",
