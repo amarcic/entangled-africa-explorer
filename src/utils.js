@@ -118,6 +118,7 @@ const newGroupByPeriods = ( timelineObject ) => {
             //span and name are rewritten every time; check if they can diverge (because span is taken from sense if not found)
             periodSpan: obj.periodSpans?.[index],
             periodName: obj.periodNames?.[index],
+            periodId: periodId,
             items: [currentItem, ...previousItems]
         });
         }

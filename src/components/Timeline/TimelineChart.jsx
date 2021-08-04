@@ -2,43 +2,39 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { TimelineChart } from "./TimelineChart";
 import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
-export const Timeline = (props) => {
+export const TimelineChart = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
-
-    //svg dimensions
-    const margin = {top: 5, right: 20, left: 20, bottom: 30};
-
-    //todo: read current dimensions of container
-    const containerHeight = 200,//parseInt(select("#timelineContainer").style("height")),
-        containerWidth = 400;//parseInt(select("#timelineContainer").style("width"));
-
-    const width = containerWidth - margin.left - margin.right,
-        height = containerHeight - margin.top - margin.bottom;
-
-    const dimensions = {margin: margin, width: width, height: height};
-
-    /*const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
+    const { width, height, margin } = props.dimensions;
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
     //const data = newGroupByPeriods(filteredTimelineData);
     const xDomain = getTimeRangeOfTimelineData(timelineObjectsData,"period");
 
     console.log(timelineObjectsData);
-    console.log(filteredTimelineData);*/
+    console.log(filteredTimelineData);
 
-    /*const svgRef = useRef();
-    //const [scale, setScale] = useState();
+    const svgRef = useRef();
+
     const [data, setData] = useState();
-    const svg = select(svgRef.current);
-    const margin = {top: 5, right: 20, left: 20, bottom: 30};*/
 
-    /*useEffect( () => {
+    //svg dimensions
+    /*const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
+    const containerHeight = parseInt(select("#timelineContainer").style("height")),
+        containerWidth = parseInt(select("#timelineContainer").style("width"));
+
+    const width = containerWidth - margin.left - margin.right,
+        height = containerHeight - margin.top - margin.bottom;*/
+
+    //const svg = select(svgRef.current);
+
+    useEffect( () => {
         if (timelineObjectsData||filteredTimelineData) {
             setData(newGroupByPeriods(filteredTimelineData));
             //data&&data.size>0&&console.log([...data.values()].sort( (a,b) => a.periodSpan?.[0]-b.periodSpan?.[0] ));
@@ -46,19 +42,70 @@ export const Timeline = (props) => {
         //const byPeriodData = newGroupByPeriods(filteredTimelineData)
 
         }, [props.timelineObjectsData]
-    )*/
+    )
 
-    /*useEffect(() => {
+    //setting up the svg after first render
+    useEffect(() => {
 
-        //svg dimensions
-        const containerHeight = parseInt(select("#timelineContainer").style("height")),
-            containerWidth = parseInt(select("#timelineContainer").style("width"));
-
-        const width = containerWidth - margin.left - margin.right,
-            height = containerHeight - margin.top - margin.bottom;
-
-        svg.attr("width", width + margin.left + margin.right)
+        const svg = select(svgRef.current)
+            .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
+        svg.select('.timelineGroup')
+            .attr("transform",`translate(${margin.left}, ${margin.top})`);
+
+    }, []);
+
+    useEffect( () => {
+        drawTimeline()
+    }, [data] );
+
+
+    const drawTimeline = () => {
+        if(!data||data.size===0) return;
+
+        const svg = select(svgRef.current);
+        const selection = svg.select("timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
+        console.log("initial selection", selection);
+        const periodIds = [...data.keys()];
+        //scale for the x axis
+        const xScale = scaleLinear()
+            .domain(xDomain)
+            .range([0,width])
+        //scale for the y axis
+        const yScale = scaleBand()
+            .domain(periodIds)
+            .range([height,0])
+            .padding(0.2)
+
+        //add x axis to svg
+        svg.select(".xAxis")
+            .attr("transform", `translate(0,${height})`)
+            .call(axisBottom(xScale))
+
+        const selectionEnteringUpdating = selection.join(
+            enter => enter
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", value => xScale(value.periodSpan?.[0]))
+                .attr("y", (value, index) => yScale(periodIds[index]))
+                .attr("height", yScale.bandwidth())
+                .attr("fill", "#69b3a2")
+        );
+
+        console.log("new and updating: ", selectionEnteringUpdating);
+
+        selectionEnteringUpdating
+            .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
+
+    }
+
+    /*
+    useEffect(() => {
+
+
+
+        svg.attr()
+
 
         //remove previously rendered timeline bars in the case there is no data from the current search
         //if (!timelineObjectsData||!byPeriodData||byPeriodData.size===0) {
@@ -85,10 +132,7 @@ export const Timeline = (props) => {
             //todo: replace this temporary cleanup of the background svg group
             svg.select(".background").selectAll("rect").remove();
 
-            //add x axis to svg
-            svg.select(".xAxis")
-                .attr("transform", `translate(0,${height})`)
-                .call(axisBottom(xScale))
+
 
             //select and position svg element for the timeline
             const timelineCanvas = svg.select(".bars")
@@ -145,7 +189,7 @@ export const Timeline = (props) => {
             newAndUpdatedGroups.on("click", (event, value) => {
 
                     //const element = svg.selectAll(".bar").nodes(),
-                    //    index = element.indexOf(event.currentTarget);
+                     //   index = element.indexOf(event.currentTarget);
 
                     const itemDatingMin = min(value.items, item => item.spanDated?.[0]),
                         itemDatingMax = max(value.items, item => item.spanDated?.[1]);
@@ -191,28 +235,18 @@ export const Timeline = (props) => {
                 })
 
         }
-    }, [data])*/
+    }, [data])
+    */
 
     return (
-        <Card className={classes.card}>
-            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
-                <Grid item>
-                    <span><h3 className={classes.h3}>{t('Temporal distribution')}</h3>
-                    <button className="sortButton">sort</button></span>
-                </Grid>
-            </Grid>
-            <Grid id="timelineContainer" className={classes.gridContent} item container direction="column" spacing={2}>
-                <Grid item>
-                    <TimelineChart timelineObjectsData={timelineObjectsData} dimensions={dimensions} />
-                    {/*<svg ref={svgRef}>
-                        <g className="bars">
-                            <g className="xAxis"></g>
-                            <g className="yAxis"></g>
-                        </g>
-                        <g className="background"/>
-                    </svg>*/}
-                </Grid>
-            </Grid>
-        </Card>
+        <div className="timeline">
+            <svg ref={svgRef}>
+                <g className="timelineGroup">
+                    <g className="xAxis"></g>
+                    <g className="yAxis"></g>
+                </g>
+                <g className="background" />
+            </svg>
+        </div>
     )
 };
