@@ -66,6 +66,7 @@ export const TimelineChart = (props) => {
         const svg = select(svgRef.current);
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         console.log("initial selection", selection);
+        const selectionLabels = svg.select(".timelineGroup").selectAll("text").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
         //scale for the x axis
         const xScale = scaleLinear()
@@ -82,7 +83,7 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height})`)
             .call(axisBottom(xScale))
 
-
+        //add unextended bars for each period on enter and return a selection of all entering and updating nodes
         const selectionEnteringAndUpdating = selection.join(
             enter => enter
                 .append("rect")
@@ -95,16 +96,24 @@ export const TimelineChart = (props) => {
 
         console.log("new and updating: ", selectionEnteringAndUpdating);
 
+        //extend bars according to temporal extend of period
         selectionEnteringAndUpdating
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
-        selection
+        //add labels to the bars
+        selectionLabels
             .enter()
             .append("text")
                 .attr("class", "label")
                 .attr("x", value => xScale(value.periodSpan?.[0]))
                 .attr("y", value => yScale(value.periodId))
                 .text(value => value.periodName);
+
+        selectionLabels
+            .exit()
+            .remove()
+
+        console.log("selection - ", selection)
     }
 
     /*
