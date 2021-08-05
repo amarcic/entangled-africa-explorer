@@ -61,7 +61,8 @@ export const TimelineChart = (props) => {
 
     const drawTimeline = () => {
         if(!data||data.size===0) return;
-        console.log([...data.values()]);
+        //console.log([...data.values()]);
+
         const svg = select(svgRef.current);
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         console.log("initial selection", selection);
@@ -81,21 +82,29 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height})`)
             .call(axisBottom(xScale))
 
-        const selectionEnteringUpdating = selection.join(
+
+        const selectionEnteringAndUpdating = selection.join(
             enter => enter
                 .append("rect")
-                .attr("class", "bar")
-                .attr("x", value => xScale(value.periodSpan?.[0]))
-                .attr("y", (value, index) => yScale(periodIds[index]))
-                .attr("height", yScale.bandwidth())
-                .attr("fill", "#69b3a2")
+                    .attr("class", "bar")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", (value, index) => yScale(periodIds[index]))
+                    .attr("height", yScale.bandwidth())
+                    .attr("fill", "#69b3a2")
         );
 
-        console.log("new and updating: ", selectionEnteringUpdating);
+        console.log("new and updating: ", selectionEnteringAndUpdating);
 
-        selectionEnteringUpdating
+        selectionEnteringAndUpdating
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
+        selection
+            .enter()
+            .append("text")
+                .attr("class", "label")
+                .attr("x", value => xScale(value.periodSpan?.[0]))
+                .attr("y", value => yScale(value.periodId))
+                .text(value => value.periodName);
     }
 
     /*
