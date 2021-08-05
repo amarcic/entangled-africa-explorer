@@ -10,18 +10,17 @@ export const TimelineChart = (props) => {
 
     const classes = useStyles();
 
-    const { timelineObjectsData } = props;
+    const filteredTimelineData = props.filteredTimelineData;
     const { width, height, margin } = props.dimensions;
-    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
-    //const data = newGroupByPeriods(filteredTimelineData);
-    const xDomain = getTimeRangeOfTimelineData(timelineObjectsData,"period");
+    const data = newGroupByPeriods(filteredTimelineData);
+    const xDomain = getTimeRangeOfTimelineData(filteredTimelineData,"period");
 
-    console.log(timelineObjectsData);
-    console.log(filteredTimelineData);
+    //console.log(timelineObjectsData);
+    console.log("filteredTimelineData: ", filteredTimelineData);
 
     const svgRef = useRef();
 
-    const [data, setData] = useState();
+    //const [data, setData] = useState();
 
     //svg dimensions
     /*const margin = {top: 5, right: 20, left: 20, bottom: 30};
@@ -34,15 +33,15 @@ export const TimelineChart = (props) => {
 
     //const svg = select(svgRef.current);
 
-    useEffect( () => {
-        if (timelineObjectsData||filteredTimelineData) {
+    /*useEffect( () => {
+        if (filteredTimelineData) {
             setData(newGroupByPeriods(filteredTimelineData));
             //data&&data.size>0&&console.log([...data.values()].sort( (a,b) => a.periodSpan?.[0]-b.periodSpan?.[0] ));
         }
         //const byPeriodData = newGroupByPeriods(filteredTimelineData)
 
-        }, [props.timelineObjectsData]
-    )
+        }, [props.filteredTimelineData]
+    )*/
 
     //setting up the svg after first render
     useEffect(() => {
@@ -57,14 +56,14 @@ export const TimelineChart = (props) => {
 
     useEffect( () => {
         drawTimeline()
-    }, [data] );
+    }, [props.filteredTimelineData] );
 
 
     const drawTimeline = () => {
         if(!data||data.size===0) return;
-
+        console.log([...data.values()]);
         const svg = select(svgRef.current);
-        const selection = svg.select("timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
+        const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         console.log("initial selection", selection);
         const periodIds = [...data.keys()];
         //scale for the x axis

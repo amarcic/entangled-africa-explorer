@@ -12,13 +12,15 @@ export const Timeline = (props) => {
     const classes = useStyles();
 
     const { timelineObjectsData } = props;
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
+
 
     //svg dimensions
     const margin = {top: 5, right: 20, left: 20, bottom: 30};
 
-    //todo: read current dimensions of container
-    const containerHeight = 200,//parseInt(select("#timelineContainer").style("height")),
-        containerWidth = 400;//parseInt(select("#timelineContainer").style("width"));
+    //todo: read current dimensions of container in way compatible with react
+    const containerHeight = document.getElementById("#timelineContainer")?.style.height!==undefined&&parseInt(select("#timelineContainer").style("height"))||180,
+        containerWidth = document.getElementById("#timelineContainer")?.style.width!==undefined&&parseInt(select("#timelineContainer").style("width"))||530;
 
     const width = containerWidth - margin.left - margin.right,
         height = containerHeight - margin.top - margin.bottom;
@@ -203,7 +205,7 @@ export const Timeline = (props) => {
             </Grid>
             <Grid id="timelineContainer" className={classes.gridContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    <TimelineChart timelineObjectsData={timelineObjectsData} dimensions={dimensions} />
+                    <TimelineChart filteredTimelineData={filteredTimelineData} dimensions={dimensions} />
                     {/*<svg ref={svgRef}>
                         <g className="bars">
                             <g className="xAxis"></g>
