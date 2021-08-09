@@ -22,18 +22,6 @@ export const TimelineChart = (props) => {
 
     //console.log(timelineObjectsData);
     console.log("filteredTimelineData: ", props.filteredTimelineData);
-    //const [data, setData] = useState();
-
-    //svg dimensions
-    /*const margin = {top: 5, right: 20, left: 20, bottom: 30};
-
-    const containerHeight = parseInt(select("#timelineContainer").style("height")),
-        containerWidth = parseInt(select("#timelineContainer").style("width"));
-
-    const width = containerWidth - margin.left - margin.right,
-        height = containerHeight - margin.top - margin.bottom;*/
-
-    //const svg = select(svgRef.current);
 
     /*useEffect( () => {
         if (filteredTimelineData) {
@@ -64,11 +52,16 @@ export const TimelineChart = (props) => {
     const drawTimeline = (timelineConfig) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
+        const svg = select(svgRef.current);
 
-        if(!data||data.size===0) return;
+        if(!data||data.size===0) {
+            svg.selectAll(".bar").remove();
+            svg.selectAll(".label").remove();
+            return;
+        }
         //console.log([...data.values()]);
 
-        const svg = select(svgRef.current);
+
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
@@ -94,7 +87,6 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("height", yScale.bandwidth())
                     .attr("fill", "#69b3a2")
         );
 
@@ -102,6 +94,7 @@ export const TimelineChart = (props) => {
 
         //position and extend bars according to temporal extent of period
         selectionEnteringAndUpdating
+            .attr("height", yScale.bandwidth())
             .transition()
             .attr("x", value => xScale(value.periodSpan?.[0]))
             .attr("y", (value, index) => yScale(periodIds[index]))
