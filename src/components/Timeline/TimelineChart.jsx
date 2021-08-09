@@ -19,13 +19,9 @@ export const TimelineChart = (props) => {
     const data = newGroupByPeriods(props.filteredTimelineData);
 
     const timelineData = { xDomain, data, svgRef };
-    console.log("tl data", timelineData);
 
     //console.log(timelineObjectsData);
     console.log("filteredTimelineData: ", props.filteredTimelineData);
-
-
-
     //const [data, setData] = useState();
 
     //svg dimensions
@@ -75,7 +71,7 @@ export const TimelineChart = (props) => {
         const svg = select(svgRef.current);
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         console.log("initial selection", selection);
-        const selectionLabels = svg.select(".timelineGroup").selectAll("text").data([...data.values()], data => data.periodId);
+        const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
 
         //scale for the x axis
@@ -98,16 +94,17 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("y", (value, index) => yScale(periodIds[index]))
                     .attr("height", yScale.bandwidth())
                     .attr("fill", "#69b3a2")
         );
 
         console.log("new and updating: ", selectionEnteringAndUpdating);
 
-        //extend bars according to temporal extent of period
+        //position and extend bars according to temporal extent of period
         selectionEnteringAndUpdating
+            .transition()
+            .attr("x", value => xScale(value.periodSpan?.[0]))
+            .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
         //add labels to the bars
@@ -118,6 +115,10 @@ export const TimelineChart = (props) => {
                 .attr("x", value => xScale(value.periodSpan?.[0]))
                 .attr("y", value => yScale(value.periodId))
                 .text(value => value.periodName);
+
+        selectionLabels
+            .attr("x", value => xScale(value.periodSpan?.[0]))
+            .attr("y", value => yScale(value.periodId))
 
         //remove labels on exit
         selectionLabels
