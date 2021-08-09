@@ -2,7 +2,8 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
+import { select, scaleBand, axisBottom, scaleLinear } from "d3";
+//import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -10,15 +11,20 @@ export const TimelineChart = (props) => {
 
     const classes = useStyles();
 
-    const filteredTimelineData = props.filteredTimelineData;
+    const svgRef = useRef();
+
+    //const filteredTimelineData = props.filteredTimelineData;
     const { width, height, margin } = props.dimensions;
-    const data = newGroupByPeriods(filteredTimelineData);
-    const xDomain = getTimeRangeOfTimelineData(filteredTimelineData,"period");
+    const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
+    const data = newGroupByPeriods(props.filteredTimelineData);
+
+    const timelineData = { xDomain, data, svgRef };
+    console.log("tl data", timelineData);
 
     //console.log(timelineObjectsData);
-    console.log("filteredTimelineData: ", filteredTimelineData);
+    console.log("filteredTimelineData: ", props.filteredTimelineData);
 
-    const svgRef = useRef();
+
 
     //const [data, setData] = useState();
 
@@ -45,7 +51,6 @@ export const TimelineChart = (props) => {
 
     //setting up the svg after first render
     useEffect(() => {
-
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
@@ -54,12 +59,16 @@ export const TimelineChart = (props) => {
 
     }, []);
 
+    //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
-        drawTimeline()
+        drawTimeline(timelineData)
     }, [props.filteredTimelineData] );
 
 
-    const drawTimeline = () => {
+    const drawTimeline = (timelineConfig) => {
+
+        const { data, svgRef, xDomain } = timelineConfig;
+
         if(!data||data.size===0) return;
         //console.log([...data.values()]);
 
@@ -68,6 +77,7 @@ export const TimelineChart = (props) => {
         console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll("text").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
+
         //scale for the x axis
         const xScale = scaleLinear()
             .domain(xDomain)
@@ -83,7 +93,7 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height})`)
             .call(axisBottom(xScale))
 
-        //add unextended bars for each period on enter and return a selection of all entering and updating nodes
+        //add bars (without extension) for each period on enter and return a selection of all entering and updating nodes
         const selectionEnteringAndUpdating = selection.join(
             enter => enter
                 .append("rect")
@@ -96,7 +106,7 @@ export const TimelineChart = (props) => {
 
         console.log("new and updating: ", selectionEnteringAndUpdating);
 
-        //extend bars according to temporal extend of period
+        //extend bars according to temporal extent of period
         selectionEnteringAndUpdating
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
@@ -109,6 +119,7 @@ export const TimelineChart = (props) => {
                 .attr("y", value => yScale(value.periodId))
                 .text(value => value.periodName);
 
+        //remove labels on exit
         selectionLabels
             .exit()
             .remove()

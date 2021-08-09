@@ -3,8 +3,8 @@ import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { TimelineChart } from "./TimelineChart";
-import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
-import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
+//import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
+//import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const Timeline = (props) => {
     const { t, i18n } = useTranslation();
