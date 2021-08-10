@@ -14,6 +14,7 @@ export const TimelineChart = (props) => {
     const svgRef = useRef();
 
     //const filteredTimelineData = props.filteredTimelineData;
+    console.log("dimensions", props.dimensions)
     const { width, height, margin } = props.dimensions;
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const data = newGroupByPeriods(props.filteredTimelineData);
@@ -35,20 +36,21 @@ export const TimelineChart = (props) => {
 
     //setting up the svg after first render
     useEffect(() => {
+        console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
         svg.select('.timelineGroup')
             .attr("transform",`translate(${margin.left}, ${margin.top})`);
 
-    }, []);
+    }, [props.dimensions]);
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
         drawTimeline(timelineData)
     }, [props.filteredTimelineData] );
 
-
+//todo: still depending on outer scope for height, width, margin
     const drawTimeline = (timelineConfig) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
