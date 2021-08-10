@@ -7,6 +7,7 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
             identifier
             name
             coordinates
+            polygon
         }
         dating
         datingSpan
@@ -42,6 +43,7 @@ query searchObjectContext($arachneId: ID!) {
             identifier
             name
             coordinates
+            polygon
         }
         dating
         datingSpan
@@ -75,6 +77,7 @@ query searchArchaeoSites($searchTerm: String, $bbox: [String]) {
         identifier
         name
         coordinates
+        polygon
         types
         locatedIn {
             identifier
@@ -88,6 +91,7 @@ query byRegion($searchTerm: String, $idOfRegion: ID!) {
         identifier
         name
         coordinates
+        polygon
         types
         locatedIn {
             identifier
@@ -101,6 +105,7 @@ query searchArchaeoSiteContext($searchTerm: String, $bbox: [String]) {
         identifier
         name
         coordinates
+        polygon
         types
         locatedIn {
             identifier
