@@ -86,6 +86,8 @@ export const TimelineChart = (props) => {
                 .attr("transform", event.transform);
         };
         const zimzoom = zoom()
+            .scaleExtent([1,5])
+            .translateExtent([[0,0], [width, height]])
             .on("zoom", handleZoom);
         const initZoom = () => {
             svg
