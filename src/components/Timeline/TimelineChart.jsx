@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select, scaleBand, axisBottom, scaleLinear } from "d3";
+import { select, scaleBand, axisBottom, scaleLinear, zoom } from "d3";
 //import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
@@ -79,6 +79,19 @@ export const TimelineChart = (props) => {
             .range([height,0])
             .padding(0.2)
 
+        //set up zoom and pan
+        console.log(zoom());
+        const handleZoom = (event) => {
+            svg.select(".timelineGroup")
+                .attr("transform", event.transform);
+        };
+        const zimzoom = zoom()
+            .on("zoom", handleZoom);
+        const initZoom = () => {
+            svg
+                .call(zimzoom);
+        }
+
         //add x axis to svg
         svg.select(".xAxis")
             .attr("transform", `translate(0,${height})`)
@@ -120,6 +133,7 @@ export const TimelineChart = (props) => {
             .exit()
             .remove()
 
+        initZoom();
         console.log("selection - ", selection)
     }
 
