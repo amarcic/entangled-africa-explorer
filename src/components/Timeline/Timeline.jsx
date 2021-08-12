@@ -51,18 +51,17 @@ export const Timeline = (props) => {
 
 
     return (
-        <Card className={classes.card}>
-            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
+        <>
+            <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <span><h3 className={classes.h3}>{t('Temporal distribution')}</h3>
-                    <button className="sortButton">sort</button></span>
+                    <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
                 </Grid>
             </Grid>
-            <Grid id="timelineContainer" className={classes.gridContent} item container direction="column" spacing={2}>
+            <Grid id="timelineContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
                     <TimelineChart filteredTimelineData={filteredTimelineData} dimensions={dimensions} />
                 </Grid>
             </Grid>
-        </Card>
+        </>
     )
 };
