@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
         //alignItems: "center"
     },
     dashboardTileContent: {
-        height: "85%",
+        height: "calc(85% - 6vh - 6px)",
         overflow: "scroll"
     },
     cardOfTileWithShowNext: {
