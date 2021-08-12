@@ -1,0 +1,22 @@
+/*TODO: fit to whatever our colorscheme will be, could be different colors or gradient for small/medium/large clusters*/
+.marker-cluster-small {
+    background-color: #49afa5 !important;
+}
+.marker-cluster-small div {
+    background-color: #1c9489 !important;
+    color: #fff !important;
+}
+.marker-cluster-medium {
+    background-color: #49afa5 !important;
+}
+.marker-cluster-medium div {
+    background-color: #1c9489 !important;
+    color: #fff !important;
+}
+.marker-cluster-large {
+    background-color: #49afa5 !important;
+}
+.marker-cluster-large div {
+    background-color: #1c9489 !important;
+    color: #fff !important;
+}

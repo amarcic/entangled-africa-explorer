@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    CollapsedFilters, DataSources, Filters, Histogram, ImageContents, OurMap, Timeline, OurTimeline, ResultsTable, ShowNext
+    CollapsedFilters, DashboardTile, DataSources, Filters, Histogram, ImageContents, Layout, OurMap, Timeline, OurTimeline, ResultsTable, ShowNext
 } from "..";
-import { Grid, LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@material-ui/core";
 // Queries
 import {
     byRegion as GET_SITES_BY_REGION, searchArchaeoSites as GET_ARCHAEOLOGICAL_SITES,
@@ -41,7 +41,8 @@ const initialInput = {
     timelineSort: "period",
     highlightedTimelineObject: undefined,
     areaA: 1,
-    areaB: 0
+    areaB: 0,
+    bigTileArea: ""
 };
 
 
@@ -176,22 +177,6 @@ export const AppContent = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
-    const extendMapBounds = () => {
-        let markers;
-        if(mapDataContext.entity) markers = mapDataContext.entity;
-        else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
-        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
-        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
-        const newMapBounds = latLngBounds();
-        markers.map( (item) => {
-            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
-            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
-                nestedItem &&
-                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
-        });
-        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
-    }
-
 
     useEffect( () => {
         if(dataContext && input.mode === "objects" && input.showRelatedObjects) {
@@ -266,50 +251,46 @@ export const AppContent = () => {
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
+    const getMapData = () => {
+        let mapData;
 
-    return (
-        <Grid container spacing={2} className={classes.gridBody}>
-            {/*GRID: Filters*/}
-            <Grid className={classes.gridFullHeightItem} item container direction="row" xs={2}>
-                {input.mapControlsExpanded
-                    ? <Filters
-                        chronOntologyTerms={chronOntologyTerms}
-                        reducer={[input, dispatch]}
-                        input={input}
-                        regions={regions}
-                    />
-                    : (/*summary of active filters when control panel is closed*/
-                        <CollapsedFilters
-                            reducer={[input, dispatch]}
-                        />
-                    )
-                }
-            </Grid>
+        if(renderingConditionObjects) mapData = mapDataObjects?.entitiesMultiFilter;
+        else if(renderingConditionRelatedObjects) mapData = {original: mapDataContext?.entity?.spatial, related: mapDataContext?.entity?.related};
+        else if(renderingConditionSites) mapData = mapDataArchaeoSites?.archaeologicalSites;
+        else if(renderingConditionSitesByRegion) mapData = mapDataSitesByRegion?.sitesByRegion;
 
-            {/*GRID: Map*/}
-            {<Grid className={classes.gridFullHeightItem} item xs={4} container>
-                <OurMap
-                    extendMapBounds={extendMapBounds}
-                    handleRelatedObjects={handleRelatedObjects}
-                    mapDataObjects={mapDataObjects}
-                    mapDataContext={mapDataContext}
-                    mapDataArchaeoSites={mapDataArchaeoSites}
-                    mapDataSitesByRegion={mapDataSitesByRegion}
-                    reducer={[input, dispatch]}
-                    renderingConditionObjects={renderingConditionObjects}
-                    renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                    renderingConditionSites={renderingConditionSites}
-                    renderingConditionSitesByRegion={renderingConditionSitesByRegion}
-                />
-            </Grid>}
+        return mapData;
+    }
 
-            {/*GRID: Container for results list and timeline*/}
-            {<Grid className={classes.gridFullHeightItem} item xs={6} container direction="row" spacing={2}>
+    const getMapDataType = () => {
+        let type = null;
+        let handler = false;
 
-                {/*GRID: Results list, image contents, data sources*/}
-                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row">
-                    {input.areaA===0
-                    && <ResultsTable
+        if(renderingConditionObjects) handler = true;
+        else if(renderingConditionRelatedObjects) {
+            type = "related";
+            handler = true;
+        }
+
+        return {type: type, handler: handler};
+    }
+
+
+    const setWidth = () => window.innerWidth
+    const setOneTwelfthWidth = () => setWidth() / 12
+
+    window.addEventListener('resize', setOneTwelfthWidth)
+
+
+    const renderAreaA = () => {
+        const area = "areaA";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    input[area]===0 && <ResultsTable
                         handleRelatedObjects={handleRelatedObjects}
                         mapDataObjects={mapDataObjects}
                         mapDataContext={mapDataContext}
@@ -321,44 +302,131 @@ export const AppContent = () => {
                         renderingConditionSites={renderingConditionSites}
                         renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                         openPopup={openPopup}
-                    />}
-                    {input.areaA===1
-                    && <ImageContents
+                    />
+                    || input[area]===1 && <ImageContents
                         contents={dataObjects
                         && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
                             dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
-                    />}
-                    {input.areaA===2
-                    && <DataSources/>}
+                    />
+                    || input[area]===2 && <DataSources/>
+                }
+                showNext={
                     <ShowNext
-                        area={"areaA"}
+                        area={area}
                         labels={["Results table", "Image contents", "Data sources"]}
                         reducer={[input, dispatch]}
                     />
-                </Grid>}
+                }
+            />
+        )
+    }
 
-                {/*GRID: Timeline, histogram*/}
-                {<Grid className={classes.gridHalfHeightItem} item xs={12} container direction="row" alignItems="stretch">
-                    {input.areaB===0 && <Timeline
+    const renderAreaB = () => {
+        const area = "areaB";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    input[area]===0 && <Timeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
-                    />}
-                    {input.areaB===1 && <Histogram
+                    />
+                    || input[area]===1 && <Histogram
                         timelineData={dataObjects?.entitiesMultiFilter.map(timelineMapper)}
-                    />}
+                    />
+                }
+                showNext={
                     <ShowNext
-                        area={"areaB"}
+                        area={area}
                         labels={["Timeline", "Histogram"]}
                         reducer={[input, dispatch]}
                     />
-                </Grid>}
-            </Grid>}
+                }
+            />
+        )
+    }
 
-            {/*GRID: Loading indicator*/}
-            <Grid item xs={12}>
-                {(loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion) &&
-                <LinearProgress/>}
-            </Grid>
-        </Grid>
-    );
-}
+    const renderAreaC = () => {
+        const area = "areaC";
+
+        return(
+            <DashboardTile
+                reducer={[input, dispatch]}
+                area={area}
+                content={
+                    <OurMap
+                        handleRelatedObjects={handleRelatedObjects}
+                        data={getMapData()}
+                        dataType={getMapDataType()}
+                        reducer={[input, dispatch]}
+                    />
+                }
+            />
+        )
+    }
+
+    return (
+        /* Layout schema:
+            F = filters, M = map, A = area A, B = area B; two rows = 100% height, four columns = 100 % width
+
+            Size md/lg:
+            default:      |    big M:        |    big A:        |    big B:        |    with expanded filters: (?)
+            ------------------------------------------------------------------------------------------------------
+            F             |    F             |    F             |    F             |    F  F  F  F
+            M  M  A  A    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |    ...
+            M  M  B  B    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |
+                          |    A  A  B  B    |    M  M  B  B    |    M  M  A  A    |
+                          |                  |    M  M          |    M  M          |
+            Size xs:
+            default: (?)  |   with expanded filters: (?)
+            --------------------------------------------
+            F  .  .  .    |    F  F  F  F
+            M  M  M  M    |    F  F  F  F
+            M  M  M  M    |    M  M  M  M
+            A  A  A  A    |    M  M  M  M
+            A  A  A  A    |    A  A  A  A
+            B  B  B  B    |    A  A  A  A
+            B  B  B  B    |    B  B  B  B
+                          |    B  B  B  B
+        */
+
+        <Layout
+            menu={input.mapControlsExpanded
+                ? <Filters
+                    chronOntologyTerms={chronOntologyTerms}
+                    reducer={[input, dispatch]}
+                    input={input}
+                    regions={regions}
+                />
+                : (
+                    <CollapsedFilters
+                        reducer={[input, dispatch]}
+                    />
+                )
+            }
+            bigTile={
+                (input.bigTileArea === "areaA" && renderAreaA())
+                || (input.bigTileArea === "areaB" && renderAreaB())
+                || (input.bigTileArea === "areaC" && renderAreaC())
+            }
+            leftOrTopTile={
+                input.bigTileArea !== "areaC" && renderAreaC()
+            }
+            topRightOrMiddleTile={
+                input.bigTileArea !== "areaA"
+                    ? renderAreaA()
+                    : renderAreaB()
+            }
+            bottomRightOrBottomTile={
+                input.bigTileArea !== "areaA" && input.bigTileArea !== "areaB" && renderAreaB()
+            }
+            loadingIndicator={
+                (loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion)
+                && <LinearProgress/>
+            }
+            rightTileIsMovedToBottomInstead={input.bigTileArea === "areaC" ? "true" : false}
+        />
+    )
+};

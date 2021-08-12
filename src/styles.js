@@ -1,32 +1,55 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-    card: {
-        padding: theme.spacing(2),
-        height: "100%",
-        width: "100%"
+    dashboardHeader: {
+        justifyContent:"space-between",
+        alignItems:"stretch",
+        height: "12vh",
+        zIndex: 100
     },
-    gridBody: {
-        height: "85vh",
-        justifyContent: "space-between"
+    dashboardBody: {
+        height: "calc(100vh - 12vh - 12px)"
     },
-    gridContent: {
-        maxHeight: "85%",
+    dashboardFooter: {
+        height: "12px"
+    },
+
+    dashboardTileHeader: {
+        //minHeight: "5%",
+        //justifyContent: "flex-start",
+        //alignItems: "center"
+    },
+    dashboardTileContent: {
+        height: "85%",
         overflow: "scroll"
     },
-    gridFullHeightItem: {
-        height: "100%"
+    cardOfTileWithShowNext: {
+        padding: theme.spacing(2),
+        height: "calc(100% - 35px)", //35px is the height of the ShowNext bar
+        width: "100%"
     },
-    gridHalfHeightItem: {
-        height: "45%",
-        justifyContent: "space-between",
-        alignItems: "center"
+    cardOfTileWithoutShowNext: {
+        padding: theme.spacing(2),
+        height: "100% ",
+        width: "100%"
     },
-    gridHead: {
-        minHeight: "15%",
-        justifyContent: "flex-start",
-        alignItems: "center"
+
+    fullHeightTile: {
+        height: "calc(100vh - 12vh - 12px)",
+        //padding: theme.spacing(2)
     },
+    halfHeightTile: {
+        height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
+        // this class will take the same height as fullHeightTile if the screen is size "xs":
+        [theme.breakpoints.down("xs")]: {
+            height: "calc(100vh - 12vh - 12px)",
+        }
+    },
+    "dashboardBody || fullHeightTile || halfHeightTile": {
+        //justifyContent: "space-between",
+        //alignItems: "center"
+    },
+
     h1: {
         fontSize: "1.25rem"
     },
@@ -34,7 +57,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: "1rem"
     },
     h3: {
-        fontSize: "0.95rem",
+        fontSize: "0.8rem",
         textTransform: "uppercase"
     },
     paper: {

@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { useStyles } from "../../styles";
 import { ArrowLeft, ArrowRight } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -16,7 +15,7 @@ const localStyles = makeStyles(theme => ({
         borderBottomLeftRadius: "30px"
     },
     showNextGrid: {
-        maxHeight: "5%",
+        height: "35px",
         justifyContent:"space-between",
         alignItems:"center",
     }
@@ -30,7 +29,6 @@ export const ShowNext = (props) => {
 
     const { t, i18n } = useTranslation();
 
-    const classes = useStyles();
     const localClasses = localStyles();
 
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import { Card, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
@@ -110,13 +110,13 @@ export const Histogram = (props) => {
     }, [binnedData])
 
     return (
-        <Card className={classes.card}>
-            <Grid className={classes.gridHead} item container direction="row" spacing={2}>
+        <>
+            <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
                 </Grid>
             </Grid>
-            <Grid id="histogramContainer" className={classes.gridContent} item container direction="column" spacing={2}>
+            <Grid id="histogramContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
                     <svg ref={svgRef}>
                         <g className="bars">
@@ -126,6 +126,6 @@ export const Histogram = (props) => {
                     </svg>
                 </Grid>
             </Grid>
-        </Card>
+        </>
     )
 };

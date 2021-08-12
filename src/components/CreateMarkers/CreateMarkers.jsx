@@ -6,7 +6,8 @@ export const CreateMarkers = (props) => {
     const { data, selectedMarker, handleRelatedObjects, showRelatedObjects } = props;
 
 
-    return data && data.map((item, index) => {
+    if(!data) return null;
+    else return data && data.map((item, index) => {
             if (item && item.coordinates) {
                 return (
                     item &&

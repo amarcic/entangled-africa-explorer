@@ -2,28 +2,17 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ClickAwayListener, Grid, Grow, MenuItem, MenuList, Paper, Popper } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
-import { makeStyles } from '@material-ui/core/styles';
 import { useStyles } from '../../styles';
-
-// additional styling for this component only
-const localStyles = makeStyles(theme => ({
-    pageHeader: {
-        justifyContent:"space-between",
-        alignItems:"stretch",
-        height: "12vh"
-    }
-}));
 
 
 export const PageHeader = () => {
     const { t, i18n } = useTranslation();
 
     const changeLanguage = lng => {
-        i18n.changeLanguage(lng);
+        i18n.changeLanguage(lng).then();
     };
 
     const classes = useStyles();
-    const localClasses = localStyles();
 
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
@@ -64,7 +53,7 @@ export const PageHeader = () => {
 
 
     return(
-        <Grid container direction="row" className={localClasses.pageHeader}>
+        <Grid container direction="row" className={classes.dashboardHeader}>
             <Grid item xs={10}>
                 <h1 className={classes.h1}>Entangled Africa Data Explorer</h1>
                 <h2 className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>

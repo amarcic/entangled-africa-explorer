@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Button, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { ResultsTableRow } from '..'
 import { useTranslation } from "react-i18next";
 import { useStyles } from '../../styles';
@@ -17,10 +17,10 @@ export const ResultsTable = (props) => {
     const classes = useStyles();
 
     return (
-        <Card className={classes.card}>
-            {<Grid className={classes.gridHead} item xs={12} container direction="row" spacing={2}>
+        <>
+            {<Grid className={classes.dashboardTileHeader} item xs={12} container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Search Results')}</h3>
+                    <h3 className={classes.h3}>{t('Search results')}</h3>
                 </Grid>
                 <Grid item>
                     {input.showRelatedObjects && <Button
@@ -39,7 +39,7 @@ export const ResultsTable = (props) => {
                     {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode !== "region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
                 </Grid>
             </Grid>}
-            {<Grid className={classes.gridContent} item xs={12} container>
+            {<Grid className={classes.dashboardTileContent} item xs={12} container>
                 {<Grid item xs={12}>
                     {// Conditions for rendering a table
                         (renderingConditionObjects || renderingConditionRelatedObjects || renderingConditionSites || renderingConditionSitesByRegion)
@@ -180,6 +180,6 @@ export const ResultsTable = (props) => {
                         </Table>}
                 </Grid>}
             </Grid>}
-        </Card>
+        </>
     )
 }

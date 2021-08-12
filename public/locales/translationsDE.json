@@ -3,5 +3,15 @@
   "current language": "Deutsch",
   "EntangledAfrica1": "Entangled Africa",
   "EntangledAfrica2": "Innerafrikanische Beziehungen zwischen Regenwald und Mittelmeer, ca. 6.000 - 500 Jahre vor heute",
-  "Map": "Karte"
+
+  "Filters": "Filter",
+  "Map": "Karte",
+  "Search results": "Suchergebnisse",
+  "Image contents": "Bildinhalte",
+  "Data sources": "Herkunft der Daten",
+  "Timeline": "Zeitstrahl",
+  "Temporal distribution": "Zeitliche Verteilung",
+
+  "Turn on/off marker clustering": "Gruppieren von Markern",
+  "Resize map to show all markers": "Kartenausschnitt für aktuelle Marker anpassen"
 }
