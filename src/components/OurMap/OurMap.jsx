@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { Circle, Map, Rectangle, TileLayer } from 'react-leaflet';
+import { Circle, GeoJSON, Map, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { CreateMarkers } from '..'
+import { CreateMarkers, ReturnPopup } from '..'
 import { useTranslation } from "react-i18next";
 import { FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
 import { useStyles } from '../../styles';
 import { makeStyles } from "@material-ui/core/styles";
+import { latLngBounds } from "leaflet";
 
 
 const osmTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -15,17 +16,13 @@ const osmAttr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenSt
 export const OurMap = (props) => {
     const [input, dispatch] = props.reducer;
     const {
-        extendMapBounds,
         handleRelatedObjects,
-        mapDataObjects,
-        mapDataContext,
-        mapDataArchaeoSites,
-        mapDataSitesByRegion,
-        renderingConditionObjects,
-        renderingConditionRelatedObjects,
-        renderingConditionSites,
-        renderingConditionSitesByRegion
+        data,
+        dataType
     } = props;
+
+    let markers = data;
+    if(dataType.type === "related") markers = data.original;
 
     const { t, i18n } = useTranslation();
 
@@ -41,9 +38,30 @@ export const OurMap = (props) => {
 
     const mapRef = useRef(null);
 
+
+    const resetMapBounds = () => {
+        if(markers.length === 0) return;
+
+        const newMapBounds = latLngBounds();
+        markers.map( (item) => {
+            if (item?.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
+            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
+                nestedItem && nestedItem.coordinates &&
+                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
+        });
+
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
+    }
+
     useEffect(() => {
-        mapRef.current.leafletElement.invalidateSize()
-    },[input.areaCIsBig])
+        mapRef.current.leafletElement.fitBounds(input.mapBounds);
+    },[input.mapBounds])
+
+    useEffect(() => {
+        //this is needed to let the map adjust to its changed container size by loading more tiles and panning
+        mapRef.current.leafletElement.invalidateSize();
+    },[input.bigTileArea])
+
 
     return (
         <>
@@ -52,7 +70,7 @@ export const OurMap = (props) => {
                     <h3 className={classes.h3}>{t('Map')}</h3>
                 </Grid>
                 <Grid item xs={5}>
-                    <FormLabel>{t('Turn on/off marker clustering')}
+                    <FormLabel>{t('Cluster nearby markers')}
                         <Tooltip title="Switch between showing individual markers or clustered circles." arrow placement="right-start">
                             <Switch
                                 name="drawBBox"
@@ -65,10 +83,10 @@ export const OurMap = (props) => {
                 </Grid>
                 <Grid item xs={5}>
                     <FormLabel
-                        onClick={() => extendMapBounds()}
+                        onClick={() => resetMapBounds()}
                         style={{cursor: "pointer"}}
                     >
-                        {`${t('Resize map to show all markers')}\t`}
+                        {`${t('Resize map on markers')}\t`}
                         <Tooltip title="Automatically adjust the size of the map so all markers are visible." arrow placement="right">
                             <MapIcon/>
                         </Tooltip>
@@ -82,7 +100,7 @@ export const OurMap = (props) => {
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
                     zoom={input.zoomLevel}
-                    minZoom={2}
+                    minZoom={1}
                     zoomSnap={0.5}
                     onClick={(event) => {
                         if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
@@ -116,6 +134,30 @@ export const OurMap = (props) => {
                         fillOpacity={0.05}
                     />}
 
+                    {/* Polygons */}
+                    {data?.map((entity, index) => {
+                            //for some queries the polygon data is located inside of 'spatial'
+                            const polygonData = entity?.spatial ? entity?.spatial[0]?.polygon : entity?.polygon;
+                            return (
+                                //because Leaflet's Polygon wants each of the coordinate pairs flipped compared to how they
+                                // are in iDAI.gazetteer, it seems easier to just give Leaflet GeoJSON objects
+                                polygonData && <GeoJSON
+                                    key={index}
+                                    data={{
+                                        "type": "MultiPolygon",
+                                        "coordinates": polygonData
+                                    }}
+                                >
+                                    {/*TODO: this is just to test it works, in actuality ReturnPopup should get more props */}
+                                    <ReturnPopup
+                                        item={entity}
+                                        openPopup={input.selectedMarker === index}
+                                    />
+                                </GeoJSON>
+                            )
+                        }
+                    )}
+
                     {/* Markers */}
                     {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
                     {input.clusterMarkers
@@ -123,76 +165,37 @@ export const OurMap = (props) => {
                             <MarkerClusterGroup
                                 disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
                             >
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.spatial
-                                && <CreateMarkers
-                                    data={mapDataContext.entity.spatial}
+                                {<CreateMarkers
+                                    data={markers}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                 />}
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.related
+                                {dataType.type === "related"
                                 && <CreateMarkers
-                                    data={mapDataContext.entity.related}
+                                    data={data.related}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                    //opacity={0.5}
-                                />}
-                                {renderingConditionObjects
-                                && <CreateMarkers
-                                    data={mapDataObjects.entitiesMultiFilter}
-                                    selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                />}
-                                {renderingConditionSitesByRegion
-                                && <CreateMarkers
-                                    data={mapDataSitesByRegion.sitesByRegion}
-                                    selectedMarker={input.selectedMarker}
-                                />}
-                                {renderingConditionSites
-                                && <CreateMarkers
-                                    data={mapDataArchaeoSites.archaeologicalSites}
-                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
+                                    opacity={0.5}
                                 />}
                             </MarkerClusterGroup>
                         )
-                        : (<div>
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.spatial
-                                && <CreateMarkers
-                                    data={mapDataContext.entity.spatial}
+                        : (
+                            <div>
+                                {<CreateMarkers
+                                    data={markers}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                 />}
-                                {renderingConditionRelatedObjects
-                                && mapDataContext.entity.related
+                                {dataType.type === "related"
                                 && <CreateMarkers
-                                    data={mapDataContext.entity.related}
+                                    data={data.related}
                                     selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                    //opacity={0.5}
-                                />}
-                                {renderingConditionObjects
-                                && <CreateMarkers
-                                    data={mapDataObjects.entitiesMultiFilter}
-                                    selectedMarker={input.selectedMarker}
-                                    handleRelatedObjects={handleRelatedObjects}
-                                    showRelatedObjects={input.showRelatedObjects}
-                                />}
-                                {renderingConditionSitesByRegion
-                                && <CreateMarkers
-                                    data={mapDataSitesByRegion.sitesByRegion}
-                                    selectedMarker={input.selectedMarker}
-                                />}
-                                {renderingConditionSites
-                                && <CreateMarkers
-                                    data={mapDataArchaeoSites.archaeologicalSites}
-                                    selectedMarker={input.selectedMarker}
+                                    handleRelatedObjects={dataType.handler === true && handleRelatedObjects}
+                                    showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
+                                    opacity={0.5}
                                 />}
                             </div>
                         )

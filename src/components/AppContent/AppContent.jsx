@@ -178,24 +178,6 @@ export const AppContent = () => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: index}});
     }
 
-    //TODO: not possible to change map view twice in a row if markers have not changed
-    const extendMapBounds = () => {
-        let markers;
-        if(mapDataContext.entity) markers = mapDataContext.entity;
-        else if(mapDataObjects.entitiesMultiFilter) markers = mapDataObjects.entitiesMultiFilter;
-        else if(mapDataSitesByRegion.sitesByRegion) markers = mapDataSitesByRegion.sitesByRegion;
-        else if(mapDataArchaeoSites.archaeologicalSites) markers = mapDataArchaeoSites.archaeologicalSites;
-        if(!markers) return;
-        const newMapBounds = latLngBounds();
-        markers.map( (item) => {
-            if (item && item.coordinates) return newMapBounds.extend(item.coordinates.split(", ").reverse());
-            else if (item && item.spatial) return item.spatial.map( (nestedItem) =>
-                nestedItem &&
-                newMapBounds.extend(nestedItem.coordinates.split(", ").reverse()));
-        });
-        dispatch({type: "UPDATE_INPUT", payload: {field: "mapBounds", value: newMapBounds}});
-    }
-
 
     useEffect( () => {
         if(dataContext && input.mode === "objects" && input.showRelatedObjects) {
@@ -269,6 +251,31 @@ export const AppContent = () => {
         && (debouncedSearchStr || input.regionId)
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
+
+    const getMapData = () => {
+        let mapData;
+
+        if(renderingConditionObjects) mapData = mapDataObjects?.entitiesMultiFilter;
+        else if(renderingConditionRelatedObjects) mapData = {original: mapDataContext?.entity?.spatial, related: mapDataContext?.entity?.related};
+        else if(renderingConditionSites) mapData = mapDataArchaeoSites?.archaeologicalSites;
+        else if(renderingConditionSitesByRegion) mapData = mapDataSitesByRegion?.sitesByRegion;
+
+        return mapData;
+    }
+
+    const getMapDataType = () => {
+        let type = null;
+        let handler = false;
+
+        if(renderingConditionObjects) handler = true;
+        else if(renderingConditionRelatedObjects) {
+            type = "related";
+            handler = true;
+        }
+
+        return {type: type, handler: handler};
+    }
+
 
     const setWidth = () => window.innerWidth
     const setOneTwelfthWidth = () => setWidth() / 12
@@ -349,17 +356,10 @@ export const AppContent = () => {
                 area={area}
                 content={
                     <OurMap
-                        extendMapBounds={extendMapBounds}
                         handleRelatedObjects={handleRelatedObjects}
-                        mapDataObjects={mapDataObjects}
-                        mapDataContext={mapDataContext}
-                        mapDataArchaeoSites={mapDataArchaeoSites}
-                        mapDataSitesByRegion={mapDataSitesByRegion}
+                        data={getMapData()}
+                        dataType={getMapDataType()}
                         reducer={[input, dispatch]}
-                        renderingConditionObjects={renderingConditionObjects}
-                        renderingConditionRelatedObjects={renderingConditionRelatedObjects}
-                        renderingConditionSites={renderingConditionSites}
-                        renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                     />
                 }
             />
