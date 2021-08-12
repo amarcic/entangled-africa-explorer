@@ -80,7 +80,6 @@ export const TimelineChart = (props) => {
             .padding(0.2)
 
         //set up zoom and pan
-        console.log(zoom());
         const handleZoom = (event) => {
             svg.select(".timelineGroup")
                 .attr("transform", event.transform);
@@ -135,7 +134,9 @@ export const TimelineChart = (props) => {
             .exit()
             .remove()
 
+        //attach zoom and pan
         initZoom();
+
         console.log("selection - ", selection)
     }
 
