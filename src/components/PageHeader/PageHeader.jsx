@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    AppBar, Button, ClickAwayListener, Grid, Grow, MenuItem, MenuList, Paper, Popper, Toolbar, Typography
+    AppBar, Button, ClickAwayListener, Drawer, Grid, Grow, MenuItem, MenuList, Paper, Popper, Toolbar, Typography
 } from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import { useStyles } from '../../styles';
 import { CollapsedFilters } from "../CollapsedFilters/CollapsedFilters";
+import { Filters } from "../Filters/Filters";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -62,6 +64,16 @@ export const PageHeader = (props) => {
     }, [open]);
 
 
+    //Filters drawer: state, toggling
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const toggleDrawer = () => (event) => {
+        if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setDrawerOpen(!drawerOpen);
+    };
+
     return(
         <>
             <AppBar
@@ -74,7 +86,7 @@ export const PageHeader = (props) => {
                         <Grid item xs={10}>
                             <Typography variant="h1" className={classes.h1}>Entangled Africa Data Explorer</Typography>
                             <Typography variant="h2" className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</Typography>
-                            <Button onClick={}>
+                            <Button onClick={toggleDrawer()}>
                                 <SearchIcon/> Filters <ExpandMoreIcon/>
                             </Button>
                             <CollapsedFilters
@@ -114,6 +126,31 @@ export const PageHeader = (props) => {
                     </Grid>
                 </Toolbar>
             </AppBar>
+
+            <Drawer
+                classes={{
+                    paper: classes.drawerPaper
+                }}
+                anchor="top"
+                open={drawerOpen}
+                onClose={toggleDrawer()}
+                //onClose={toggleDrawer(false)}
+                //onOpen={setDrawerOpen(true)}
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                    onClick={toggleDrawer()}
+                >
+                    <SearchIcon/> Close filters <ExpandLessIcon/>
+                </Button>
+                <Filters
+                    chronOntologyTerms={chronOntologyTerms}
+                    reducer={[input, dispatch]}
+                    regions={regions}
+                />
+            </Drawer>
         </>
     );
 };
