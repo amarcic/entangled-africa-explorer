@@ -47,6 +47,8 @@ export const TimelineChart = (props) => {
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
+        console.log("dims: ",props.dimensions.height)
+        if(props.filteredTimelineData&&props.dimensions.width)
         drawTimeline(timelineData)
     }, [props.filteredTimelineData] );
 
