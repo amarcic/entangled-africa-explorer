@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { AppContent, PageHeader } from './components/';
+import { AppContent } from './components/';
 import { SettingsContext } from './Contexts';
 import { INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
 //Apollo GraphQL related
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -34,12 +33,9 @@ const App = () => {
     return(
         <SettingsContext.Provider value={settings}>
             <CssBaseline/>
-            <Container maxWidth={"xl"}>
-                <PageHeader/>
-                <ApolloProvider client={client}>
-                    <AppContent/>
-                </ApolloProvider>
-            </Container>
+            <ApolloProvider client={client}>
+                <AppContent/>
+            </ApolloProvider>
         </SettingsContext.Provider>
     );
 };

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    CollapsedFilters, DashboardTile, DataSources, Filters, Histogram, ImageContents, Layout, OurMap, Timeline, OurTimeline, ResultsTable, ShowNext
+    DashboardTile, DataSources, Histogram, ImageContents, Layout, OurMap, PageHeader, ResultsTable, ShowNext, Timeline
 } from "..";
 import { LinearProgress } from "@material-ui/core";
 // Queries
@@ -13,6 +13,7 @@ import {
 } from "./queries.graphql";
 import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
+import Container from "@material-ui/core/Container";
 
 const initialInput = {
     mapBounds: latLngBounds([28.906303, -11.146792], [-3.355435, 47.564145]),
@@ -223,7 +224,7 @@ export const AppContent = () => {
         input.showSearchResults
         // at least one relevant input not empty
         && (debouncedSearchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
-        || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
+            || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
 
@@ -276,10 +277,10 @@ export const AppContent = () => {
     }
 
 
-    const setWidth = () => window.innerWidth
-    const setOneTwelfthWidth = () => setWidth() / 12
+    //const setWidth = () => window.innerWidth
+    //const setOneTwelfthWidth = () => setWidth() / 12
 
-    window.addEventListener('resize', setOneTwelfthWidth)
+    //window.addEventListener('resize', setOneTwelfthWidth)
 
 
     const renderAreaA = () => {
@@ -391,29 +392,37 @@ export const AppContent = () => {
             B  B  B  B    |    B  B  B  B
                           |    B  B  B  B
         */
-
-        <Layout
-            bigTile={
-                (input.bigTileArea === "areaA" && renderAreaA())
-                || (input.bigTileArea === "areaB" && renderAreaB())
-                || (input.bigTileArea === "areaC" && renderAreaC())
-            }
-            leftOrTopTile={
-                input.bigTileArea !== "areaC" && renderAreaC()
-            }
-            topRightOrMiddleTile={
-                input.bigTileArea !== "areaA"
-                    ? renderAreaA()
-                    : renderAreaB()
-            }
-            bottomRightOrBottomTile={
-                input.bigTileArea !== "areaA" && input.bigTileArea !== "areaB" && renderAreaB()
-            }
-            loadingIndicator={
-                (loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion)
-                && <LinearProgress/>
-            }
-            rightTileIsMovedToBottomInstead={input.bigTileArea === "areaC" ? "true" : false}
-        />
+        <>
+            <PageHeader
+                chronOntologyTerms={chronOntologyTerms}
+                reducer={[input, dispatch]}
+                regions={regions}
+            />
+            <Container maxWidth={"xl"}>
+                <Layout
+                    bigTile={
+                        (input.bigTileArea === "areaA" && renderAreaA())
+                        || (input.bigTileArea === "areaB" && renderAreaB())
+                        || (input.bigTileArea === "areaC" && renderAreaC())
+                    }
+                    leftOrTopTile={
+                        input.bigTileArea !== "areaC" && renderAreaC()
+                    }
+                    topRightOrMiddleTile={
+                        input.bigTileArea !== "areaA"
+                            ? renderAreaA()
+                            : renderAreaB()
+                    }
+                    bottomRightOrBottomTile={
+                        input.bigTileArea !== "areaA" && input.bigTileArea !== "areaB" && renderAreaB()
+                    }
+                    loadingIndicator={
+                        (loadingContext || loadingObjects || loadingArchaeoSites || loadingSitesByRegion)
+                        && <LinearProgress/>
+                    }
+                    rightTileIsMovedToBottomInstead={input.bigTileArea === "areaC" ? "true" : false}
+                />
+            </Container>
+        </>
     )
 };
