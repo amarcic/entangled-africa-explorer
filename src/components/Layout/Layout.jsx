@@ -5,7 +5,7 @@ import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export const Layout = (props) => {
-    const {menu, bigTile, leftOrTopTile, topRightOrMiddleTile, bottomRightOrBottomTile, loadingIndicator, rightTileIsMovedToBottomInstead} = props;
+    const {bigTile, leftOrTopTile, topRightOrMiddleTile, bottomRightOrBottomTile, loadingIndicator, rightTileIsMovedToBottomInstead} = props;
 
     const theme = useTheme();
     const classes = useStyles();
@@ -45,21 +45,6 @@ export const Layout = (props) => {
             direction="row"
             spacing={2}
         >
-
-            <Grid
-                item
-                xs={12}
-                md={12}
-                lg={12}
-
-                container
-                direction="column"
-            >
-                {
-                    // collapsed or expanded filters
-                    menu
-                }
-            </Grid>
 
             {bigTile && <Grid
                 className={classes.fullHeightTile}

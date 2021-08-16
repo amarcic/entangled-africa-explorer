@@ -393,19 +393,6 @@ export const AppContent = () => {
         */
 
         <Layout
-            menu={input.mapControlsExpanded
-                ? <Filters
-                    chronOntologyTerms={chronOntologyTerms}
-                    reducer={[input, dispatch]}
-                    input={input}
-                    regions={regions}
-                />
-                : (
-                    <CollapsedFilters
-                        reducer={[input, dispatch]}
-                    />
-                )
-            }
             bigTile={
                 (input.bigTileArea === "areaA" && renderAreaA())
                 || (input.bigTileArea === "areaB" && renderAreaB())
