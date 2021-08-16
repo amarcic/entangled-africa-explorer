@@ -1,14 +1,22 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
+    appBar: {
+        //height: "80px",
+        height: "auto",
+        zIndex: 1200// theme.zIndex.drawer + 1,
+    },
+    drawerPaper: {
+        //marginTop: "80px"
+    },
     dashboardHeader: {
         justifyContent:"space-between",
         alignItems:"stretch",
-        height: "12vh",
+        //height: "12vh",
         zIndex: 100
     },
     dashboardBody: {
-        height: "calc(100vh - 12vh - 12px)"
+        height: "calc(100vh - 80px - 12px)"
     },
     dashboardFooter: {
         height: "12px"
@@ -33,7 +41,6 @@ const useStyles = makeStyles(theme => ({
         height: "100% ",
         width: "100%"
     },
-
     fullHeightTile: {
         height: "calc(100vh - 12vh - 12px)",
         //padding: theme.spacing(2)
