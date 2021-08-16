@@ -12,6 +12,8 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from '@apollo/react-hooks';
+import { theme } from "./styles";
+import { MuiThemeProvider } from "@material-ui/core";
 
 const App = () => {
 
@@ -34,7 +36,9 @@ const App = () => {
         <SettingsContext.Provider value={settings}>
             <CssBaseline/>
             <ApolloProvider client={client}>
-                <AppContent/>
+                <MuiThemeProvider theme={theme}>
+                    <AppContent/>
+                </MuiThemeProvider>
             </ApolloProvider>
         </SettingsContext.Provider>
     );

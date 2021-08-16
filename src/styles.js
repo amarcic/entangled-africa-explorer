@@ -1,4 +1,22 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { createTheme } from '@material-ui/core/styles';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#ffcccb',
+            main: '#ef9a9a',
+            dark: '#ba6b6c',
+            contrastText: '#fff',
+        },
+        secondary: {
+            light: '#ffffff',
+            main: '#fff3e0',
+            dark: '#ccc0ae',
+            contrastText: '#000',
+        },
+    },
+});
 
 const useStyles = makeStyles(theme => ({
     appBar: {
@@ -72,4 +90,5 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+export { theme };
 export { useStyles };
