@@ -1,12 +1,9 @@
 import React from 'react';
 import {
-    Button, Card, Checkbox, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, Radio, RadioGroup, Switch,
-    TextField, Tooltip
+    Checkbox, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, Radio, RadioGroup, Switch, TextField, Tooltip
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useStyles } from '../../styles';
 import { useTranslation } from "react-i18next";
 
@@ -32,18 +29,8 @@ export const Filters = (props) => {
 
 
     return (
-        <Card className={classes.card}>
-            <Grid className={classes.dashboardTileHeader} item>
-                <Button
-                    onClick={() => {
-                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "mapControlsExpanded"}})
-                    }}
-                >
-                    <h3 className={classes.h3}>{t('Filters')}</h3>
-                    {input.mapControlsExpanded ? <ExpandLessIcon/> : <ExpandMoreIcon/>}
-                </Button>
-            </Grid>
-            {<Grid className={classes.dashboardTileContent} item container direction="column" spacing={2}>
+        <>
+            {<Grid /*className={classes.dashboardTileContent}*/ item container direction="column" spacing={2}>
                 <Grid item container direction="row" spacing={2}>
                     {/*radio buttons for selecting mode*/
                         <Grid item>
@@ -269,6 +256,6 @@ export const Filters = (props) => {
                         </Grid>}
                 </Grid>
             </Grid>}
-        </Card>
-    )
+        </>
+    );
 };

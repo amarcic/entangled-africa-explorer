@@ -90,7 +90,7 @@ export const PageHeader = (props) => {
                                 <SearchIcon/> Filters <ExpandMoreIcon/>
                             </Button>
                             <CollapsedFilters
-                                reducer={[input, dispatch]}
+                                input={input}
                             />
                         </Grid>
                         <Grid item xs={1}>
