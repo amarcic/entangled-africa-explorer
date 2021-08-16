@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ClickAwayListener, Grid, Grow, MenuItem, MenuList, Paper, Popper } from '@material-ui/core';
+import {
+    AppBar, Button, ClickAwayListener, Grid, Grow, MenuItem, MenuList, Paper, Popper, Toolbar, Typography
+} from '@material-ui/core';
 import TranslateIcon from '@material-ui/icons/Translate';
 import { useStyles } from '../../styles';
+import { CollapsedFilters } from "../CollapsedFilters/CollapsedFilters";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from '@material-ui/icons/Search';
 
 
-export const PageHeader = () => {
+export const PageHeader = (props) => {
+
+    const [input, dispatch] = props.reducer;
+    const {chronOntologyTerms, regions} = props;
+
     const { t, i18n } = useTranslation();
 
     const changeLanguage = lng => {
@@ -14,8 +23,9 @@ export const PageHeader = () => {
 
     const classes = useStyles();
 
-    const [open, setOpen] = React.useState(false);
-    const anchorRef = React.useRef(null);
+    // Language menu: state, ref, handlers
+    const [open, setOpen] = useState(false);
+    const anchorRef = useRef(null);
 
     const handleToggle = () => {
         setOpen(prevOpen => !prevOpen);
@@ -41,9 +51,9 @@ export const PageHeader = () => {
         }
     }
 
-    // return focus to the button when we transitioned from !open -> open
-    const prevOpen = React.useRef(open);
-    React.useEffect(() => {
+    // Language menu: return focus to the button when we transitioned from !open -> open
+    const prevOpen = useRef(open);
+    useEffect(() => {
         if (prevOpen.current === true && open === false) {
             anchorRef.current.focus();
         }
@@ -53,41 +63,57 @@ export const PageHeader = () => {
 
 
     return(
-        <Grid container direction="row" className={classes.dashboardHeader}>
-            <Grid item xs={10}>
-                <h1 className={classes.h1}>Entangled Africa Data Explorer</h1>
-                <h2 className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</h2>
-            </Grid>
-            <Grid item xs={1}>
-                <Button
-                    ref={anchorRef}
-                    aria-controls={open ? 'menu-list-grow' : undefined}
-                    aria-haspopup="true"
-                    onClick={handleToggle}
+        <>
+            <AppBar
+                className={classes.appBar}
+                color="primary"
+                position="relative"
+            >
+                <Toolbar>
+                    <Grid container direction="row" className={classes.dashboardHeader}>
+                        <Grid item xs={10}>
+                            <Typography variant="h1" className={classes.h1}>Entangled Africa Data Explorer</Typography>
+                            <Typography variant="h2" className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</Typography>
+                            <Button onClick={}>
+                                <SearchIcon/> Filters <ExpandMoreIcon/>
+                            </Button>
+                            <CollapsedFilters
+                                reducer={[input, dispatch]}
+                            />
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Button
+                                ref={anchorRef}
+                                aria-controls={open ? 'menu-list-grow' : undefined}
+                                aria-haspopup="true"
+                                onClick={handleToggle}
 
-                >
-                    <TranslateIcon/> {t('current language')}
-                </Button>
-                <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal placement="bottom-end">
-                    {({ TransitionProps, placement }) => (
-                        <Grow
-                            {...TransitionProps}
-                            style={{ transformOrigin: placement === 'top' ? 'left top' : 'left bottom' }}
-                        >
-                            <Paper className={classes.paper}>
-                                <ClickAwayListener onClickAway={handleClose}>
-                                    <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                        <MenuItem onClick={() => handleLanguageChange('de')}>Deutsch</MenuItem>
-                                        <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
-                                        <MenuItem onClick={() => handleLanguageChange('fr')}>Français</MenuItem>
-                                        <MenuItem onClick={() => handleLanguageChange('ar')}>لعربية</MenuItem>
-                                    </MenuList>
-                                </ClickAwayListener>
-                            </Paper>
-                        </Grow>
-                    )}
-                </Popper>
-            </Grid>
-        </Grid>
+                            >
+                                <TranslateIcon/> {t('current language')}
+                            </Button>
+                            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal placement="bottom-end">
+                                {({ TransitionProps, placement }) => (
+                                    <Grow
+                                        {...TransitionProps}
+                                        style={{ transformOrigin: placement === 'top' ? 'left top' : 'left bottom' }}
+                                    >
+                                        <Paper className={classes.paper}>
+                                            <ClickAwayListener onClickAway={handleClose}>
+                                                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                                                    <MenuItem onClick={() => handleLanguageChange('de')}>Deutsch</MenuItem>
+                                                    <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
+                                                    <MenuItem onClick={() => handleLanguageChange('fr')}>Français</MenuItem>
+                                                    <MenuItem onClick={() => handleLanguageChange('ar')}>لعربية</MenuItem>
+                                                </MenuList>
+                                            </ClickAwayListener>
+                                        </Paper>
+                                    </Grow>
+                                )}
+                            </Popper>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+        </>
     );
 };
