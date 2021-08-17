@@ -24,7 +24,7 @@ export const TimelineChart = (props) => {
 
     //setting up the svg after first render
     useEffect(() => {
-        console.log("width", width)
+        //console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
@@ -69,11 +69,29 @@ export const TimelineChart = (props) => {
             .range([height,0])
             .padding(0.2)
 
+        //add x axis to svg
+        const xAxis = axisBottom(xScale);
+        const xAxisDraw = svg.select(".xAxis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
         //set up zoom and pan
-        console.log(zoom());
         const handleZoom = (event) => {
-            svg.select(".timelineGroup")
-                .attr("transform", event.transform);
+
+            const transform = event.transform;
+            //zoom and pan bars (geometric)
+            svg.select(".timelineGroup").selectAll(".bar")
+                .attr("transform", transform);
+
+            const xScaleNew = transform.rescaleX(xScale);
+            //const yScaleNew = transform.rescaleY(yScale);
+
+            xAxis.scale(xScaleNew);
+            xAxisDraw.call(xAxis);
+
+            svg.selectAll(".label")
+                .attr("x", value => xScaleNew(value.periodSpan?.[0]))
+                //.attr("y", value => yScaleNew(value.periodId));
         };
         const zimzoom = zoom()
             .scaleExtent([1,5])
@@ -83,11 +101,6 @@ export const TimelineChart = (props) => {
             svg
                 .call(zimzoom);
         }
-
-        //add x axis to svg
-        svg.select(".xAxis")
-            .attr("transform", `translate(0,${height})`)
-            .call(axisBottom(xScale))
 
         //add bars (without extension) for each period on enter and return a selection of all entering and updating nodes
         const selectionEnteringAndUpdating = selection.join(
