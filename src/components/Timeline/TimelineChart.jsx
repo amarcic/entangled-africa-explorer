@@ -13,7 +13,6 @@ export const TimelineChart = (props) => {
 
     //const filteredTimelineData = props.filteredTimelineData;
     console.log("dimensions", props.dimensions)
-    const { width, height, margin } = props.dimensions;
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const data = newGroupByPeriods(props.filteredTimelineData);
 
@@ -24,6 +23,7 @@ export const TimelineChart = (props) => {
 
     //setting up the svg after first render
     useEffect(() => {
+        const { width, height, margin } = props.dimensions;
         //console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
@@ -35,8 +35,6 @@ export const TimelineChart = (props) => {
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
-        /*console.log("dims: ",props.dimensions.height)
-        if(props.filteredTimelineData&&props.dimensions.width)*/
         drawTimeline(timelineData, props.dimensions)
     }, [props.filteredTimelineData, props.dimensions] );
 
@@ -44,7 +42,7 @@ export const TimelineChart = (props) => {
     const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
-        const { width, height } = dimensions;
+        const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
 
         if(!data||data.size===0) {
@@ -95,7 +93,7 @@ export const TimelineChart = (props) => {
         };
         const zimzoom = zoom()
             .scaleExtent([1,5])
-            .translateExtent([[0,0], [width, height]])
+            .translateExtent([[0,0], [width, height+margin.bottom+margin.top]])
             .on("zoom", handleZoom);
         const initZoom = () => {
             svg
@@ -139,7 +137,6 @@ export const TimelineChart = (props) => {
             .remove()
 
         initZoom();
-        console.log("selection - ", selection)
     }
 
     const updateTimeline = () => {
