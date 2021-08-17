@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
-import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { select, scaleBand, axisBottom, scaleLinear, zoom } from "d3";
-//import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -24,16 +22,6 @@ export const TimelineChart = (props) => {
     //console.log(timelineObjectsData);
     console.log("filteredTimelineData: ", props.filteredTimelineData);
 
-    /*useEffect( () => {
-        if (filteredTimelineData) {
-            setData(newGroupByPeriods(filteredTimelineData));
-            //data&&data.size>0&&console.log([...data.values()].sort( (a,b) => a.periodSpan?.[0]-b.periodSpan?.[0] ));
-        }
-        //const byPeriodData = newGroupByPeriods(filteredTimelineData)
-
-        }, [props.filteredTimelineData]
-    )*/
-
     //setting up the svg after first render
     useEffect(() => {
         console.log("width", width)
@@ -47,15 +35,16 @@ export const TimelineChart = (props) => {
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
-        console.log("dims: ",props.dimensions.height)
-        if(props.filteredTimelineData&&props.dimensions.width)
-        drawTimeline(timelineData)
-    }, [props.filteredTimelineData] );
+        /*console.log("dims: ",props.dimensions.height)
+        if(props.filteredTimelineData&&props.dimensions.width)*/
+        drawTimeline(timelineData, props.dimensions)
+    }, [props.filteredTimelineData, props.dimensions] );
 
 //todo: still depending on outer scope for height, width, margin
-    const drawTimeline = (timelineConfig) => {
+    const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
+        const { width, height } = dimensions;
         const svg = select(svgRef.current);
 
         if(!data||data.size===0) {
@@ -65,9 +54,8 @@ export const TimelineChart = (props) => {
         }
         //console.log([...data.values()]);
 
-
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
-        console.log("initial selection", selection);
+        //console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
 
@@ -139,6 +127,10 @@ export const TimelineChart = (props) => {
 
         initZoom();
         console.log("selection - ", selection)
+    }
+
+    const updateTimeline = () => {
+
     }
 
     /*
