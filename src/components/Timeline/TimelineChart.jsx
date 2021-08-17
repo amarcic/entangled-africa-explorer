@@ -82,14 +82,14 @@ export const TimelineChart = (props) => {
                 .attr("transform", transform);
 
             const xScaleNew = transform.rescaleX(xScale);
-            //const yScaleNew = transform.rescaleY(yScale);
+            const yScaleNew = yScale.range([height,0].map( d => transform.applyY(d) ));
 
             xAxis.scale(xScaleNew);
             xAxisDraw.call(xAxis);
 
             svg.selectAll(".label")
                 .attr("x", value => xScaleNew(value.periodSpan?.[0]))
-                //.attr("y", value => yScaleNew(value.periodId));
+                .attr("y", value => yScaleNew(value.periodId));
         };
         const zimzoom = zoom()
             .scaleExtent([1,5])
