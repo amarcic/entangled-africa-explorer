@@ -49,11 +49,17 @@ const timelineAdapter = ( object ) => {
     let periodData = {};
     let timelineData = [];
 
+    const date = new Date();
+    const currentYear = date.getFullYear();
+
+
     object.temporal?.flat().forEach( period => {
         let periodStuff = {
             periodName: period.title,
             periodType: period.type,
-            periodSpan: period.begin||period.end ? [period.begin, period.end] : undefined
+            periodSpan: period.begin||period.end
+                ? [period.begin, period.end!=="present"? period.end : currentYear] 
+                : undefined
         };
         //only checks for senses when period has no begin
         //assumes there are no periods with an end but no beginning
