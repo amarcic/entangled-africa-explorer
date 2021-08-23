@@ -1,6 +1,6 @@
-query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String) {
+query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String, $entityTypes: [RelatedType]) {
     entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, period: $periodTerm,
-        entityTypes: [Einzelobjekte, Topographien, Bilder]) {
+        entityTypes: $entityTypes) {
         identifier
         name
         spatial {

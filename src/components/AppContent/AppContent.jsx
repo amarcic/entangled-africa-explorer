@@ -43,7 +43,8 @@ const initialInput = {
     highlightedTimelineObject: undefined,
     areaA: 1,
     areaB: 0,
-    bigTileArea: ""
+    bigTileArea: "",
+    arachneTypes: ["Einzelobjekte", "Topographien", "Bilder"]
 };
 
 
@@ -119,10 +120,11 @@ export const AppContent = () => {
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
-                    periodTerm: input.chronOntologyTerm
+                    periodTerm: input.chronOntologyTerm,
+                    entityTypes: input.arachneTypes
                 }
             }
-            : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: ""}});
+            : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: "", entityTypes: []}});
 
     const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "archaeoSites"
         ? {
