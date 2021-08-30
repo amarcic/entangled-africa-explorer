@@ -21,7 +21,7 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for entity types*/}
             {input.arachneTypesCheckedLabels.length !== 0
-            && <Chip variant="outlined" label={`Entity types: ${input.arachneTypesCheckedLabels}`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Entity types: ${input.arachneTypesCheckedLabels}`}/>}
 
             {/*Chip for for string query*/}
             {input.searchStr !== ""
@@ -29,7 +29,7 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for filter by period*/}
             {input.chronOntologyTerm !== null
-            && <Chip variant="outlined" label={`Chronontology term: ${input.chronOntologyTerm}`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Chronontology term: ${input.chronOntologyTerm}`}/>}
 
             {/*Chip for filter by region*/}
             {input.sitesMode === "region" && input.regionTitle !== null
@@ -44,7 +44,7 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for filter by catalogs*/}
             {input.checkedCatalogLabels.length !== 0
-            && <Chip variant="outlined" label={`Catalog: ${input.checkedCatalogLabels}`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Catalog: ${input.checkedCatalogLabels}`}/>}
         </>
     );
 };
