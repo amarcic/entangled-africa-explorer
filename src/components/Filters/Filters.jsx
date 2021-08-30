@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { chronOntologyTerms, regions } = props;
+    const { chronOntologyTerms, regions, arachneTypes } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -56,7 +56,7 @@ export const Filters = (props) => {
                         !input.showArchaeoSites && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by Arachne entity type</FormLabel>
-                                {input.arachneTypesChoices && input.arachneTypesChoices.map(type => {
+                                {arachneTypes && arachneTypes.map(type => {
                                     return (type.id
                                         && <FormControlLabel
                                             key={type.id}
