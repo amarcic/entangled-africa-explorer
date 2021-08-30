@@ -15,7 +15,7 @@ import SearchIcon from '@material-ui/icons/Search';
 export const PageHeader = (props) => {
 
     const [input, dispatch] = props.reducer;
-    const {chronOntologyTerms, regions} = props;
+    const {periods, regions} = props;
 
     const { t, i18n } = useTranslation();
 
@@ -146,7 +146,7 @@ export const PageHeader = (props) => {
                     <SearchIcon/> Close filters <ExpandLessIcon/>
                 </Button>
                 <Filters
-                    chronOntologyTerms={chronOntologyTerms}
+                    periods={periods}
                     reducer={[input, dispatch]}
                     regions={regions}
                 />

@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { chronOntologyTerms, regions, arachneTypes } = props;
+    const { arachneTypes, periods, regions } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -127,7 +127,7 @@ export const Filters = (props) => {
                                 <Autocomplete
                                     name="chronOntologyTerm"
                                     value={input.chronOntologyTerm}
-                                    options={chronOntologyTerms}
+                                    options={periods}
                                     onChange={(event, newValue) =>
                                         dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})
                                     }

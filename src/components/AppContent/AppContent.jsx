@@ -145,29 +145,48 @@ export const AppContent = () => {
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
 
-    const chronOntologyTerms = [
-        'antoninisch', 'archaisch', 'augusteisch', 'FM III', 'frühkaiserzeitlich', 'geometrisch', 'hadrianisch',
-        'hellenistisch', 'hochhellenistisch', 'kaiserzeitlich', 'klassisch', 'MM II', 'MM IIB', 'römisch', 'SB II',
-        'severisch', 'SH IIIB', 'SM I', 'SM IB', 'trajanisch',
-        'Altes Reich', 'Neues Reich', 'Erste Zwischenzeit', 'Holocene', 'Early Holocene', 'Middle Holocene', 'Late Holocene', 'Pleistocene'
-    ];
+    //todo: the periods and regions should probably be queried via Hub and not like this
 
-    const regions = [
-        {title: 'Africa', id: 2042601},
-        {title: 'Benin', id: 2353200},
-        {title: 'East Africa', id: 2359915},
-        {title: 'Egypt', id: 2042786},
-        {title: 'Horn of Africa', id: 2379066},
-        {title: 'Maghreb', id: 2042694},
-        {title: 'Meroe', id: 2293921},
-        {title: 'Nubien', id: 2042608},
-        {title: 'Republic of Namibia', id: 2293917},
-        {title: 'Senegambia', id: 2348444},
-        {title: 'Sudan', id: 2042707},
-        {title: 'Tschad', id: 2128989},
-        {title: 'Wadi Howar Region Sudan', id: 2042736},
-        {title: 'West Africa', id: 2379014}
-    ];
+    const [periods, setPeriods] = useState(["Frühnubischer Horizont"]);
+
+    //todo: error... this does not seem to be the correct URL
+    /*fetch("https://chronontology.dainst.org/data/period/?fq=resource.provenance:%22SPP2143%22&q=*&from=0")
+        .then(response => response.json())
+        .then((jsonData) => {
+            //let tempPeriods = jsonData.results.map(result => result && result.resource && {title: result.resource?.names?.de?.[0], id: result.resource?.id})
+            //tempPeriods.sort((a, b) => {
+            //    let ta = a.title.toLowerCase(), tb = b.title.toLowerCase();
+            //    if (ta < tb) return -1;
+            //    if (ta > tb) return 1;
+            //    return 0;
+            //});
+
+            let tempPeriods = jsonData.results.map(result => result && result.resource?.names?.de?.[0] || result.resource?.names?.en?.[0])//.sort();
+
+            setPeriods(tempPeriods)
+        })
+        .catch((error) => {
+            console.error(error)
+        });*/
+
+
+    const [regions, setRegions] = useState([]);
+
+    fetch("https://gazetteer.dainst.org/search.json?q=parent%3A2042601%20OR%20parent%3A2293101&fq=&limit=1000&type=&pretty=true")
+        .then(response => response.json())
+        .then((jsonData) => {
+            let tempRegions = jsonData.result.map(result => result && {title: result.prefName.title, id: result.gazId})
+            tempRegions.sort((a, b) => {
+                let ta = a.title.toLowerCase(), tb = b.title.toLowerCase();
+                if (ta < tb) return -1;
+                if (ta > tb) return 1;
+                return 0;
+            });
+            setRegions(tempRegions)
+        })
+        .catch((error) => {
+            console.error(error)
+        });
 
     const arachneTypes = [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
         {"label": t("arachneTypeEinzelobjekte"), "id": "Einzelobjekte"},
@@ -421,7 +440,7 @@ export const AppContent = () => {
         <>
             <PageHeader
                 arachneTypes={arachneTypes}
-                chronOntologyTerms={chronOntologyTerms}
+                periods={periods}
                 reducer={[input, dispatch]}
                 regions={regions}
             />
