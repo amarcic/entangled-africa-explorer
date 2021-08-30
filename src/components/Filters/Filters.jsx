@@ -52,6 +52,46 @@ export const Filters = (props) => {
                             </FormGroup>
                         </Grid>}
 
+                    {/*checkboxes for filter by entity type; only active in object search mode*/
+                        !input.showArchaeoSites && <Grid item>
+                            <FormGroup>
+                                <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by Arachne entity type</FormLabel>
+                                {input.arachneTypesChoices && input.arachneTypesChoices.map(type => {
+                                    return (type.id
+                                        && <FormControlLabel
+                                            key={type.id}
+                                            control={
+                                                <Checkbox
+                                                    checked={input.arachneTypesCheckedIds.includes(type.id)}
+                                                    onChange={() => {
+                                                        dispatch({
+                                                            type: input.arachneTypesCheckedIds.includes(type.id)
+                                                                ? "UNCHECK_ITEM"
+                                                                : "CHECK_ITEM",
+                                                            payload: {field: "arachneTypesCheckedIds", toggledItem: type.id}
+                                                        });
+                                                        dispatch({
+                                                            type: "UPDATE_INPUT",
+                                                            payload: {
+                                                                field: "arachneTypesCheckedLabels",
+                                                                value: input.arachneTypesCheckedLabels.includes(type.label)
+                                                                    ? [...input.arachneTypesCheckedLabels.filter(label => label !== type.label)]
+                                                                    : [...input.arachneTypesCheckedLabels, type.label]
+                                                            }
+                                                        })
+                                                    }}
+                                                    name={String(type.id)}
+                                                    key={type.id}
+                                                    disabled={input.showArchaeoSites}
+                                                />
+                                            }
+                                            label={type.label}
+                                        />
+                                    )
+                                })}
+                            </FormGroup>
+                        </Grid>}
+
                     {/*input field for string query*/
                         <Grid item>
                             <FormGroup>

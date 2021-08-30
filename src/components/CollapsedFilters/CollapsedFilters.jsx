@@ -19,6 +19,10 @@ export const CollapsedFilters = (props) => {
                 : "Objects"}
             />
 
+            {/*Chip for entity types*/}
+            {input.arachneTypesCheckedLabels.length !== 0
+            && <Chip variant="outlined" label={`Entity types: ${input.arachneTypesCheckedLabels}`}/>}
+
             {/*Chip for for string query*/}
             {input.searchStr !== ""
             && <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/>}

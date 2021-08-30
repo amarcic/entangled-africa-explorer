@@ -44,7 +44,29 @@ const initialInput = {
     areaA: 1,
     areaB: 0,
     bigTileArea: "",
-    arachneTypes: ["Einzelobjekte", "Topographien", "Bilder"]
+    arachneTypesChoices: [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
+        {"label": "Einzelobjekte", "id": "Einzelobjekte"},
+        {"label": "Mehrteilige Denkmäler", "id": "MehrteiligeDenkmaeler"},
+        {"label": "Bauwerke", "id": "Bauwerke"},
+        {"label": "Bauwerksteile", "id": "Bauwerksteile"},
+        {"label": "Bilder", "id": "Bilder"},
+        {"label": "Bücher", "id": "Buecher"},
+        {"label": "Buchseiten", "id": "Buchseiten"},
+        {"label": "Einzelmotive", "id": "Einzelmotive"},
+        {"label": "Gruppierungen", "id": "Gruppierungen"},
+        {"label": "Inschriften", "id": "Inschriften"},
+        {"label": "Literatur", "id": "Literatur"},
+        {"label": "Orte", "id": "Orte"},
+        {"label": "Reproduktionen", "id": "Reproduktionen"},
+        {"label": "Personen", "id": "Personen"},
+        {"label": "Rezeptionen", "id": "Rezeptionen"},
+        {"label": "Sammlungen", "id": "Sammlungen"},
+        {"label": "Szenen", "id": "Szenen"},
+        {"label": "Topographien", "id": "Topographien"},
+        {"label": "Typen", "id": "Typen"},
+        {"label": "3D-Modelle", "id": "dreiDModelle"}],
+    arachneTypesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
+    arachneTypesCheckedLabels: ["Bilder", "Einzelobjekte", "Topographien"],
 };
 
 
@@ -121,7 +143,7 @@ export const AppContent = () => {
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
                     periodTerm: input.chronOntologyTerm,
-                    entityTypes: input.arachneTypes
+                    entityTypes: input.arachneTypesCheckedIds
                 }
             }
             : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: "", entityTypes: []}});
@@ -198,7 +220,7 @@ export const AppContent = () => {
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
+    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
 
     useEffect( () => {
         if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
