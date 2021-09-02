@@ -188,6 +188,8 @@ export const AppContent = () => {
             console.error(error)
         });
 
+    //todo: change out translation keys for English terms, e.g. "Images" instead of "arachneTypeBilder" – because these
+    // keys will be shown as default if no translation exists
     const arachneTypes = [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
         {"label": t("arachneTypeEinzelobjekte"), "id": "Einzelobjekte"},
         {"label": t("arachneTypeMehrteilige Denkmäler"), "id": "MehrteiligeDenkmaeler"},
