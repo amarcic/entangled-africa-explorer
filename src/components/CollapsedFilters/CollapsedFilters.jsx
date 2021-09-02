@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 
 export const CollapsedFilters = (props) => {
-    const { input } = props;
+    const { arachneTypes, catalogs, input } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -20,8 +20,10 @@ export const CollapsedFilters = (props) => {
             />
 
             {/*Chip for entity types*/}
-            {input.arachneTypesCheckedLabels.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Entity types: ${input.arachneTypesCheckedLabels}`}/>}
+            {input.arachneTypesCheckedIds.length !== 0
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Entity types: ${
+                arachneTypes.filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")
+            }`}/>}
 
             {/*Chip for for string query*/}
             {input.searchStr !== ""
@@ -43,8 +45,10 @@ export const CollapsedFilters = (props) => {
                      label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}/>}
 
             {/*Chip for filter by catalogs*/}
-            {input.checkedCatalogLabels.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Catalog: ${input.checkedCatalogLabels}`}/>}
+            {input.catalogsCheckedIds.length !== 0
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Catalog: ${
+                catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")
+            }`}/>}
         </>
     );
 };

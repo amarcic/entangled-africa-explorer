@@ -23,10 +23,7 @@ const initialInput = {
     regionId: 0,
     regionTitle: null,
     searchStr: "brosche",
-    catalogIdsList: [{"catalogLabel": "All SPP 2143 Arachne data", "catalogId": 123},
-        {"catalogLabel": "AAArC - Fundplätze", "catalogId": 942},],
-    checkedCatalogIds: [],
-    checkedCatalogLabels: [],
+    catalogsCheckedIds: [],
     mode: "objects",
     sitesMode: "",
     showSearchResults: true,
@@ -45,7 +42,6 @@ const initialInput = {
     areaB: 0,
     bigTileArea: "",
     arachneTypesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
-    arachneTypesCheckedLabels: [],
 };
 
 
@@ -116,7 +112,7 @@ export const AppContent = () => {
         useQuery(GET_OBJECTS, input.mode === "objects"
             ? {
                 variables: {
-                    searchTerm: debouncedSearchStr, catalogIds: input.checkedCatalogIds,
+                    searchTerm: debouncedSearchStr, catalogIds: input.catalogsCheckedIds,
                     // only send coordinates if entered values have valid format (floats with at least one decimal place)
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
@@ -172,7 +168,7 @@ export const AppContent = () => {
 
     const [regions, setRegions] = useState([]);
 
-    fetch("https://gazetteer.dainst.org/search.json?q=parent%3A2042601%20OR%20parent%3A2293101&fq=&limit=1000&type=&pretty=true")
+    /*fetch("https://gazetteer.dainst.org/search.json?q=parent%3A2042601%20OR%20parent%3A2293101&fq=&limit=1000&type=&pretty=true")
         .then(response => response.json())
         .then((jsonData) => {
             let tempRegions = jsonData.result.map(result => result && {title: result.prefName.title, id: result.gazId})
@@ -186,7 +182,7 @@ export const AppContent = () => {
         })
         .catch((error) => {
             console.error(error)
-        });
+        });*/
 
     //todo: change out translation keys for English terms, e.g. "Images" instead of "arachneTypeBilder" – because these
     // keys will be shown as default if no translation exists
@@ -213,6 +209,11 @@ export const AppContent = () => {
         {"label": t("arachneType3D-Modelle"), "id": "dreiDModelle"}
     ];
 
+    const catalogs = [
+        {"label": "All SPP 2143 Arachne data", "id": 123},
+        {"label": "AAArC - Fundplätze", "id": 942}
+    ]
+
 
     const handleRelatedObjects = (id) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
@@ -236,14 +237,14 @@ export const AppContent = () => {
     }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.mode === "objects" && input.showSearchResults && (debouncedSearchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && input.showSearchResults && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.checkedCatalogIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
+    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
 
     useEffect( () => {
         if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
@@ -270,7 +271,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showSearchResults
         // at least one relevant input not empty
-        && (debouncedSearchStr || input.checkedCatalogIds.length!==0 || input.chronOntologyTerm
+        && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
             || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
@@ -442,6 +443,7 @@ export const AppContent = () => {
         <>
             <PageHeader
                 arachneTypes={arachneTypes}
+                catalogs={catalogs}
                 periods={periods}
                 reducer={[input, dispatch]}
                 regions={regions}

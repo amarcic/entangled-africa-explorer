@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { arachneTypes, periods, regions } = props;
+    const { arachneTypes, catalogs, periods, regions } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -57,7 +57,7 @@ export const Filters = (props) => {
                             <FormGroup>
                                 <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by Arachne entity type</FormLabel>
                                 {arachneTypes && arachneTypes.map(type => {
-                                    return (type.id
+                                    return (type && type.id
                                         && <FormControlLabel
                                             key={type.id}
                                             control={
@@ -70,15 +70,6 @@ export const Filters = (props) => {
                                                                 : "CHECK_ITEM",
                                                             payload: {field: "arachneTypesCheckedIds", toggledItem: type.id}
                                                         });
-                                                        dispatch({
-                                                            type: "UPDATE_INPUT",
-                                                            payload: {
-                                                                field: "arachneTypesCheckedLabels",
-                                                                value: input.arachneTypesCheckedLabels.includes(type.label)
-                                                                    ? [...input.arachneTypesCheckedLabels.filter(label => label !== type.label)]
-                                                                    : [...input.arachneTypesCheckedLabels, type.label]
-                                                            }
-                                                        })
                                                     }}
                                                     name={String(type.id)}
                                                     key={type.id}
@@ -259,36 +250,27 @@ export const Filters = (props) => {
                         !input.showArchaeoSites && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by catalogs</FormLabel>
-                                {input.catalogIdsList && input.catalogIdsList.map(project => {
-                                    return (project
+                                {catalogs && catalogs.map(catalog => {
+                                    return (catalog
                                         && <FormControlLabel
-                                            key={project.catalogId}
+                                            key={catalog.id}
                                             control={
                                                 <Checkbox
-                                                    checked={input.checkedCatalogIds.includes(project.catalogId)}
+                                                    checked={input.catalogsCheckedIds.includes(catalog.id)}
                                                     onChange={() => {
                                                         dispatch({
-                                                            type: input.checkedCatalogIds.includes(project.catalogId)
+                                                            type: input.catalogsCheckedIds.includes(catalog.id)
                                                                 ? "UNCHECK_ITEM"
                                                                 : "CHECK_ITEM",
-                                                            payload: {field: "checkedCatalogIds", toggledItem: project.catalogId}
+                                                            payload: {field: "catalogsCheckedIds", toggledItem: catalog.id}
                                                         });
-                                                        dispatch({
-                                                            type: "UPDATE_INPUT",
-                                                            payload: {
-                                                                field: "checkedCatalogLabels",
-                                                                value: input.checkedCatalogLabels.includes(project.catalogLabel)
-                                                                    ? [...input.checkedCatalogLabels.filter(catalogLabel => catalogLabel !== project.catalogLabel)]
-                                                                    : [...input.checkedCatalogLabels, project.catalogLabel]
-                                                            }
-                                                        })
                                                     }}
-                                                    name={String(project.catalogId)}
-                                                    key={project.catalogId}
+                                                    name={String(catalog.id)}
+                                                    key={catalog.id}
                                                     disabled={input.showArchaeoSites}
                                                 />
                                             }
-                                            label={project.catalogLabel}
+                                            label={catalog.label}
                                         />
                                     )
                                 })}
