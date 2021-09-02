@@ -34,5 +34,10 @@
   "arachneTypeSzenen": "Szenen",
   "arachneTypeTopographien": "Topographien",
   "arachneTypeTypen": "Typen",
-  "arachneType3D-Modelle": "3D-Modelle"
+  "arachneType3D-Modelle": "3D-Modelle",
+
+  "Catalog": "Katalog",
+  "Catalog_plural": "Kataloge",
+  "EntityType": "Kategorie",
+  "EntityType_plural": "Kategorien"
 }

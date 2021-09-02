@@ -21,9 +21,12 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for entity types*/}
             {input.arachneTypesCheckedIds.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Entity types: ${
-                arachneTypes.filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")
-            }`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
+                     label={
+                         `${t("EntityType", {count: input.arachneTypesCheckedIds.length})}: 
+                         ${arachneTypes.filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
+                     }
+            />}
 
             {/*Chip for for string query*/}
             {input.searchStr !== ""
@@ -42,13 +45,17 @@ export const CollapsedFilters = (props) => {
             {/*Chip for filter by coordinates*/}
             {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))
             && <Chip variant="outlined"
-                     label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}/>}
+                     label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}
+            />}
 
             {/*Chip for filter by catalogs*/}
             {input.catalogsCheckedIds.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Catalog: ${
-                catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")
-            }`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
+                     label={
+                         `${t("Catalog", {count: input.catalogsCheckedIds.length})}: 
+                         ${catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")}`
+                     }
+            />}
         </>
     );
 };
