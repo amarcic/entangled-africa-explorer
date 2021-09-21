@@ -27,6 +27,20 @@ const useDebounce = (value, delay) => {
     return debouncedValue;
 }
 
+//get dimensions height and width from an element in the dom
+const getDimensions = (domContainerID) => {
+    const timelineContainer = document.getElementById(domContainerID);
+    if(!timelineContainer) console.log(`DOM element with ID ${domContainerID} not found`, timelineContainer);
+    const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
+    const containerHeight = timelineContainer?.clientHeight,
+        containerWidth = timelineContainer?.clientWidth;
+    const width = containerWidth - margin.left - margin.right,
+        height = containerHeight - margin.top - margin.bottom;
+
+    return {margin: margin, width: width, height: height};
+}
+
 
 //TIMELINE HELPER FUNCTIONS
 
@@ -35,11 +49,17 @@ const timelineAdapter = ( object ) => {
     let periodData = {};
     let timelineData = [];
 
+    const date = new Date();
+    const currentYear = date.getFullYear();
+
+
     object.temporal?.flat().forEach( period => {
         let periodStuff = {
             periodName: period.title,
             periodType: period.type,
-            periodSpan: period.begin||period.end ? [period.begin, period.end] : undefined
+            periodSpan: period.begin||period.end
+                ? [period.begin, period.end!=="present"? period.end : currentYear] 
+                : undefined
         };
         //only checks for senses when period has no begin
         //assumes there are no periods with an end but no beginning
@@ -274,4 +294,15 @@ function binTimespanObjects( {timespanObjects, approxAmountBins} ) {
 }
 
 
-export { useDebounce, timelineAdapter, timelineMapper, groupByPeriods, newGroupByPeriods, transformTimelineData, getTimeRangeOfTimelineData, prepareHistogramData,binTimespanObjects };
+export {
+    useDebounce,
+    timelineAdapter,
+    timelineMapper,
+    groupByPeriods,
+    newGroupByPeriods,
+    transformTimelineData,
+    getTimeRangeOfTimelineData,
+    prepareHistogramData,
+    binTimespanObjects,
+    getDimensions
+};

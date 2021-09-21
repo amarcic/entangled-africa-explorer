@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
-import { Card, Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { select, scaleBand, axisBottom, scaleLinear, zoom } from "d3";
-//import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, min, ascending, descending} from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -15,7 +13,6 @@ export const TimelineChart = (props) => {
 
     //const filteredTimelineData = props.filteredTimelineData;
     console.log("dimensions", props.dimensions)
-    const { width, height, margin } = props.dimensions;
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const data = newGroupByPeriods(props.filteredTimelineData);
 
@@ -24,19 +21,10 @@ export const TimelineChart = (props) => {
     //console.log(timelineObjectsData);
     console.log("filteredTimelineData: ", props.filteredTimelineData);
 
-    /*useEffect( () => {
-        if (filteredTimelineData) {
-            setData(newGroupByPeriods(filteredTimelineData));
-            //data&&data.size>0&&console.log([...data.values()].sort( (a,b) => a.periodSpan?.[0]-b.periodSpan?.[0] ));
-        }
-        //const byPeriodData = newGroupByPeriods(filteredTimelineData)
-
-        }, [props.filteredTimelineData]
-    )*/
-
     //setting up the svg after first render
     useEffect(() => {
-        console.log("width", width)
+        const { width, height, margin } = props.dimensions;
+        //console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
@@ -47,13 +35,14 @@ export const TimelineChart = (props) => {
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
-        drawTimeline(timelineData)
-    }, [props.filteredTimelineData] );
+        drawTimeline(timelineData, props.dimensions)
+    }, [props.filteredTimelineData, props.dimensions] );
 
-//todo: still depending on outer scope for height, width, margin
-    const drawTimeline = (timelineConfig) => {
+//todo: check if still depending on outer scope (like height, width, margin)
+    const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
+        const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
 
         if(!data||data.size===0) {
@@ -63,9 +52,8 @@ export const TimelineChart = (props) => {
         }
         //console.log([...data.values()]);
 
-
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
-        console.log("initial selection", selection);
+        //console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
 
@@ -79,25 +67,51 @@ export const TimelineChart = (props) => {
             .range([height,0])
             .padding(0.2)
 
+        //add x axis to svg
+        const xAxis = axisBottom(xScale);
+        const xAxisDraw = svg.select(".xAxis")
+            .attr("transform", `translate(0,${height+margin.top})`)
+            .call(xAxis);
+
+        if (document.getElementById("clip")===null&&height&&width) {
+            svg.append("defs").append("clipPath")
+                .attr("id","clip")
+                .append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
+        }
+
+        svg.select(".timelineGroup")
+            .attr("clip-path", "url(#clip)");
+
         //set up zoom and pan
-        console.log(zoom());
         const handleZoom = (event) => {
-            svg.select(".timelineGroup")
-                .attr("transform", event.transform);
+
+            const transform = event.transform;
+            //zoom and pan bars (geometric)
+            svg.select(".timelineGroup").selectAll(".bar")
+                .attr("transform", transform);
+
+            const xScaleNew = transform.rescaleX(xScale);
+            const yScaleNew = yScale.range([height,0].map( d => transform.applyY(d) ));
+
+            xAxis.scale(xScaleNew);
+            xAxisDraw.call(xAxis);
+
+            svg.selectAll(".label")
+                .attr("x", value => xScaleNew(value.periodSpan?.[0]))
+                .attr("y", value => yScaleNew(value.periodId));
         };
         const zimzoom = zoom()
             .scaleExtent([1,5])
-            .translateExtent([[0,0], [width, height]])
+            .translateExtent([[0,0], [width, height+margin.bottom+margin.top]])
             .on("zoom", handleZoom);
         const initZoom = () => {
             svg
                 .call(zimzoom);
         }
-
-        //add x axis to svg
-        svg.select(".xAxis")
-            .attr("transform", `translate(0,${height})`)
-            .call(axisBottom(xScale))
 
         //add bars (without extension) for each period on enter and return a selection of all entering and updating nodes
         const selectionEnteringAndUpdating = selection.join(
@@ -136,7 +150,10 @@ export const TimelineChart = (props) => {
             .remove()
 
         initZoom();
-        console.log("selection - ", selection)
+    }
+
+    const updateTimeline = () => {
+
     }
 
     /*
@@ -282,9 +299,10 @@ export const TimelineChart = (props) => {
         <div className="timeline">
             <svg ref={svgRef}>
                 <g className="timelineGroup">
-                    <g className="xAxis"></g>
-                    <g className="yAxis"></g>
+
                 </g>
+                <g className="xAxis"></g>
+                <g className="yAxis"></g>
                 <g className="background" />
             </svg>
         </div>
