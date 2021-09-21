@@ -38,7 +38,7 @@ export const TimelineChart = (props) => {
         drawTimeline(timelineData, props.dimensions)
     }, [props.filteredTimelineData, props.dimensions] );
 
-//todo: still depending on outer scope for height, width, margin
+//todo: check if still depending on outer scope (like height, width, margin)
     const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
@@ -70,8 +70,21 @@ export const TimelineChart = (props) => {
         //add x axis to svg
         const xAxis = axisBottom(xScale);
         const xAxisDraw = svg.select(".xAxis")
-            .attr("transform", `translate(0,${height})`)
+            .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
+
+        if (document.getElementById("clip")===null&&height&&width) {
+            svg.append("defs").append("clipPath")
+                .attr("id","clip")
+                .append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
+        }
+
+        svg.select(".timelineGroup")
+            .attr("clip-path", "url(#clip)");
 
         //set up zoom and pan
         const handleZoom = (event) => {
@@ -286,9 +299,10 @@ export const TimelineChart = (props) => {
         <div className="timeline">
             <svg ref={svgRef}>
                 <g className="timelineGroup">
-                    <g className="xAxis"></g>
-                    <g className="yAxis"></g>
+
                 </g>
+                <g className="xAxis"></g>
+                <g className="yAxis"></g>
                 <g className="background" />
             </svg>
         </div>
