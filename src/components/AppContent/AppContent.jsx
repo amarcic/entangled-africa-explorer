@@ -301,15 +301,15 @@ export const AppContent = () => {
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
-    const getMapData = () => {
-        let mapData;
+    const getCurrentData = () => {
+        let currentData;
 
-        if(renderingConditionObjects) mapData = mapDataObjects?.entitiesMultiFilter;
-        else if(renderingConditionRelatedObjects) mapData = {original: mapDataContext?.entity?.spatial, related: mapDataContext?.entity?.related};
-        else if(renderingConditionSites) mapData = mapDataArchaeoSites?.archaeologicalSites;
-        else if(renderingConditionSitesByRegion) mapData = mapDataSitesByRegion?.sitesByRegion;
+        if(renderingConditionObjects) currentData = mapDataObjects?.entitiesMultiFilter;
+        else if(renderingConditionRelatedObjects) currentData = {original: mapDataContext?.entity?.spatial, related: mapDataContext?.entity?.related};
+        else if(renderingConditionSites) currentData = mapDataArchaeoSites?.archaeologicalSites;
+        else if(renderingConditionSitesByRegion) currentData = mapDataSitesByRegion?.sitesByRegion;
 
-        return mapData;
+        return currentData;
     }
 
     const getMapDataType = () => {
@@ -359,12 +359,14 @@ export const AppContent = () => {
                             dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
                     />
                     || input[area]===2 && <DataSources/>
-                    || input[area]===3 && <Graph/>
+                    || input[area]===3 && <Graph
+                        data={getCurrentData()}
+                    />
                 }
                 showNext={
                     <ShowNext
                         area={area}
-                        labels={["Results table", "Image contents", "Data sources"]}
+                        labels={["Results table", "Image contents", "Data sources", "Graph"]}
                         reducer={[input, dispatch]}
                     />
                 }
@@ -409,7 +411,7 @@ export const AppContent = () => {
                 content={
                     <OurMap
                         handleRelatedObjects={handleRelatedObjects}
-                        data={getMapData()}
+                        data={getCurrentData()}
                         dataType={getMapDataType()}
                         reducer={[input, dispatch]}
                     />
