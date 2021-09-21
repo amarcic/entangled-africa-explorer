@@ -12,7 +12,9 @@ export const Timeline = (props) => {
     const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
 
     const { timelineObjectsData } = props;
-    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData
+        .filter( datapoint =>
+            datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
 
     useEffect( () => {
         let currentDimensions = getDimensions("timelineContainer");

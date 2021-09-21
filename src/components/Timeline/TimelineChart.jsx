@@ -14,12 +14,17 @@ export const TimelineChart = (props) => {
     //const filteredTimelineData = props.filteredTimelineData;
     console.log("dimensions", props.dimensions)
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
-    const data = newGroupByPeriods(props.filteredTimelineData);
+    const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
+    const data = dataUnsorted && new Map([...dataUnsorted.entries()]
+        //sort by period start year
+        .sort( (a,b) =>
+            a[1].periodSpan?.[0] - b[1].periodSpan?.[0] ));
 
     const timelineData = { xDomain, data, svgRef };
 
-    //console.log(timelineObjectsData);
-    console.log("filteredTimelineData: ", props.filteredTimelineData);
+    //console.log("filteredTimelineData: ", props.filteredTimelineData);
+    console.log("grouped by periods and sorted: ", data)
+    //console.log("sorted data: ", dataUnsorted)
 
     //setting up the svg after first render
     useEffect(() => {
