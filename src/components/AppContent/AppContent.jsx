@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    DashboardTile, DataSources, Histogram, ImageContents, Layout, OurMap, PageHeader, ResultsTable, ShowNext, Timeline
+    DashboardTile, DataSources, Graph, Histogram, ImageContents, Layout, OurMap, PageHeader, ResultsTable, ShowNext,
+    Timeline
 } from "..";
 import { LinearProgress } from "@material-ui/core";
 // Queries
@@ -38,7 +39,7 @@ const initialInput = {
     selectedMarker: undefined,
     timelineSort: "period",
     highlightedTimelineObject: undefined,
-    areaA: 1,
+    areaA: 3,
     areaB: 0,
     bigTileArea: "",
     arachneTypesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
@@ -358,6 +359,7 @@ export const AppContent = () => {
                             dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
                     />
                     || input[area]===2 && <DataSources/>
+                    || input[area]===3 && <Graph/>
                 }
                 showNext={
                     <ShowNext
