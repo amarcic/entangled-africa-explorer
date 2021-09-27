@@ -298,182 +298,194 @@ const getNodesAndLinks = (data) => {
     // select some of the query data as the graph's nodes and links data
     // TODO: extend for gazetteer based entry to data ("archaeological sites" search mode)
 
-        let nodes = [],
-            links = [];
+    let nodes = [],
+        links = [];
 
-        data.map((d) => {
-            //first layer nodes
+    const getEntityNodesAndLinks = ({entityData, sourceId}) => {
+        entityData &&
+        entityData.map(entity => {
+            nodes.push({
+                id: entity.identifier,
+                name: entity.name,
+                type: "arachne",
+                subtype: entity.type
+            });
+            links.push({
+                source: sourceId,
+                target: entity.identifier,
+                value: "related"
+            });
+
+            //nodes and links under "related"
+            getEntityNodesAndLinks({entityData: entity.related, sourceId: entity.identifier});
+
+            //nodes and links under "temporal"
+            getPeriodNodesAndLinks({periodData: entity.temporal, sourceId: entity.identifier});
+
+            //nodes and links under "spatial"
+            getPlaceNodesAndLinks({placeData: entity.spatial, sourceId: entity.identifier});
+        })
+    };
+
+    const getPeriodNodesAndLinks = ({periodData, sourceId}) => {
+        periodData && periodData.map(periods => {
+            periods.map(d => {
+                nodes.push({
+                    id: d.identifier,
+                    name: d.title,
+                    type: "chronontology",
+                    subtype: d.types
+                });
+                links.push({
+                    source: sourceId,
+                    target: d.identifier,
+                    value: "temporal"
+                });
+
+                //temporal.follows
+                d.follows && d.follows.map(follows => {
+                    nodes.push({
+                        id: follows.identifier,
+                        name: follows.title,
+                        type: "chronontology",
+                        subtype: follows.types
+                    });
+                    links.push({
+                        source: follows.identifier,
+                        target: d.identifier,
+                        value: "temporal (follows)"
+                    });
+                });
+
+                //temporal.followedBy
+                d.followedBy && d.followedBy.map(followedBy => {
+                    nodes.push({
+                        id: followedBy.identifier,
+                        name: followedBy.title,
+                        type: "chronontology",
+                        subtype: followedBy.types
+                    });
+                    links.push({
+                            source: d.identifier,
+                            target: followedBy.identifier,
+                            value: "temporal (followed by)"
+                        }
+                    );
+                });
+
+                //TODO: other Chronontology relations could be added
+
+                //nodes and links under "follows"
+                getPeriodNodesAndLinks({periodData: d.follows, sourceId: d.identifier});
+
+                //nodes and links under "followedBy"
+                getPeriodNodesAndLinks({periodData: d.followedBy, sourceId: d.identifier});
+            });
+        });
+    };
+
+    const getPlaceNodesAndLinks = ({placeData, sourceId}) => {
+        placeData && placeData.map(d => {
+            if (!d) return;
+
             nodes.push({
                 id: d.identifier,
                 name: d.name,
-                type: "arachne",
-                subtype: d.type
+                type: "gazetteer",
+                subtype: d.types
+            });
+            links.push({
+                source: sourceId,
+                target: d.identifier,
+                value: "spatial"
             });
 
-            //nodes and links under "spatial"
-            d.spatial &&
-            d.spatial.map((s) => {
-                nodes.push({
-                    id: s.identifier,
-                    name: s.name,
-                    type: "gazetteer",
-                    subtype: s.types
-                });
-                links.push({
-                    source: d.identifier,
-                    target: s.identifier,
-                    value: "spatial"
-                });
-
-                s.locatedIn &&
-                nodes.push({
-                    id: s.locatedIn.identifier,
-                    name: s.locatedIn.name,
-                    type: "gazetteer",
-                    subtype: s.locatedIn.types
-                });
-                s.locatedIn &&
-                links.push({
-                    source: s.identifier,
-                    target: s.locatedIn.identifier,
-                    value: "spatial (locatedIn)"
-                });
+            d.locatedIn &&
+            nodes.push({
+                id: d.locatedIn.identifier,
+                name: d.locatedIn.name,
+                type: "gazetteer",
+                subtype: d.locatedIn.types
             });
+            d.locatedIn &&
+            links.push({
+                source: d.identifier,
+                target: d.locatedIn.identifier,
+                value: "spatial (locatedIn)"
+            })
+
+            //TODO: other Gazetteer relations could be added
+
+            //nodes and links under "linkedObjects"
+            getEntityNodesAndLinks({entityData: d.linkedObjects, sourceId: d.identifier});
 
             //nodes and links under "temporal"
-            d.temporal &&
-            d.temporal.map((temporal) =>
-                temporal.map((t) => {
-                    nodes.push({
-                        id: t.identifier,
-                        name: t.title,
-                        type: "chronontology",
-                        subtype: t.types
-                    });
-                    links.push({
-                        source: d.identifier,
-                        target: t.identifier,
-                        value: "temporal"
-                    });
+            getPeriodNodesAndLinks({periodData: d.temporal, sourceId: d.identifier});
 
-                    //temporal.follows
-                    t.follows &&
-                    t.follows.map((f) => {
-                        nodes.push({
-                            id: f.identifier,
-                            name: f.title,
-                            type: "chronontology",
-                            subtype: f.types
-                        });
-                        links.push({
-                            source: f.identifier,
-                            target: t.identifier,
-                            value: "temporal (follows)"
-                        });
-                    });
+            //nodes and links under "locatedIn"
+            getPlaceNodesAndLinks({placeData: [d.locatedIn], sourceId: d.identifier});
+        });
+    };
 
-                    //temporal.followedBy
-                    t.followedBy &&
-                    t.followedBy.map((fb) => {
-                        nodes.push({
-                            id: fb.identifier,
-                            name: fb.title,
-                            type: "chronontology",
-                            subtype: fb.types
-                        });
-                        links.push({
-                            source: t.identifier,
-                            target: fb.identifier,
-                            value: "temporal (followed by)"
-                        });
-                    });
-                })
-            );
-
-            //nodes and links under "related"
-            d.related &&
-            d.related.map((r) => {
-                nodes.push({
-                    id: r.identifier,
-                    name: r.name,
-                    type: "arachne",
-                    subtype: r.type
-                });
-                links.push({
-                    source: d.identifier,
-                    target: r.identifier,
-                    value: "related"
-                });
-
-                r.spatial &&
-                r.spatial.map((s) => {
-                    nodes.push({
-                        id: s.identifier,
-                        name: s.name,
-                        type: "gazetteer",
-                        subtype: s.types
-                    });
-                    links.push({
-                        source: r.identifier,
-                        target: s.identifier,
-                        value: "spatial"
-                    });
-                });
-
-                r.locatedIn &&
-                nodes.push({
-                    id: r.locatedIn.identifier,
-                    name: r.locatedIn.name,
-                    type: "gazetteer",
-                    subtype: r.locatedIn.types
-                });
-                r.locatedIn &&
-                links.push({
-                    source: r.identifier,
-                    target: r.locatedIn.identifier,
-                    value: "spatial (locatedIn)"
-                });
-            });
+    data.map((d) => {
+        //first layer of nodes
+        nodes.push({
+            id: d.identifier,
+            name: d.name,
+            type: (d.__typename === "Entity" && "arachne") || (d.__typename === "Place" && "gazetteer"),
+            subtype: d.type
         });
 
-        //some nodes are duplicated, e.g. they are directly found as an entity and appear as a related entity
-        //there might be a better way to fix this
-        const mergeNodes = (arr) => {
-            return arr.reduce((acc, val, ind) => {
-                const index = acc.findIndex((el) => el.id === val.id);
-                if (index !== -1) {
-                    const key = Object.keys(val)[1];
-                    acc[index][key] = val[key];
-                } else {
-                    acc.push(val);
-                }
-                return acc;
-            }, []);
-        };
+        //nodes and links under "related" or "linkedObjects"
+        getEntityNodesAndLinks({entityData: (d.__typename === "Entity" && d.related)
+                || (d.__typename === "Place" && d.linkedObjects), sourceId: d.identifier});
 
-        const mergeLinks = (arr) => {
-            return arr.reduce((acc, val, ind) => {
-                const index = acc.findIndex(
-                    (el) => el.source === val.source && el.target === val.target
-                );
-                if (index !== -1) {
-                    const key = Object.keys(val)[1];
-                    acc[index][key] = val[key];
-                } else {
-                    acc.push(val);
-                }
-                return acc;
-            }, []);
-        };
+        //nodes and links under "temporal"
+        getPeriodNodesAndLinks({periodData: d.temporal, sourceId: d.identifier});
 
-        nodes = mergeNodes(nodes);
-        links = mergeLinks(links);
+        //nodes and links under "spatial" or "locatedIn"
+        //locatedIn is not actually an array of Places, it's just one Place nested in another
+        getPlaceNodesAndLinks({placeData: (d.__typename === "Entity" && d.spatial) || (d.__typename === "Place" && [d.locatedIn]), sourceId: d.identifier});
+    });
 
-        console.log("NODES", nodes);
-        console.log("LINKS", links);
 
-        return {nodes, links};
+    //some nodes are duplicated, e.g. they are directly found as an entity and appear as a related entity
+    //there might be a better way to fix this
+    const mergeNodes = (arr) => {
+        return arr.reduce((acc, val, ind) => {
+            const index = acc.findIndex((el) => el.id === val.id);
+            if (index !== -1) {
+                const key = Object.keys(val)[1];
+                acc[index][key] = val[key];
+            } else {
+                acc.push(val);
+            }
+            return acc;
+        }, []);
+    };
 
+    const mergeLinks = (arr) => {
+        return arr.reduce((acc, val, ind) => {
+            const index = acc.findIndex(
+                (el) => el.source === val.source && el.target === val.target
+            );
+            if (index !== -1) {
+                const key = Object.keys(val)[1];
+                acc[index][key] = val[key];
+            } else {
+                acc.push(val);
+            }
+            return acc;
+        }, []);
+    };
+
+    nodes = mergeNodes(nodes);
+    links = mergeLinks(links);
+
+    console.log("NODES", nodes);
+    console.log("LINKS", links);
+
+    return {nodes, links};
 };
 
 
