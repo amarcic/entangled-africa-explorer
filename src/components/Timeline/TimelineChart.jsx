@@ -50,6 +50,7 @@ export const TimelineChart = (props) => {
         const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
 
+        //empty canvas in case no data is found by query
         if(!data||data.size===0) {
             svg.selectAll(".bar").remove();
             svg.selectAll(".label").remove();
@@ -57,8 +58,8 @@ export const TimelineChart = (props) => {
         }
         //console.log([...data.values()]);
 
+
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
-        //console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
 
@@ -78,6 +79,7 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
 
+        //add clip path to svg for later use
         if (document.getElementById("clip")===null&&height&&width) {
             svg.append("defs").append("clipPath")
                 .attr("id","clip")
@@ -88,6 +90,7 @@ export const TimelineChart = (props) => {
                 .attr("y", 0);
         }
 
+        //apply the prepared clip path to the svg group containing the bars and labels
         svg.select(".timelineGroup")
             .attr("clip-path", "url(#clip)");
 
@@ -136,6 +139,7 @@ export const TimelineChart = (props) => {
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
+        //add tool tips when bar height (bandwidth) is too low for readable results
         if(yScale.bandwidth()<=4)
         selectionEnteringAndUpdating
             .on("mouseenter", (event, value) => {
@@ -144,13 +148,14 @@ export const TimelineChart = (props) => {
                     .data([value])
                     .join("text")
                     .attr("class", "tooltip")
-                    .text(`${value.periodName}`)
+                    .text(`${value.periodName}: ${value.items.length} item/s`)
                     .attr("text-anchor", "middle")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("y", value => yScale(value.periodId))
+                    .attr("y", value => yScale(value.periodId)+yScale.bandwidth()/*+margin.top*/)
             });
 
-        //add labels to the bars
+        //add labels to the bars (when bandwith is heigh enough for readable labels)
+        //todo: check if all
         if(yScale.bandwidth()>4)
         selectionLabels
             .enter()
@@ -160,6 +165,7 @@ export const TimelineChart = (props) => {
                 .attr("y", value => yScale(value.periodId))
                 .text(value => value.periodName);
 
+        //position labels
         selectionLabels
             .attr("x", value => xScale(value.periodSpan?.[0]))
             .attr("y", value => yScale(value.periodId))
@@ -169,6 +175,7 @@ export const TimelineChart = (props) => {
             .exit()
             .remove()
 
+        //apply zoom
         initZoom();
     }
 
