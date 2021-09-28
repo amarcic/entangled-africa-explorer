@@ -87,8 +87,8 @@ export const Histogram = (props) => {
                     .style("transform", "scale(1,-1)")
                     .attr("width", x.bandwidth())
                     .on("mouseenter", (event, value) => {
-                        const element = svg.selectAll(".bar").nodes();
-                        const index = element.indexOf(event.target);
+                        //const element = svg.selectAll(".bar").nodes();
+                        //const index = element.indexOf(event.target);
                         //console.log(value);
                         svg
                             .selectAll(".tooltip")

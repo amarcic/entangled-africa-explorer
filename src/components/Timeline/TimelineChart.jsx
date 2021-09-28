@@ -136,7 +136,22 @@ export const TimelineChart = (props) => {
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
+        if(yScale.bandwidth()<=4)
+        selectionEnteringAndUpdating
+            .on("mouseenter", (event, value) => {
+                svg
+                    .selectAll(".tooltip")
+                    .data([value])
+                    .join("text")
+                    .attr("class", "tooltip")
+                    .text(`${value.periodName}`)
+                    .attr("text-anchor", "middle")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+            });
+
         //add labels to the bars
+        if(yScale.bandwidth()>4)
         selectionLabels
             .enter()
             .append("text")
