@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select, scaleBand, axisBottom, scaleLinear, zoom } from "d3";
+import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent } from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -49,7 +49,7 @@ export const TimelineChart = (props) => {
         const { data, svgRef, xDomain } = timelineConfig;
         const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
-        const labelRenderLimit = 4;
+        const labelRenderLimit = 8;
 
         //empty canvas in case no data is found by query
         if(!data||data.size===0) {
@@ -63,6 +63,7 @@ export const TimelineChart = (props) => {
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
+        const itemQuantityExtent = extent([...data.values()].map( value => value.items.length));
 
         //scale for the x axis
         const xScale = scaleLinear()
@@ -79,6 +80,10 @@ export const TimelineChart = (props) => {
         const xAxisDraw = svg.select(".xAxis")
             .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
+
+        const colorScale = scaleQuantize()
+            .domain(itemQuantityExtent)
+            .range(["#82DE8D","#65C183","#4CA476","#378767","#256B57"])
 
         //function to add labels to the bars (when bandwith is heigh enough for readable labels)
         //todo: remove outer dependency on selectionLabels
@@ -156,7 +161,8 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("fill", "#69b3a2")
+                    .attr("fill", value => colorScale(value.items.length))
+                    //.attr("fill", "#69b3a2")
         );
 
         console.log("new and updating: ", selectionEnteringAndUpdating);
