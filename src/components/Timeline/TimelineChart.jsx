@@ -80,6 +80,33 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
 
+        //function to add labels to the bars (when bandwith is heigh enough for readable labels)
+        //todo: remove outer dependency on selectionLabels
+        const addLabels = (bandwidth, renderLimit) => {
+            if (bandwidth > renderLimit) {
+                selectionLabels
+                    .enter()
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+                    .text(value => value.periodName);
+
+                //position labels
+                selectionLabels
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+
+                //remove labels on exit
+                selectionLabels
+                    .exit()
+                    .remove()
+            } else {
+                svg.selectAll(".label")
+                    .remove();
+            }
+        }
+
         //add clip path to svg for later use
         if (document.getElementById("clip")===null&&height&&width) {
             svg.append("defs").append("clipPath")
@@ -108,6 +135,8 @@ export const TimelineChart = (props) => {
 
             xAxis.scale(xScaleNew);
             xAxisDraw.call(xAxis);
+
+            addLabels(yScaleNew.bandwidth(), labelRenderLimit);
 
             svg.selectAll(".label")
                 .attr("x", value => xScaleNew(value.periodSpan?.[0]))
@@ -164,30 +193,7 @@ export const TimelineChart = (props) => {
                 .remove()
         } )
 
-        //add labels to the bars (when bandwith is heigh enough for readable labels)
-        //todo: check if all
-        const addLabels = () => {
-            if (yScale.bandwidth() > labelRenderLimit) {
-                selectionLabels
-                    .enter()
-                    .append("text")
-                    .attr("class", "label")
-                    .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("y", value => yScale(value.periodId))
-                    .text(value => value.periodName);
-
-                //position labels
-                selectionLabels
-                    .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("y", value => yScale(value.periodId))
-
-                //remove labels on exit
-                selectionLabels
-                    .exit()
-                    .remove()
-            }
-        }
-        addLabels();
+        addLabels(yScale.bandwidth(), labelRenderLimit);
 
         //apply zoom
         initZoom();
