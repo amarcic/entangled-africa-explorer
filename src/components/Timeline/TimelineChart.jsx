@@ -83,7 +83,7 @@ export const TimelineChart = (props) => {
 
         const colorScale = scaleQuantize()
             .domain(itemQuantityExtent)
-            .range(["#82DE8D","#65C183","#4CA476","#378767","#256B57"])
+            .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
 
         //function to add labels to the bars (when bandwith is heigh enough for readable labels)
         //todo: remove outer dependency on selectionLabels
@@ -161,7 +161,6 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("fill", value => colorScale(value.items.length))
                     //.attr("fill", "#69b3a2")
         );
 
@@ -174,6 +173,7 @@ export const TimelineChart = (props) => {
             .attr("x", value => xScale(value.periodSpan?.[0]))
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
+            .attr("fill", value => colorScale(value.items.length))
 
         //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
