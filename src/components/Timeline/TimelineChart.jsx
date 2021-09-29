@@ -11,8 +11,13 @@ export const TimelineChart = (props) => {
 
     const svgRef = useRef();
 
-    //const filteredTimelineData = props.filteredTimelineData;
     console.log("dimensions", props.dimensions)
+    //todo: make highlighted global state?
+    let highlighted = {
+        objects: [],
+        periods: [],
+        locations: []
+    };
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
     const data = dataUnsorted && new Map([...dataUnsorted.entries()]
@@ -81,6 +86,7 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
 
+        //todo: application wide color scale should be used; colors are not that great
         const colorScale = scaleQuantize()
             .domain(itemQuantityExtent)
             .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
@@ -178,11 +184,14 @@ export const TimelineChart = (props) => {
         //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
             .on("mouseenter", (event, value) => {
+                highlighted.objects = value.items.map( item => item.id);
+                //console.log("high: ", highlighted)
                 svg
                     .selectAll(".tooltip")
                     .data([value])
                     .join("text")
                     .attr("class", "tooltip")
+                    //todo: label should use translations
                     .text( value => yScale.bandwidth() <= labelRenderLimit
                         ? `${value.periodName}: ${value.items.length} item/s`
                         : `${value.items.length} items/s`)
