@@ -49,6 +49,7 @@ export const TimelineChart = (props) => {
         const { data, svgRef, xDomain } = timelineConfig;
         const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
+        const labelRenderLimit = 4;
 
         //empty canvas in case no data is found by query
         if(!data||data.size===0) {
@@ -139,8 +140,7 @@ export const TimelineChart = (props) => {
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
 
-        //add tool tips when bar height (bandwidth) is too low for readable results
-        if(yScale.bandwidth()<=4)
+        //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
             .on("mouseenter", (event, value) => {
                 svg
@@ -148,32 +148,46 @@ export const TimelineChart = (props) => {
                     .data([value])
                     .join("text")
                     .attr("class", "tooltip")
-                    .text(`${value.periodName}: ${value.items.length} item/s`)
+                    .text( value => yScale.bandwidth() <= labelRenderLimit
+                        ? `${value.periodName}: ${value.items.length} item/s`
+                        : `${value.items.length} items/s`)
                     .attr("text-anchor", "middle")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("y", value => yScale(value.periodId)+yScale.bandwidth()/*+margin.top*/)
             });
 
+        //remove tooltips when mouse leaves the svg
+        svg
+            .on("mouseleave", () => {
+            svg
+                .selectAll(".tooltip")
+                .remove()
+        } )
+
         //add labels to the bars (when bandwith is heigh enough for readable labels)
         //todo: check if all
-        if(yScale.bandwidth()>4)
-        selectionLabels
-            .enter()
-            .append("text")
-                .attr("class", "label")
-                .attr("x", value => xScale(value.periodSpan?.[0]))
-                .attr("y", value => yScale(value.periodId))
-                .text(value => value.periodName);
+        const addLabels = () => {
+            if (yScale.bandwidth() > labelRenderLimit) {
+                selectionLabels
+                    .enter()
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+                    .text(value => value.periodName);
 
-        //position labels
-        selectionLabels
-            .attr("x", value => xScale(value.periodSpan?.[0]))
-            .attr("y", value => yScale(value.periodId))
+                //position labels
+                selectionLabels
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
 
-        //remove labels on exit
-        selectionLabels
-            .exit()
-            .remove()
+                //remove labels on exit
+                selectionLabels
+                    .exit()
+                    .remove()
+            }
+        }
+        addLabels();
 
         //apply zoom
         initZoom();
