@@ -191,10 +191,9 @@ export const TimelineChart = (props) => {
                     .data([value])
                     .join("text")
                     .attr("class", "tooltip")
-                    //todo: label should use translations
                     .text( value => yScale.bandwidth() <= labelRenderLimit
-                        ? `${value.periodName}: ${value.items.length} item/s`
-                        : `${value.items.length} items/s`)
+                        ? `${value.periodName}: ${value.items.length} ${t("item/s")}`
+                        : `${value.items.length} ${t("item/s")}`)
                     .attr("text-anchor", "middle")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("y", value => yScale(value.periodId)+yScale.bandwidth()/*+margin.top*/)
