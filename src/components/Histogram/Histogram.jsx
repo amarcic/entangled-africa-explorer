@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max} from "d3";
+import {select, scaleBand, axisBottom, axisLeft, scaleLinear, max, scaleQuantize} from "d3";
 import {prepareHistogramData, binTimespanObjects} from "../../utils";
 
 export const Histogram = (props) => {
@@ -74,6 +74,10 @@ export const Histogram = (props) => {
             svg.select(".yAxis")
                 .call(axisLeft(y));
 
+            const colorScale = scaleQuantize()
+                .domain([0,maxYValue])
+                .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
+
             //calculate and append histogram bars for each bin
             svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
@@ -105,7 +109,7 @@ export const Histogram = (props) => {
                     //.on("mouseleave", () => svg.select(".tooltip").remove())
                     .transition()
                     .attr("height", value => height - y(value.values.length))
-                    .attr("fill", "#69b3a2");
+                    .attr("fill", value => colorScale(value.values.length));
         }
     }, [binnedData])
 
