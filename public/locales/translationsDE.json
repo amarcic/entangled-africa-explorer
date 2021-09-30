@@ -11,7 +11,8 @@
   "Data sources": "Herkunft der Daten",
   "Timeline": "Zeitstrahl",
   "Temporal distribution": "Zeitliche Verteilung",
-  "item/s": "Objekt/e",
+  "Item": "Objekt",
+  "Item_plural": "Objekte",
 
   "Turn on/off marker clustering": "Gruppieren von Markern",
   "Resize map to show all markers": "Kartenausschnitt für aktuelle Marker anpassen",

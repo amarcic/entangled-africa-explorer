@@ -8,5 +8,7 @@
   "Catalog": "Catalog",
   "Catalog_plural": "Catalogs",
   "EntityType": "Entity type",
-  "EntityType_plural": "Entity types"
+  "EntityType_plural": "Entity types",
+  "Item": "item",
+  "Item_plural": "items"
 }
