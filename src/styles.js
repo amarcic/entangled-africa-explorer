@@ -1,5 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles";
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme, makeStyles } from "@material-ui/core/styles";
 
 const theme = createTheme({
     palette: {
@@ -24,29 +23,31 @@ const useStyles = makeStyles(theme => ({
         height: "auto",
         zIndex: 1200// theme.zIndex.drawer + 1,
     },
-    drawerPaper: {
+    //drawerPaper: {
         //marginTop: "80px"
-    },
+    //},
     dashboardHeader: {
         justifyContent:"space-between",
         alignItems:"stretch",
-        //height: "12vh",
+        minHeight: "12vh",
         zIndex: 100
     },
     dashboardBody: {
-        height: "calc(100vh - 80px - 12px)"
+        //height: "calc(100vh - 80px - 12px)"
     },
     dashboardFooter: {
         height: "12px"
     },
 
-    dashboardTileHeader: {
-        //minHeight: "5%",
-        //justifyContent: "flex-start",
-        //alignItems: "center"
-    },
+    //dashboardTileHeader: {
+    //height: "50px",
+    //minHeight: "5%",
+    //justifyContent: "flex-start",
+    //alignItems: "center"
+    //},
     dashboardTileContent: {
-        height: "calc(85% - 6vh - 6px)",
+        height: "calc(100% - (8px * 6))", // 8px is the size of theme.spacing(1)
+        //width: "100%",
         overflow: "scroll"
     },
     dashboardTile: {
@@ -56,30 +57,29 @@ const useStyles = makeStyles(theme => ({
     },
     cardOfTileWithShowNext: {
         padding: theme.spacing(2),
-        //height: "100%",
         height: "calc(100% - 35px)", //35px is the height of the ShowNext bar
         width: "100%"
     },
     cardOfTileWithoutShowNext: {
         padding: theme.spacing(2),
-        height: "100% ",
+        height: "100%",
         width: "100%"
     },
     fullHeightTile: {
-        height: "calc(100vh - 12vh - 12px)",
-        //padding: theme.spacing(2)
+        height: "calc(100vh - 12vh - 12px + (8px * 2))", // 8px is the size of theme.spacing(1)
+        //marginTop: theme.spacing(2)
     },
     halfHeightTile: {
-        height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
+        height: `calc((100vh - 12vh - 12px ) * 0.5)`, // half of the fullHeightTile height
         // this class will take the same height as fullHeightTile if the screen is size "xs":
         [theme.breakpoints.down("xs")]: {
-            height: "calc(100vh - 12vh - 12px)",
+            height: "calc(100vh - 12vh - 12px + (8px * 2))",
         }
     },
-    "dashboardBody || fullHeightTile || halfHeightTile": {
-        //justifyContent: "space-between",
-        //alignItems: "center"
-    },
+    //"dashboardBody || fullHeightTile || halfHeightTile": {
+    //justifyContent: "space-between",
+    //alignItems: "center"
+    //},
     tabs: {
         height: "35px",
         minHeight: "35px",
@@ -97,9 +97,6 @@ const useStyles = makeStyles(theme => ({
         marginRight: "0.5%",
         marginTop: theme.spacing(1),
         backgroundColor: "rgba(171,134,97,0.08)",
-        //borderRight: "solid 1px grey",
-        //borderLeft: "solid 1px grey",
-        //borderTop: "solid 1px grey",
     },
     tabSelected: {
         height: "35px",
@@ -109,9 +106,6 @@ const useStyles = makeStyles(theme => ({
         marginRight: "0.5%",
         marginTop: theme.spacing(0),
         backgroundColor: "rgba(171,134,97,0.18)",
-        //borderRight: "solid 1px grey",
-        //borderLeft: "solid 1px grey",
-        //borderTop: "solid 1px grey",
     },
 
     h1: {
