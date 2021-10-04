@@ -49,8 +49,14 @@ const useStyles = makeStyles(theme => ({
         height: "calc(85% - 6vh - 6px)",
         overflow: "scroll"
     },
+    dashboardTile: {
+        padding: theme.spacing(1),
+        height: "100%",
+        width: "100%"
+    },
     cardOfTileWithShowNext: {
         padding: theme.spacing(2),
+        //height: "100%",
         height: "calc(100% - 35px)", //35px is the height of the ShowNext bar
         width: "100%"
     },
@@ -73,6 +79,39 @@ const useStyles = makeStyles(theme => ({
     "dashboardBody || fullHeightTile || halfHeightTile": {
         //justifyContent: "space-between",
         //alignItems: "center"
+    },
+    tabs: {
+        height: "35px",
+        minHeight: "35px",
+        width: "100%",
+        //paddingTop: theme.spacing(0.5),
+        //marginRight: "-5%",
+        //justifyContent:"space-between",
+        //alignItems:"center",
+    },
+    tab: {
+        height: "35px",
+        minHeight: "35px",
+        borderTopRightRadius: "10px",
+        borderTopLeftRadius: "10px",
+        marginRight: "0.5%",
+        marginTop: theme.spacing(1),
+        backgroundColor: "rgba(171,134,97,0.08)",
+        //borderRight: "solid 1px grey",
+        //borderLeft: "solid 1px grey",
+        //borderTop: "solid 1px grey",
+    },
+    tabSelected: {
+        height: "35px",
+        minHeight: "35px",
+        borderTopRightRadius: "10px",
+        borderTopLeftRadius: "10px",
+        marginRight: "0.5%",
+        marginTop: theme.spacing(0),
+        backgroundColor: "rgba(171,134,97,0.18)",
+        //borderRight: "solid 1px grey",
+        //borderLeft: "solid 1px grey",
+        //borderTop: "solid 1px grey",
     },
 
     h1: {
