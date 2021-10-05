@@ -14,7 +14,7 @@ export const TimelineChart = (props) => {
     console.log("dimensions", props.dimensions)
     //todo: make highlighted global state?
     let highlighted = {
-        objects: [],
+        objects: ["1080824", "1086070"],
         periods: [],
         locations: []
     };
@@ -180,12 +180,23 @@ export const TimelineChart = (props) => {
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
             .attr("fill", value => colorScale(value.items.length))
+            .attr("stroke", value => highlighted.objects.some( id =>
+                value.items.map( item => item.id).indexOf(id) > -1)
+                ? "black"
+                : "red")
 
         //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
             .on("mouseenter", (event, value) => {
+                select(event.currentTarget)
+                    .attr("id", "mouse-target")
+                    .on("mouseleave", () => {
+                        select("#mouse-target")
+                            .attr("id", null)
+                    })
                 highlighted.objects = value.items.map( item => item.id);
                 //console.log("high: ", highlighted)
+
                 svg
                     .selectAll(".tooltip")
                     .data([value])

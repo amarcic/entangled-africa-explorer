@@ -20,3 +20,6 @@
     background-color: #1c9489 !important;
     color: #fff !important;
 }
+#mouse-target {
+    stroke: blue
+}
