@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
         zIndex: 1200// theme.zIndex.drawer + 1,
     },
     //drawerPaper: {
-        //marginTop: "80px"
+    //marginTop: "80px"
     //},
     dashboardHeader: {
         justifyContent:"space-between",
@@ -39,12 +39,11 @@ const useStyles = makeStyles(theme => ({
         height: "12px"
     },
 
-    //dashboardTileHeader: {
-    //height: "50px",
-    //minHeight: "5%",
-    //justifyContent: "flex-start",
-    //alignItems: "center"
-    //},
+    dashboardTileHeader: {
+        //height: "50px",
+        //minHeight: "5%",
+        justifyContent:"space-between",
+    },
     dashboardTileContent: {
         height: "calc(100% - (8px * 6))", // 8px is the size of theme.spacing(1)
         //width: "100%",
@@ -106,6 +105,12 @@ const useStyles = makeStyles(theme => ({
         marginRight: "0.5%",
         marginTop: theme.spacing(0),
         backgroundColor: "rgba(171,134,97,0.18)",
+    },
+    maximizeTileButton: {
+        backgroundColor: "rgba(171,134,97,0.18)",
+        float: "right",
+        height: "30px",
+        width: "30px",
     },
 
     h1: {

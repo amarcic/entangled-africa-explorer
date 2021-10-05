@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    DashboardTile, DataSources, Histogram, ImageContents, Layout, OurMap, PageHeader, ResultsTable, ShowNext, Timeline
+    DashboardTile, DataSources, Histogram, ImageContents, Layout, MaximizeTileButton, OurMap, PageHeader, ResultsTable,
+    ShowNext, Timeline
 } from "..";
 import { LinearProgress } from "@material-ui/core";
 // Queries
@@ -286,6 +287,13 @@ export const AppContent = () => {
     const renderAreaA = () => {
         const area = "areaA";
 
+        const maximizeTileButton = (
+            <MaximizeTileButton
+                area={area}
+                reducer={[input, dispatch]}
+            />
+        );
+
         return(
             <DashboardTile
                 reducer={[input, dispatch]}
@@ -303,13 +311,17 @@ export const AppContent = () => {
                         renderingConditionSites={renderingConditionSites}
                         renderingConditionSitesByRegion={renderingConditionSitesByRegion}
                         openPopup={openPopup}
+                        maximizeTileButton={maximizeTileButton}
                     />
                     || input[area]===1 && <ImageContents
                         contents={dataObjects
                         && [dataObjects?.entitiesMultiFilter?.map(entity => entity?.categoryOfDepicted),
                             dataObjects?.entitiesMultiFilter?.map(entity => entity?.materialOfDepicted)]}
+                        maximizeTileButton={maximizeTileButton}
                     />
-                    || input[area]===2 && <DataSources/>
+                    || input[area]===2 && <DataSources
+                        maximizeTileButton={maximizeTileButton}
+                    />
                 }
                 showNext={
                     <ShowNext
@@ -325,6 +337,13 @@ export const AppContent = () => {
     const renderAreaB = () => {
         const area = "areaB";
 
+        const maximizeTileButton = (
+            <MaximizeTileButton
+                area={area}
+                reducer={[input, dispatch]}
+            />
+        );
+
         return(
             <DashboardTile
                 reducer={[input, dispatch]}
@@ -333,9 +352,11 @@ export const AppContent = () => {
                     input[area]===0 && <Timeline
                         reducer={[input, dispatch]}
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
+                        maximizeTileButton={maximizeTileButton}
                     />
                     || input[area]===1 && <Histogram
                         timelineData={dataObjects?.entitiesMultiFilter.map(timelineMapper)}
+                        maximizeTileButton={maximizeTileButton}
                     />
                 }
                 showNext={
@@ -352,6 +373,13 @@ export const AppContent = () => {
     const renderAreaC = () => {
         const area = "areaC";
 
+        const maximizeTileButton = (
+            <MaximizeTileButton
+                area={area}
+                reducer={[input, dispatch]}
+            />
+        );
+
         return(
             <DashboardTile
                 reducer={[input, dispatch]}
@@ -362,6 +390,7 @@ export const AppContent = () => {
                         data={getMapData()}
                         dataType={getMapDataType()}
                         reducer={[input, dispatch]}
+                        maximizeTileButton={maximizeTileButton}
                     />
                 }
             />

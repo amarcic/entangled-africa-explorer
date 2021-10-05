@@ -4,7 +4,7 @@ import { useStyles } from "../../styles";
 import { Grid, List, ListItem } from "@material-ui/core";
 
 export const ImageContents = (props) => {
-    const { contents } = props;
+    const { contents, maximizeTileButton } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -27,6 +27,9 @@ export const ImageContents = (props) => {
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Image contents')}</h3>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid className={classes.dashboardTileContent} item container direction="column" spacing={2}>

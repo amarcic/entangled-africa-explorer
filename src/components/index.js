@@ -14,6 +14,7 @@ export { GazetteerEntry } from './GazetteerEntry/GazetteerEntry'
 export { Histogram } from './Histogram/Histogram'
 export { ImageContents } from './ImageContents/ImageContents'
 export { Layout } from './Layout/Layout'
+export { MaximizeTileButton } from './MaximizeTileButton/MaximizeTileButton'
 export { OurMap } from './OurMap/OurMap';
 export { OurTimeline } from './OurTimeline/OurTimeline'
 export { PageHeader } from './PageHeader/PageHeader';
