@@ -9,7 +9,8 @@ export const ResultsTable = (props) => {
 
     const {
         handleRelatedObjects, mapDataObjects, mapDataContext, mapDataArchaeoSites, mapDataSitesByRegion, openPopup,
-        renderingConditionObjects, renderingConditionRelatedObjects, renderingConditionSites, renderingConditionSitesByRegion
+        renderingConditionObjects, renderingConditionRelatedObjects, renderingConditionSites, renderingConditionSitesByRegion,
+        maximizeTileButton
     } = props;
 
     const { t, i18n } = useTranslation();
@@ -18,11 +19,11 @@ export const ResultsTable = (props) => {
 
     return (
         <>
-            {<Grid className={classes.dashboardTileHeader} item xs={12} container direction="row" spacing={2}>
+            {<Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Search results')}</h3>
                 </Grid>
-                <Grid item>
+                <Grid item xs={4}>
                     {input.showRelatedObjects && <Button
                         onClick={() => handleRelatedObjects()}
                         name="hideRelatedObjects"
@@ -32,11 +33,14 @@ export const ResultsTable = (props) => {
                         Return to search results (hide related objects)
                     </Button>}
                 </Grid>
-                <Grid item>
+                <Grid item xs={3}>
                     {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
                     {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
                     {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode === "region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
                     {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode !== "region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>}
             {<Grid className={classes.dashboardTileContent} item xs={12} container>

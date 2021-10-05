@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select, scaleBand, axisBottom, scaleLinear, zoom } from "d3";
+import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent } from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -11,15 +11,25 @@ export const TimelineChart = (props) => {
 
     const svgRef = useRef();
 
-    //const filteredTimelineData = props.filteredTimelineData;
     console.log("dimensions", props.dimensions)
+    //todo: make highlighted global state?
+    let highlighted = {
+        objects: [],
+        periods: [],
+        locations: []
+    };
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
-    const data = newGroupByPeriods(props.filteredTimelineData);
+    const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
+    const data = dataUnsorted && new Map([...dataUnsorted.entries()]
+        //sort by period start year
+        .sort( (a,b) =>
+            a[1].periodSpan?.[0] - b[1].periodSpan?.[0] ));
 
     const timelineData = { xDomain, data, svgRef };
 
-    //console.log(timelineObjectsData);
-    console.log("filteredTimelineData: ", props.filteredTimelineData);
+    //console.log("filteredTimelineData: ", props.filteredTimelineData);
+    console.log("grouped by periods and sorted: ", data)
+    //console.log("sorted data: ", dataUnsorted)
 
     //setting up the svg after first render
     useEffect(() => {
@@ -44,7 +54,9 @@ export const TimelineChart = (props) => {
         const { data, svgRef, xDomain } = timelineConfig;
         const { width, height, margin } = dimensions;
         const svg = select(svgRef.current);
+        const labelRenderLimit = 8;
 
+        //empty canvas in case no data is found by query
         if(!data||data.size===0) {
             svg.selectAll(".bar").remove();
             svg.selectAll(".label").remove();
@@ -52,10 +64,11 @@ export const TimelineChart = (props) => {
         }
         //console.log([...data.values()]);
 
+
         const selection = svg.select(".timelineGroup").selectAll("rect").data([...data.values()], data => data.periodId);
-        //console.log("initial selection", selection);
         const selectionLabels = svg.select(".timelineGroup").selectAll(".label").data([...data.values()], data => data.periodId);
         const periodIds = [...data.keys()];
+        const itemQuantityExtent = extent([...data.values()].map( value => value.items.length));
 
         //scale for the x axis
         const xScale = scaleLinear()
@@ -73,6 +86,39 @@ export const TimelineChart = (props) => {
             .attr("transform", `translate(0,${height+margin.top})`)
             .call(xAxis);
 
+        //todo: application wide color scale should be used; colors are not that great
+        const colorScale = scaleQuantize()
+            .domain(itemQuantityExtent)
+            .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
+
+        //function to add labels to the bars (when bandwith is heigh enough for readable labels)
+        //todo: remove outer dependency on selectionLabels
+        const addLabels = (bandwidth, renderLimit) => {
+            if (bandwidth > renderLimit) {
+                selectionLabels
+                    .enter()
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+                    .text(value => value.periodName);
+
+                //position labels
+                selectionLabels
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId))
+
+                //remove labels on exit
+                selectionLabels
+                    .exit()
+                    .remove()
+            } else {
+                svg.selectAll(".label")
+                    .remove();
+            }
+        }
+
+        //add clip path to svg for later use
         if (document.getElementById("clip")===null&&height&&width) {
             svg.append("defs").append("clipPath")
                 .attr("id","clip")
@@ -83,6 +129,7 @@ export const TimelineChart = (props) => {
                 .attr("y", 0);
         }
 
+        //apply the prepared clip path to the svg group containing the bars and labels
         svg.select(".timelineGroup")
             .attr("clip-path", "url(#clip)");
 
@@ -99,6 +146,8 @@ export const TimelineChart = (props) => {
 
             xAxis.scale(xScaleNew);
             xAxisDraw.call(xAxis);
+
+            addLabels(yScaleNew.bandwidth(), labelRenderLimit);
 
             svg.selectAll(".label")
                 .attr("x", value => xScaleNew(value.periodSpan?.[0]))
@@ -118,7 +167,7 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("fill", "#69b3a2")
+                    //.attr("fill", "#69b3a2")
         );
 
         console.log("new and updating: ", selectionEnteringAndUpdating);
@@ -130,25 +179,37 @@ export const TimelineChart = (props) => {
             .attr("x", value => xScale(value.periodSpan?.[0]))
             .attr("y", (value, index) => yScale(periodIds[index]))
             .attr("width", value => Math.abs(xScale(value.periodSpan?.[0])-xScale(value.periodSpan?.[1]))||0)
+            .attr("fill", value => colorScale(value.items.length))
 
-        //add labels to the bars
-        selectionLabels
-            .enter()
-            .append("text")
-                .attr("class", "label")
-                .attr("x", value => xScale(value.periodSpan?.[0]))
-                .attr("y", value => yScale(value.periodId))
-                .text(value => value.periodName);
+        //display tooltip when mouse enters bar on chart
+        selectionEnteringAndUpdating
+            .on("mouseenter", (event, value) => {
+                highlighted.objects = value.items.map( item => item.id);
+                //console.log("high: ", highlighted)
+                svg
+                    .selectAll(".tooltip")
+                    .data([value])
+                    .join("text")
+                    .attr("class", "tooltip")
+                    .text( value => yScale.bandwidth() <= labelRenderLimit
+                        ? `${value.periodName}: ${value.items.length} ${t("Item", {count: value.items.length})}`
+                        : `${value.items.length} ${t("Item", {count: value.items.length})}`)
+                    .attr("text-anchor", "middle")
+                    .attr("x", value => xScale(value.periodSpan?.[0]))
+                    .attr("y", value => yScale(value.periodId)+yScale.bandwidth()/*+margin.top*/)
+            });
 
-        selectionLabels
-            .attr("x", value => xScale(value.periodSpan?.[0]))
-            .attr("y", value => yScale(value.periodId))
+        //remove tooltips when mouse leaves the svg
+        svg
+            .on("mouseleave", () => {
+            svg
+                .selectAll(".tooltip")
+                .remove()
+        } )
 
-        //remove labels on exit
-        selectionLabels
-            .exit()
-            .remove()
+        addLabels(yScale.bandwidth(), labelRenderLimit);
 
+        //apply zoom
         initZoom();
     }
 

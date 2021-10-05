@@ -18,7 +18,8 @@ export const OurMap = (props) => {
     const {
         handleRelatedObjects,
         data,
-        dataType
+        dataType,
+        maximizeTileButton
     } = props;
 
     let markers = data;
@@ -69,7 +70,7 @@ export const OurMap = (props) => {
                 <Grid item>
                     <h3 className={classes.h3}>{t('Map')}</h3>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={4}>
                     <FormLabel>{t('Cluster nearby markers')}
                         <Tooltip title="Switch between showing individual markers or clustered circles." arrow placement="right-start">
                             <Switch
@@ -81,7 +82,7 @@ export const OurMap = (props) => {
                         </Tooltip>
                     </FormLabel>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={4}>
                     <FormLabel
                         onClick={() => resetMapBounds()}
                         style={{cursor: "pointer"}}
@@ -91,6 +92,9 @@ export const OurMap = (props) => {
                             <MapIcon/>
                         </Tooltip>
                     </FormLabel>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid className={classes.dashboardTileContent} item>

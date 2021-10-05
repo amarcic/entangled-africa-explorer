@@ -11,8 +11,10 @@ export const Timeline = (props) => {
     const classes = useStyles();
     const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
 
-    const { timelineObjectsData } = props;
-    const filteredTimelineData = timelineObjectsData&&timelineObjectsData.filter( datapoint => datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
+    const { timelineObjectsData, maximizeTileButton } = props;
+    const filteredTimelineData = timelineObjectsData&&timelineObjectsData
+        .filter( datapoint =>
+            datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
 
     useEffect( () => {
         let currentDimensions = getDimensions("timelineContainer");
@@ -27,6 +29,9 @@ export const Timeline = (props) => {
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid id="timelineContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
