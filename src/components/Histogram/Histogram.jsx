@@ -8,6 +8,8 @@ import {prepareHistogramData, binTimespanObjects} from "../../utils";
 export const Histogram = (props) => {
     const { t, i18n } = useTranslation();
 
+    const {maximizeTileButton} = props;
+
     const classes = useStyles();
 
     //console.log(props.timelineData);
@@ -118,6 +120,9 @@ export const Histogram = (props) => {
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid id="histogramContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>

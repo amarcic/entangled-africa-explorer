@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { Grid, List, ListItem } from "@material-ui/core";
 
-export const DataSources = () => {
+export const DataSources = (props) => {
+    const {maximizeTileButton} = props;
+
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
@@ -13,6 +15,9 @@ export const DataSources = () => {
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Data sources')}</h3>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid className={classes.dashboardTileContent} item container direction="column" spacing={2}>
