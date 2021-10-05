@@ -372,6 +372,7 @@ export const AppContent = () => {
                     />
                     || input[area]===3 && <Graph
                         data={getCurrentData()}
+                        maximizeTileButton={maximizeTileButton}
                     />
                 }
                 showNext={

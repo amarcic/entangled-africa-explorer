@@ -11,7 +11,7 @@ import { getNodesAndLinks } from "../../utils";
 
 
 export const Graph = (props) => {
-    const { data } = props;
+    const { data, maximizeTileButton } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -167,6 +167,9 @@ export const Graph = (props) => {
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
                     <h3 className={classes.h3}>{t('Graph')}</h3>
+                </Grid>
+                <Grid item xs={1}>
+                    {maximizeTileButton}
                 </Grid>
             </Grid>
             <Grid id="graphContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
