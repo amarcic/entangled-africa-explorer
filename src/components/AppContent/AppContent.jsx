@@ -38,7 +38,7 @@ const initialInput = {
     selectedMarker: undefined,
     timelineSort: "period",
     highlightedTimelineObject: undefined,
-    highlightedObjects: ["1080824"],
+    highlightedObjects: [],
     areaA: 1,
     areaB: 0,
     bigTileArea: "",
@@ -384,6 +384,7 @@ export const AppContent = () => {
                         timelineObjectsData={dataObjects?.entitiesMultiFilter.flatMap(timelineAdapter)}
                     />
                     || input[area]===1 && <Histogram
+                        reducer={[input, dispatch]}
                         timelineData={dataObjects?.entitiesMultiFilter.map(timelineMapper)}
                     />
                 }

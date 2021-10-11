@@ -10,6 +10,7 @@ export const Histogram = (props) => {
 
     const classes = useStyles();
 
+    const [input, dispatch] = props.reducer;
     console.log(props.timelineData);
     const preparedData = prepareHistogramData(props.timelineData)?.filter( e => e&&e );
     //console.log("data prepared for histogram: ", preparedData);
@@ -77,7 +78,7 @@ export const Histogram = (props) => {
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
                 .selectAll("rect").data(binnedData).join(
                     enter => enter.append("rect")
-                ).attr("class","bar")
+                ).attr("class", value => value.values.some( id => input.highlightedObjects.indexOf(id) > -1 ) ? "bar highlighted" : "bar")
                     //.attr("y", value => y(value.values.length))
                     .attr("y", height*-1)
                     .attr("x", value => x(value.lower))
