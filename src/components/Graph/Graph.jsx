@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { getDimensions, getNodesAndLinks } from "../../utils";
 import {
-    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal,
-    schemeCategory10, select
+    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, scaleOrdinal, schemeCategory10, select
 } from "d3";
 
 
@@ -91,14 +90,25 @@ export const Graph = (props) => {
         const circleSize = 8;
         const fontSize = 14;
 
-        // TODO: find better suited forces/strengths/distances, best would be dynamically chosen ones based on current graph properties
+        /*function boxingForce() {
+            const xMax = dimensions.width/2 - (dimensions.margin.left + dimensions.margin.right)/2; //?
+            const yMax = dimensions.height/2 - (dimensions.margin.top + dimensions.margin.bottom)/2; //?
+
+            // if a node is outside the box, set its x/y to the boundary
+            for (let node of nodes) {
+                node.x = Math.max(-xMax, Math.min(xMax, node.x));
+                node.y = Math.max(-yMax, Math.min(yMax, node.y));
+            }
+        }*/
+
         const simulation = forceSimulation(nodes)
             .force("link", forceLink(links).id((d) => d.id))
-            .force("separate", forceCollide((dimensions.height+dimensions.width) * 0.025))
-            .force("charge", forceManyBody().strength(1))
-            .force("x", forceX())
-            .force("y", forceY())
-            .force("center", forceCenter());
+            .force("separate", forceCollide((dimensions.height+dimensions.width) * 0.02)) //?
+            .force("charge", forceManyBody().strength(-(dimensions.height+dimensions.width) * 0.2)) //?
+            //.force("x", forceX())
+            //.force("y", forceY())
+            .force("center", forceCenter())
+            //.force("bounds", boxingForce);
 
         //const svg = select(svgRef.current)
         //    .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
@@ -119,6 +129,7 @@ export const Graph = (props) => {
         // create links
         // TODO: parts of lines and arrows are hidden below larger node circles because links end in the circle centers
         const link = svg.select(".linkGroup")
+            .attr("class", "link")
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.6)
             .selectAll("line")
