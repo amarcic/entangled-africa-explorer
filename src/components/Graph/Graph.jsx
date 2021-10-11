@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { getDimensions } from "../../utils";
+import { getDimensions, getNodesAndLinks } from "../../utils";
 import {
     drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal,
     schemeCategory10, select
 } from "d3";
-import { getNodesAndLinks } from "../../utils";
 
 
 export const Graph = (props) => {
@@ -19,15 +18,25 @@ export const Graph = (props) => {
 
     const svgRef = useRef();
 
-    const [dimensions, setDimensions] = useState({width: 1, height: 1, margin: {top: 0, right: 0, left: 0, bottom: 0}});
+    const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
 
     useEffect( () => {
         let currentDimensions = getDimensions("graphContainer");
         if (currentDimensions&&currentDimensions.width!==dimensions?.width)
             setDimensions(currentDimensions);
-        console.log("state dimensions", dimensions)
-
     }, []);
+
+    const [svg, setSvg] = useState(select(svgRef.current));
+
+    //setting up the svg after first render
+    useEffect(() => {
+        //const { width, height, margin } = dimensions;
+
+        const updatedSvg = select(svgRef.current)
+            .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
+
+        setSvg(updatedSvg);
+    }, [dimensions]);
 
     //draw graph every time data or dimensions change
     useEffect( () => {
@@ -71,7 +80,12 @@ export const Graph = (props) => {
 
     // draw graph
     const drawGraph = (data, dimensions) => {
-        if(!data) return;
+        //const svg = select(svgRef.current);
+        //.attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
+
+        // return if there is no data
+        if(!data||data.size===0) return;
+
         const {nodes, links} = getNodesAndLinks(data);
 
         const circleSize = 8;
@@ -86,8 +100,8 @@ export const Graph = (props) => {
             .force("y", forceY())
             .force("center", forceCenter());
 
-        const svg = select(svgRef.current)
-            .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
+        //const svg = select(svgRef.current)
+        //    .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
 
         // define arrowhead to be used as marker-end
         svg.append("svg:defs")
