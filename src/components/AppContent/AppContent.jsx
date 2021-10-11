@@ -38,6 +38,7 @@ const initialInput = {
     selectedMarker: undefined,
     timelineSort: "period",
     highlightedTimelineObject: undefined,
+    highlightedObjects: ["1080824"],
     areaA: 1,
     areaB: 0,
     bigTileArea: "",
