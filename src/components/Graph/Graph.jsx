@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { getDimensions, getNodesAndLinks } from "../../utils";
 import {
-    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, scaleOrdinal, schemeCategory10, select
+    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal, schemeCategory10, select
 } from "d3";
 
 
@@ -79,9 +79,6 @@ export const Graph = (props) => {
 
     // draw graph
     const drawGraph = (data, dimensions) => {
-        //const svg = select(svgRef.current);
-        //.attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
-
         // return if there is no data
         if(!data||data.size===0) return;
 
@@ -105,8 +102,8 @@ export const Graph = (props) => {
             .force("link", forceLink(links).id((d) => d.id))
             .force("separate", forceCollide((dimensions.height+dimensions.width) * 0.02)) //?
             .force("charge", forceManyBody().strength(-(dimensions.height+dimensions.width) * 0.2)) //?
-            //.force("x", forceX())
-            //.force("y", forceY())
+            .force("x", forceX())
+            .force("y", forceY())
             .force("center", forceCenter())
             //.force("bounds", boxingForce);
 
@@ -127,16 +124,16 @@ export const Graph = (props) => {
             .attr("fill", "#000");
 
         // create links
-        // TODO: parts of lines and arrows are hidden below larger node circles because links end in the circle centers
+        //svg.selectAll(".line").remove(); // does not work
         const link = svg.select(".linkGroup")
-            .attr("class", "link")
-            .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.6)
+            .attr("class", "line")
             .selectAll("line")
             .data(links)
             .join("line")
-            .attr("stroke-width", 1.5)
-            .attr("marker-end", "url(#arrowhead)");
+            .attr("stroke-width", 2)
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6);
+            //.attr("marker-end", "url(#arrowhead)");
 
         // create nodes
         const node = svg.select(".nodeGroup")
@@ -147,21 +144,22 @@ export const Graph = (props) => {
             .join("g")
             .call(dragging(simulation));
 
-        // set node circle radius based on weight of node, i.e. how many links are connected to it
+        svg.selectAll(".circle").remove();
         node.append("circle")
+            .attr("class", "circle")
             .attr("r", (d) => {
-                // re-calculate weight
+                // set node circle radius based on weight of node, i.e. how many links are connected to it
                 d.weight = link
-                    .filter((l) => {
-                        return l.source.index === d.index || l.target.index === d.index;
-                    })
+                    .filter((l) => l.source.index === d.index || l.target.index === d.index)
                     .size();
                 return circleSize + d.weight;
             })
             .attr("fill", nodecolor());
 
         // add text to nodes
+        svg.selectAll(".label").remove();
         node.append("text")
+            .attr("class", "label")
             .text((d) => d.name)
             .attr("stroke", "none")
             .attr("text-anchor", "start")
@@ -170,7 +168,9 @@ export const Graph = (props) => {
             .attr("font-size", fontSize);
 
         // add title (shown on hovering) to nodes
+        svg.selectAll(".title").remove();
         node.append("title")
+            .attr("class", "title")
             .text((d) => d.id);
 
         //
