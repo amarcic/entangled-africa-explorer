@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { getDimensions, getNodesAndLinks } from "../../utils";
 import {
-    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal, schemeCategory10, select
+    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal, schemeCategory10, select, zoom
 } from "d3";
 
 
@@ -123,6 +123,30 @@ export const Graph = (props) => {
             .attr("d", "M0,-5L10,0L0,5")
             .attr("fill", "#000");
 
+
+        //set up zoom and pan
+        const handleZoom = (event) => {
+            const transform = event.transform;
+
+            //zoom and pan the entire graph
+            svg.select(".graphGroup")
+                .attr("transform", transform);
+        };
+
+        const minZoom = 0.5;
+        const maxZoom = 2;
+
+        const zimzoom = zoom()
+            .scaleExtent([minZoom, maxZoom]) // if first value is set to 0 then zooming out will have no limit
+            .translateExtent([[-dimensions.height,-dimensions.width], [dimensions.width, dimensions.height]])
+            .on("zoom", handleZoom);
+
+        const initZoom = () => {
+            svg
+                .call(zimzoom);
+        };
+
+
         // create links
         //svg.selectAll(".line").remove(); // does not work
         const link = svg.select(".linkGroup")
@@ -173,7 +197,12 @@ export const Graph = (props) => {
             .attr("class", "title")
             .text((d) => d.id);
 
-        //
+
+        //apply manual zoom
+        initZoom();
+
+
+        // the simulation will adjust itself according to the current data and specified forces for 300 ticks (default)
         simulation.on("tick", () => {
             link
                 .attr("x1", (d) => d.source.x)
@@ -200,8 +229,10 @@ export const Graph = (props) => {
             <Grid id="graphContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
                     <svg ref={svgRef}>
-                        <g className="linkGroup"></g>
-                        <g className="nodeGroup"></g>
+                        <g className="graphGroup">
+                            <g className="linkGroup"></g>
+                            <g className="nodeGroup"></g>
+                        </g>
                     </svg>
                 </Grid>
             </Grid>
