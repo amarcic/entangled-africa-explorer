@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { getDimensions, getNodesAndLinks } from "../../utils";
 import {
-    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal, schemeCategory10, select, zoom
+    drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, scaleOrdinal,
+    schemeCategory10, select, zoom
 } from "d3";
 
 
@@ -150,14 +151,14 @@ export const Graph = (props) => {
         // create links
         //svg.selectAll(".line").remove(); // does not work
         const link = svg.select(".linkGroup")
-            .attr("class", "line")
             .selectAll("line")
             .data(links)
             .join("line")
-            .attr("stroke-width", 2)
+            .attr("class", "line")
+            .attr("stroke-width", 0.1)
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.6);
-            //.attr("marker-end", "url(#arrowhead)");
+        //.attr("marker-end", "url(#arrowhead)");
 
         // create nodes
         const node = svg.select(".nodeGroup")
@@ -166,18 +167,13 @@ export const Graph = (props) => {
             .selectAll("g")
             .data(nodes)
             .join("g")
+            .style("opacity", 0)
             .call(dragging(simulation));
 
         svg.selectAll(".circle").remove();
         node.append("circle")
             .attr("class", "circle")
-            .attr("r", (d) => {
-                // set node circle radius based on weight of node, i.e. how many links are connected to it
-                d.weight = link
-                    .filter((l) => l.source.index === d.index || l.target.index === d.index)
-                    .size();
-                return circleSize + d.weight;
-            })
+            .attr("r", circleSize)
             .attr("fill", nodecolor());
 
         // add text to nodes
@@ -196,6 +192,27 @@ export const Graph = (props) => {
         node.append("title")
             .attr("class", "title")
             .text((d) => d.id);
+
+        node
+            .transition()
+            .duration(500)
+            .style("opacity", 1);
+
+        svg.selectAll(".circle")
+            .transition()
+            .duration(2000)
+            .attr("r", (d) => {
+                // set node circle radius based on weight of node, i.e. how many links are connected to it
+                d.weight = link
+                    .filter((l) => l.source.index === d.index || l.target.index === d.index)
+                    .size();
+                return d.weight > 1 ? circleSize + d.weight : circleSize;
+            });
+
+        link
+            .transition()
+            .duration(1000)
+            .attr("stroke-width", 2);
 
 
         //apply manual zoom
