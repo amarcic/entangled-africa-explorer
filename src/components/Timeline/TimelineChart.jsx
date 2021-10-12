@@ -230,7 +230,6 @@ export const TimelineChart = (props) => {
 
         selectionEnteringAndUpdating
             .on("click", (event, value) => {
-                //select(event.currentTarget)
                 dispatch({
                     type: "UPDATE_INPUT",
                     payload: {field: "highlightedObjects", value: value.items.map( item => item.id)}

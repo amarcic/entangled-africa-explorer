@@ -77,8 +77,12 @@ export const Histogram = (props) => {
             svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
                 .selectAll("rect").data(binnedData).join(
-                    enter => enter.append("rect")
-                ).attr("class", value => value.values.some( id => input.highlightedObjects.indexOf(id) > -1 ) ? "bar highlighted" : "bar")
+                    enter =>
+                        enter.append("rect")).attr("class", value =>
+                            value.values.some( id =>
+                                input.highlightedObjects.indexOf(id) > -1 )
+                                    ? "bar highlighted"
+                                    : "bar")
                     //.attr("y", value => y(value.values.length))
                     .attr("y", height*-1)
                     .attr("x", value => x(value.lower))
@@ -101,6 +105,12 @@ export const Histogram = (props) => {
                             .attr("y", y(value.values.length)+3);
                     })
                     //.on("mouseleave", () => svg.select(".tooltip").remove())
+                    .on("click", (event, value) => {
+                        dispatch({
+                            type: "UPDATE_INPUT",
+                            payload: {field: "highlightedObjects", value: value.values}
+                        });
+                    } )
                     .transition()
                     .attr("height", value => height - y(value.values.length))
                     .attr("fill", value => colorScale(value.values.length));
