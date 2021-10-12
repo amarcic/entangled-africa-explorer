@@ -9,16 +9,7 @@ export const TimelineChart = (props) => {
 
     const classes = useStyles();
 
-    //todo: make highlighted global state?
-    /*const [highlighted, setHighlighted] = useState({
-        objects: ["1080824", "1086070"],
-        periods: [],
-        locations: []
-    });*/
     const [input, dispatch] = props.reducer;
-
-    //const [highlightedObjects, setHighlightedObjects] = useState(["1080824"]);
-    //let highlightedObjects = input.highlightedObjects;
 
     const svgRef = useRef();
 
@@ -98,7 +89,7 @@ export const TimelineChart = (props) => {
             .domain(itemQuantityExtent)
             .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
 
-        //function to add labels to the bars (when bandwith is heigh enough for readable labels)
+        //function to add labels to the bars (when bandwidth is high enough for readable labels)
         //todo: remove outer dependency on selectionLabels?
         const addLabels = (bandwidth, renderLimit) => {
             if (bandwidth > renderLimit) {
