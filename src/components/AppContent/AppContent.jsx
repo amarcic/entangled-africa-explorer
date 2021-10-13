@@ -39,6 +39,7 @@ const initialInput = {
     selectedMarker: undefined,
     timelineSort: "period",
     highlightedTimelineObject: undefined,
+    highlightedObjects: [],
     areaA: 1,
     areaB: 0,
     bigTileArea: "",
@@ -403,6 +404,7 @@ export const AppContent = () => {
                         maximizeTileButton={maximizeTileButton}
                     />
                     || input[area]===1 && <Histogram
+                        reducer={[input, dispatch]}
                         timelineData={dataObjects?.entitiesMultiFilter.map(timelineMapper)}
                         maximizeTileButton={maximizeTileButton}
                     />
