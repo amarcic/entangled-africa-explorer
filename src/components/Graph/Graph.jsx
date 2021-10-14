@@ -147,8 +147,8 @@ export const Graph = (props) => {
                 .call(zimzoom);
         };
 
-        const startingZoom = (minZoom) => {
-            svg.select(".graphGroup")
+        const startingZoom = () => {
+            svg
                 .transition()
                 .duration(1500)
                 .call(zimzoom.scaleTo, minZoom);
@@ -223,7 +223,7 @@ export const Graph = (props) => {
 
 
         //apply manual zoom
-        startingZoom(minZoom);
+        startingZoom();
         initZoom();
 
 
