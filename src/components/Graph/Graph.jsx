@@ -139,13 +139,20 @@ export const Graph = (props) => {
 
         const zimzoom = zoom()
             .scaleExtent([minZoom, maxZoom]) // if first value is set to 0 then zooming out will have no limit
-            .translateExtent([[-dimensions.height,-dimensions.width], [dimensions.width, dimensions.height]])
+            .translateExtent([[-dimensions.height, -dimensions.width], [dimensions.width, dimensions.height]])
             .on("zoom", handleZoom);
 
         const initZoom = () => {
             svg
                 .call(zimzoom);
         };
+
+        const startingZoom = (minZoom) => {
+            svg.select(".graphGroup")
+                .transition()
+                .duration(1500)
+                .call(zimzoom.scaleTo, minZoom);
+        }
 
 
         // create links
@@ -216,6 +223,7 @@ export const Graph = (props) => {
 
 
         //apply manual zoom
+        startingZoom(minZoom);
         initZoom();
 
 
