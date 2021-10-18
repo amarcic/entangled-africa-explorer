@@ -85,8 +85,8 @@ export const Graph = (props) => {
 
         const {nodes, links} = getNodesAndLinks(data);
 
-        const circleSize = 8;
-        const fontSize = 14;
+        const circleSize = 10,
+            fontSize = 14;
 
         /*function boxingForce() {
             const xMax = dimensions.width/2 - (dimensions.margin.left + dimensions.margin.right)/2; //?
@@ -99,6 +99,7 @@ export const Graph = (props) => {
             }
         }*/
 
+        // create simulation with combination of forces
         const simulation = forceSimulation(nodes)
             .force("link", forceLink(links).id((d) => d.id))
             .force("separate", forceCollide((dimensions.height+dimensions.width) * 0.02)) //?
@@ -106,7 +107,7 @@ export const Graph = (props) => {
             .force("x", forceX())
             .force("y", forceY())
             .force("center", forceCenter())
-            //.force("bounds", boxingForce);
+        //.force("bounds", boxingForce);
 
         //const svg = select(svgRef.current)
         //    .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
@@ -127,15 +128,15 @@ export const Graph = (props) => {
 
         //set up zoom and pan
         const handleZoom = (event) => {
-            const transform = event.transform;
-
             //zoom and pan the entire graph
             svg.select(".graphGroup")
-                .attr("transform", transform);
+                .attr("transform", event.transform);
+
+            updateLabels(event.transform.k);
         };
 
-        const minZoom = 0.5;
-        const maxZoom = 2;
+        const minZoom = 0.5,
+            maxZoom = 3;
 
         const zimzoom = zoom()
             .scaleExtent([minZoom, maxZoom]) // if first value is set to 0 then zooming out will have no limit
@@ -152,7 +153,7 @@ export const Graph = (props) => {
                 .transition()
                 .duration(1500)
                 .call(zimzoom.scaleTo, minZoom);
-        }
+        };
 
 
         // create links
@@ -167,23 +168,25 @@ export const Graph = (props) => {
             .attr("stroke-opacity", 0.6);
         //.attr("marker-end", "url(#arrowhead)");
 
+
         // create nodes
         const node = svg.select(".nodeGroup")
             .attr("stroke", "#fff")
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", 0.5)
             .selectAll("g")
             .data(nodes)
             .join("g")
             .style("opacity", 0)
             .call(dragging(simulation));
 
+        // add circles to nodes
         svg.selectAll(".circle").remove();
         node.append("circle")
             .attr("class", "circle")
             .attr("r", circleSize)
             .attr("fill", nodecolor());
 
-        // add text to nodes
+        // add labels to nodes
         svg.selectAll(".label").remove();
         node.append("text")
             .attr("class", "label")
@@ -200,6 +203,8 @@ export const Graph = (props) => {
             .attr("class", "title")
             .text((d) => d.id);
 
+
+        // transitions
         node
             .transition()
             .duration(500)
@@ -213,7 +218,7 @@ export const Graph = (props) => {
                 d.weight = link
                     .filter((l) => l.source.index === d.index || l.target.index === d.index)
                     .size();
-                return d.weight > 1 ? circleSize + d.weight : circleSize;
+                return circleSize + d.weight;
             });
 
         link
@@ -222,7 +227,7 @@ export const Graph = (props) => {
             .attr("stroke-width", 2);
 
 
-        //apply manual zoom
+        // apply zoom
         startingZoom();
         initZoom();
 
