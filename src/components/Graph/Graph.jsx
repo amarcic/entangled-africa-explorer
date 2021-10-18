@@ -192,12 +192,29 @@ export const Graph = (props) => {
             .attr("class", "label")
             .text((d) => d.name)
             .attr("stroke", "none")
-            .attr("text-anchor", "start")
-            .attr("dx", (d) => d.weight + circleSize + fontSize * 0.1)
-            .attr("dy", fontSize * (1/3))
-            .attr("font-size", fontSize);
+            .attr("text-anchor", "start");
 
-        // add title (shown on hovering) to nodes
+        //label positions x and y are changed on zoom but the font size remains unchanged
+        const updateLabels = (k) => {
+            const padding = 2 / k;
+
+            svg.selectAll(".label")
+                .attr("font-size", fontSize / k) //i.e. compensate the zoom that was applied to the label
+                .attr("x", (d) => {
+                    d.weight = link
+                        .filter((l) => l.source.index === d.index || l.target.index === d.index)
+                        .size();
+                    return circleSize + d.weight + padding;
+                })
+                .attr("y", (d) => {
+                    d.weight = link
+                        .filter((l) => l.source.index === d.index || l.target.index === d.index)
+                        .size();
+                    return (circleSize + d.weight) / 3;
+                });
+        };
+
+        // add titles (shown on hovering) to nodes
         svg.selectAll(".title").remove();
         node.append("title")
             .attr("class", "title")
