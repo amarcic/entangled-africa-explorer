@@ -165,7 +165,7 @@ export const Graph = (props) => {
             .attr("class", "line")
             .attr("stroke-width", 0.1)
             .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.6);
+            .attr("stroke-opacity", 0.8);
         //.attr("marker-end", "url(#arrowhead)");
 
 
@@ -176,7 +176,8 @@ export const Graph = (props) => {
             .join("g")
             .style("opacity", 0)
             .attr("stroke", (d) => d.nodeLevel === "searchResult" ? "#000" : "#999")
-            .attr("stroke-width", (d) => d.nodeLevel === "searchResult" ? 2 : 0.5)
+            .attr("stroke-width", 0.5)
+            //.attr("stroke-width", (d) => d.nodeLevel === "searchResult" ? 2 : 0.5)
             .style("filter", (d) => d.nodeLevel === "searchResult" ? "brightness(100%)" : "brightness(80%)") // is this visually confusing?
             .call(dragging(simulation));
 
@@ -224,26 +225,48 @@ export const Graph = (props) => {
             .attr("class", "title")
             .text((d) => d.id);
 
-        // show label and make circle slightly bigger on mouseover
+        // on mouseenter: enlarge circle and show its label; highlight lines connected to the circle and circles connected to those lines
         node
             .on("mouseenter", (event, item) => {
                 const selection = node.filter((d) => d.id === item.id); //is there a smarter way?
+                const connectedLinks = link.filter((l) => l.source.index === item.index || l.target.index === item.index);
 
                 selection.select(".circle")
                     .attr("r", selection.select(".circle").attr("r") * 1.05); //is there a smarter way?
 
                 selection.select(".label")
                     .attr("visibility", "visible")
+
+                connectedLinks
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 3);
+
+                //TODO: select all nodes that appear as source/target among the links in connectedLinks and re-style them
+                /*connectedNodes
+                    .selectAll(".circle")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 2);*/
             })
+            // on mouseleave: undo effects of mouseenter
             .on("mouseleave", (event, item) => {
                 const selection = node.filter((d) => d.id === item.id);
+                //const connectedLinks = link.filter((l) => l.source.index === item.index || l.target.index === item.index);
 
                 selection.select(".circle")
                     .attr("r", selection.select(".circle").attr("r") / 1.05);
 
-                selection.select(".label")
+                svg.selectAll(".label") //alternatively -->  selection.select(".label").attr(...)
                     .attr("visibility", "hidden");
                 //.attr("visibility", (d) => d.nodeLevel === "searchResult" ? "visible" : "hidden");
+
+                svg.selectAll(".line") //alternatively --> connectedLinks.attr(...)
+                    .attr("stroke", "#999")
+                    .attr("stroke-width", 2);
+
+                /*connectedNodes
+                    .selectAll(".circle")
+                    .attr("stroke", "#999")
+                    .attr("stroke-width", 0.5);*/
             });
 
 
