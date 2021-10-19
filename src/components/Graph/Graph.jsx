@@ -194,11 +194,13 @@ export const Graph = (props) => {
             .text((d) => d.name)
             .attr("stroke", "none")
             .attr("text-anchor", "start")
-            .attr("font-weight", (d) => d.nodeLevel === "searchResult" ? "bold" : "normal");
+            //.attr("font-weight", (d) => d.nodeLevel === "searchResult" ? "bold" : "normal")
+            //.attr("visibility", (d) => d.nodeLevel === "searchResult" ? "visible" : "hidden");
+            .attr("visibility", "hidden");
 
         //label positions x and y are changed on zoom but the font size remains unchanged
         const updateLabels = (k) => {
-            const padding = 4 / k;
+            const padding = 5 / k;
 
             svg.selectAll(".label")
                 .attr("font-size", fontSize / k) //i.e. compensate the zoom that was applied to the label
@@ -221,6 +223,28 @@ export const Graph = (props) => {
         node.append("title")
             .attr("class", "title")
             .text((d) => d.id);
+
+        // show label and make circle slightly bigger on mouseover
+        node
+            .on("mouseenter", (event, item) => {
+                const selection = node.filter((d) => d.id === item.id); //is there a smarter way?
+
+                selection.select(".circle")
+                    .attr("r", selection.select(".circle").attr("r") * 1.05); //is there a smarter way?
+
+                selection.select(".label")
+                    .attr("visibility", "visible")
+            })
+            .on("mouseleave", (event, item) => {
+                const selection = node.filter((d) => d.id === item.id);
+
+                selection.select(".circle")
+                    .attr("r", selection.select(".circle").attr("r") / 1.05);
+
+                selection.select(".label")
+                    .attr("visibility", "hidden");
+                //.attr("visibility", (d) => d.nodeLevel === "searchResult" ? "visible" : "hidden");
+            });
 
 
         // transitions
