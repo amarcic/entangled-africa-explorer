@@ -433,7 +433,8 @@ const getNodesAndLinks = (data) => {
             id: d.identifier,
             name: d.name,
             type: (d.__typename === "Entity" && "arachne") || (d.__typename === "Place" && "gazetteer"),
-            subtype: d.type
+            subtype: d.type,
+            nodeLevel: "searchResult"
         });
 
         //nodes and links under "related" or "linkedObjects"

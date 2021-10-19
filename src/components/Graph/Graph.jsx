@@ -171,12 +171,13 @@ export const Graph = (props) => {
 
         // create nodes
         const node = svg.select(".nodeGroup")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 0.5)
             .selectAll("g")
             .data(nodes)
             .join("g")
             .style("opacity", 0)
+            .attr("stroke", (d) => d.nodeLevel === "searchResult" ? "#000" : "#999")
+            .attr("stroke-width", (d) => d.nodeLevel === "searchResult" ? 2 : 0.5)
+            .style("filter", (d) => d.nodeLevel === "searchResult" ? "brightness(100%)" : "brightness(80%)") // is this visually confusing?
             .call(dragging(simulation));
 
         // add circles to nodes
@@ -192,11 +193,12 @@ export const Graph = (props) => {
             .attr("class", "label")
             .text((d) => d.name)
             .attr("stroke", "none")
-            .attr("text-anchor", "start");
+            .attr("text-anchor", "start")
+            .attr("font-weight", (d) => d.nodeLevel === "searchResult" ? "bold" : "normal");
 
         //label positions x and y are changed on zoom but the font size remains unchanged
         const updateLabels = (k) => {
-            const padding = 2 / k;
+            const padding = 4 / k;
 
             svg.selectAll(".label")
                 .attr("font-size", fontSize / k) //i.e. compensate the zoom that was applied to the label
