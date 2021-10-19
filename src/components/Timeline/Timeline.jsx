@@ -12,6 +12,7 @@ export const Timeline = (props) => {
     const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
 
     const { timelineObjectsData, maximizeTileButton } = props;
+    const [input, dispatch] = props.reducer;
     const filteredTimelineData = timelineObjectsData&&timelineObjectsData
         .filter( datapoint =>
             datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
@@ -36,7 +37,11 @@ export const Timeline = (props) => {
             </Grid>
             <Grid id="timelineContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    <TimelineChart filteredTimelineData={filteredTimelineData} dimensions={dimensions/*getDimensions("timelineContainer")*/} />
+                    <TimelineChart
+                        reducer={[input, dispatch]}
+                        filteredTimelineData={filteredTimelineData}
+                        dimensions={dimensions}
+                    />
                 </Grid>
             </Grid>
         </>
