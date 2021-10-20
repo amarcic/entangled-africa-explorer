@@ -229,23 +229,33 @@ export const Graph = (props) => {
         node
             .on("mouseenter", (event, item) => {
                 const selection = node.filter((d) => d.id === item.id); //is there a smarter way?
+                // alternative to the line above:
+                // const selection = select(event.currentTarget);
                 const connectedLinks = link.filter((l) => l.source.index === item.index || l.target.index === item.index);
+                const connectedNodesIds = connectedLinks.data()
+                    .map( link => [link.source.id, link.target.id] )
+                    .flat()
+                    .filter( id => id !== item.id );
+                const connectedNodes = node.filter( node => connectedNodesIds.indexOf(node.id) > -1 );
 
                 selection.select(".circle")
                     .attr("r", selection.select(".circle").attr("r") * 1.05); //is there a smarter way?
+                //alternative: let css do the updates by defining a class for highlighted graph nodes, etc and
+                // only add the class name here.
+                //this also makes it easier to remove all changes on mouseleave, since only the class name needs to be removed
 
                 selection.select(".label")
                     .attr("visibility", "visible")
 
                 connectedLinks
                     .attr("stroke", "#000")
-                    .attr("stroke-width", 3);
+                    .attr("stroke-width", 3)
 
-                //TODO: select all nodes that appear as source/target among the links in connectedLinks and re-style them
-                /*connectedNodes
+                //TODO: remove highlighted styling from nodes at mouseleave
+                connectedNodes
                     .selectAll(".circle")
                     .attr("stroke", "#000")
-                    .attr("stroke-width", 2);*/
+                    .attr("stroke-width", 2);
             })
             // on mouseleave: undo effects of mouseenter
             .on("mouseleave", (event, item) => {
