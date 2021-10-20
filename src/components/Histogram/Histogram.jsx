@@ -81,7 +81,7 @@ export const Histogram = (props) => {
                         enter.append("rect")).attr("class", value =>
                             value.values.some( id =>
                                 input.highlightedObjects.indexOf(id) > -1 )
-                                    ? "bar highlighted"
+                                    ? "bar highlight"
                                     : "bar")
                     //.attr("y", value => y(value.values.length))
                     .attr("y", height*-1)

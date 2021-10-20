@@ -20,7 +20,7 @@
     background-color: #1c9489 !important;
     color: #fff !important;
 }
-.highlighted {
+.highlight.bar {
     stroke: pink;
     stroke-width: 2;
 }

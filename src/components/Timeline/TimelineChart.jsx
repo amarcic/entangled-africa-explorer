@@ -181,7 +181,7 @@ export const TimelineChart = (props) => {
                 value.items.map( item =>
                     item.id ).some( id =>
                         input.highlightedObjects.indexOf(id) >-1 )
-                            ? "bar highlighted"
+                            ? "bar highlight"
                             : "bar")
             .attr("fill", value => colorScale(value.items.length))
             /*.attr("stroke", value => highlighted.objects.some( id =>
