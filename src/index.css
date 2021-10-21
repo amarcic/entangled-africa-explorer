@@ -20,6 +20,10 @@
     background-color: #1c9489 !important;
     color: #fff !important;
 }
+svg#timelineSVG {
+    width: 100%;
+    height: 100%;
+}
 .highlight.bar {
     stroke: pink;
     stroke-width: 2;

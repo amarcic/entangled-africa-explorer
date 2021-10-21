@@ -11,7 +11,10 @@ export const TimelineChart = (props) => {
 
     const [input, dispatch] = props.reducer;
 
+    const wrapperRef = useRef();
     const svgRef = useRef();
+
+    const dimension = useResizeObserver(wrapperRef);
 
     console.log("dimensions", props.dimensions)
 
@@ -29,8 +32,9 @@ export const TimelineChart = (props) => {
     //console.log("sorted data: ", dataUnsorted)
 
     //setting up the svg after first render
-    useEffect(() => {
+    /*useEffect(() => {
         const { width, height, margin } = props.dimensions;
+        //const {  } = dimension;
         //console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
@@ -38,21 +42,26 @@ export const TimelineChart = (props) => {
         svg.select('.timelineGroup')
             .attr("transform",`translate(${margin.left}, ${margin.top})`);
 
-    }, [props.dimensions]);
+    }, [props.dimensions, dimension]);*/
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
-        drawTimeline(timelineData, props.dimensions)
-    }, [props.filteredTimelineData, props.dimensions, input] );
+        drawTimeline(timelineData, dimension /*, props.dimensions*/)
+    }, [props.filteredTimelineData, /*props.dimensions,*/ input, dimension] );
 
 //todo: check if still depending on outer scope (like height, width, margin)
-    const drawTimeline = (timelineConfig, dimensions) => {
-
+    const drawTimeline = (timelineConfig, dimension/*dimensions*/) => {
+        if (!dimension) return;
         const { data, svgRef, xDomain } = timelineConfig;
-        const { width, height, margin } = dimensions;
+        //const { width, height } = dimension;
+        const margin = {top: 5, right: 20, left: 20, bottom: 30}//dimensions;
+        const width = dimension.width - margin.right - margin.left;
+        const height = dimension.height - margin.top - margin.bottom;
         const svg = select(svgRef.current);
         //todo: change name to be more describing: limit of bar height for rendering labels in different ways
         const labelRenderLimit = 8;
+
+        console.log("useResizeObserver: ", dimension)
 
         //empty canvas in case no data is found by query
         if(!data||data.size===0) {
@@ -238,8 +247,8 @@ export const TimelineChart = (props) => {
     }
 
     return (
-        <div className="timeline">
-            <svg ref={svgRef}>
+        <div className="timeline" ref={wrapperRef}>
+            <svg ref={svgRef} id="timelineSVG">
                 <g className="timelineGroup">
 
                 </g>
