@@ -27,6 +27,23 @@ const useDebounce = (value, delay) => {
     return debouncedValue;
 }
 
+const useResizeObserver = ref => {
+    const [dimensions, setDimensions] = useState();
+    useEffect( () => {
+        const observeTarget = ref.current;
+        const resizeObserver = new ResizeObserver( entries => {
+            entries.forEach( entry => {
+                setDimensions(entry.contentRect)
+            } );
+        } )
+        resizeObserver.observe(observeTarget);
+        return () => {
+            resizeObserver.unobserve(observeTarget)
+        }
+    }, [ref] );
+    return dimensions;
+}
+
 //get dimensions height and width from an element in the dom
 const getDimensions = (domContainerID) => {
     const timelineContainer = document.getElementById(domContainerID);
@@ -304,5 +321,6 @@ export {
     getTimeRangeOfTimelineData,
     prepareHistogramData,
     binTimespanObjects,
-    getDimensions
+    getDimensions,
+    useResizeObserver
 };

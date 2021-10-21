@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent } from "d3";
-import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
+import {getTimeRangeOfTimelineData, newGroupByPeriods, useResizeObserver} from "../../utils";
 
 export const TimelineChart = (props) => {
     const { t, i18n } = useTranslation();
