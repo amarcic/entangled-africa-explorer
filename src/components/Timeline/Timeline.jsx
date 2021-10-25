@@ -3,13 +3,13 @@ import { Grid } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { TimelineChart } from "./TimelineChart";
-import {getDimensions} from "../../utils";
+//import {getDimensions} from "../../utils";
 
 export const Timeline = (props) => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
-    const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
+    //const [dimensions, setDimensions] = useState({width: 0, height: 0, margin: {top: 0, right: 0, left: 0, bottom: 0}});
 
     const { timelineObjectsData } = props;
     const [input, dispatch] = props.reducer;
@@ -17,13 +17,13 @@ export const Timeline = (props) => {
         .filter( datapoint =>
             datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
 
-    useEffect( () => {
+    /*useEffect( () => {
         let currentDimensions = getDimensions("timelineContainer");
         if (currentDimensions&&currentDimensions.width!==dimensions?.width)
             setDimensions(currentDimensions);
         console.log("state dimensions", dimensions)
 
-    }, []);
+    }, []);*/
 
     return (
         <>
@@ -37,7 +37,7 @@ export const Timeline = (props) => {
                     <TimelineChart
                         reducer={[input, dispatch]}
                         filteredTimelineData={filteredTimelineData}
-                        dimensions={dimensions}
+                        //dimensions={dimensions}
                     />
                 </Grid>
             </Grid>

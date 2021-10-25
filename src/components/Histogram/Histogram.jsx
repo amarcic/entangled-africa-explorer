@@ -126,7 +126,7 @@ export const Histogram = (props) => {
             </Grid>
             <Grid id="histogramContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
-                    <svg ref={svgRef}>
+                    <svg id="histogramSVG" ref={svgRef}>
                         <g className="bars">
                             <g className="xAxis"></g>
                             <g className="yAxis"></g>

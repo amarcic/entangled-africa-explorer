@@ -54,6 +54,7 @@ export const TimelineChart = (props) => {
         if (!dimension) return;
         const { data, svgRef, xDomain } = timelineConfig;
         //const { width, height } = dimension;
+        console.log("dimension: ", dimension)
         const margin = {top: 5, right: 20, left: 20, bottom: 30}//dimensions;
         const width = dimension.width - margin.right - margin.left;
         const height = dimension.height - margin.top - margin.bottom;

@@ -42,11 +42,13 @@ const useStyles = makeStyles(theme => ({
         width: "100%"
     },
     fullHeightTile: {
-        height: "calc(100vh - 12vh - 12px)",
+        //todo: temporary removal: fix height calculation with useResizeObserver
+        //height: "calc(100vh - 12vh - 12px)",
         //padding: theme.spacing(2)
     },
     halfHeightTile: {
-        height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
+        //todo: temporary removal: fix height calculation with useResizeObserver
+        //height: "calc(50vh - 6vh - 6px)", // half of the dashboardBody/dashboardHeader/dashboardFooter height
         // this class will take the same height as fullHeightTile if the screen is size "xs":
         [theme.breakpoints.down("xs")]: {
             height: "calc(100vh - 12vh - 12px)",
