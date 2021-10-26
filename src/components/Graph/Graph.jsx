@@ -228,9 +228,8 @@ export const Graph = (props) => {
         // on mouseenter: enlarge circle and show its label; highlight lines connected to the circle and circles connected to those lines
         node
             .on("mouseenter", (event, item) => {
-                const selection = node.filter((d) => d.id === item.id); //is there a smarter way?
-                // alternative to the line above:
-                // const selection = select(event.currentTarget);
+                //const selection = node.filter((d) => d.id === item.id);
+                const selection = select(event.currentTarget);
                 const connectedLinks = link.filter((l) => l.source.index === item.index || l.target.index === item.index);
                 const connectedNodesIds = connectedLinks.data()
                     .map( link => [link.source.id, link.target.id] )
@@ -239,7 +238,10 @@ export const Graph = (props) => {
                 const connectedNodes = node.filter( node => connectedNodesIds.indexOf(node.id) > -1 );
 
                 selection.select(".circle")
-                    .attr("r", selection.select(".circle").attr("r") * 1.05); //is there a smarter way?
+                    //.attr("r", selection.select(".circle").attr("r") * 1.05)
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 4);
+
                 //alternative: let css do the updates by defining a class for highlighted graph nodes, etc and
                 // only add the class name here.
                 //this also makes it easier to remove all changes on mouseleave, since only the class name needs to be removed
@@ -251,7 +253,6 @@ export const Graph = (props) => {
                     .attr("stroke", "#000")
                     .attr("stroke-width", 3)
 
-                //TODO: remove highlighted styling from nodes at mouseleave
                 connectedNodes
                     .selectAll(".circle")
                     .attr("stroke", "#000")
@@ -259,24 +260,23 @@ export const Graph = (props) => {
             })
             // on mouseleave: undo effects of mouseenter
             .on("mouseleave", (event, item) => {
-                const selection = node.filter((d) => d.id === item.id);
+                //const selection = select(event.currentTarget);
                 //const connectedLinks = link.filter((l) => l.source.index === item.index || l.target.index === item.index);
 
-                selection.select(".circle")
-                    .attr("r", selection.select(".circle").attr("r") / 1.05);
+                //selection.select(".circle")
+                    //.attr("r", selection.select(".circle").attr("r") / 1.05);
 
-                svg.selectAll(".label") //alternatively -->  selection.select(".label").attr(...)
+                svg.selectAll(".label")
                     .attr("visibility", "hidden");
                 //.attr("visibility", (d) => d.nodeLevel === "searchResult" ? "visible" : "hidden");
 
-                svg.selectAll(".line") //alternatively --> connectedLinks.attr(...)
+                svg.selectAll(".line")
                     .attr("stroke", "#999")
                     .attr("stroke-width", 2);
 
-                /*connectedNodes
-                    .selectAll(".circle")
+                svg.selectAll(".circle")
                     .attr("stroke", "#999")
-                    .attr("stroke-width", 0.5);*/
+                    .attr("stroke-width", 0.5);
             });
 
 
