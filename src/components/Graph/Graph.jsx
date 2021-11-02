@@ -140,7 +140,7 @@ export const Graph = (props) => {
 
         const zimzoom = zoom()
             .scaleExtent([minZoom, maxZoom]) // if first value is set to 0 then zooming out will have no limit
-            .translateExtent([[-dimensions.height, -dimensions.width], [dimensions.width, dimensions.height]])
+            .translateExtent([[-dimensions.width, -dimensions.height], [dimensions.width, dimensions.height]])
             .on("zoom", handleZoom);
 
         const initZoom = () => {
