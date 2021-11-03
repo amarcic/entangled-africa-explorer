@@ -13,10 +13,9 @@ export const TimelineChart = (props) => {
 
     const svgRef = useRef();
     const wrapperRef = useRef();
-
     console.log("dimensions", props.dimensions)
 
-    const size = useResize(wrapperRef, {height: 80, width: 500});
+    const size = useResize(wrapperRef);
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
     const data = dataUnsorted && new Map([...dataUnsorted.entries()]
@@ -32,7 +31,9 @@ export const TimelineChart = (props) => {
 
     //setting up the svg after first render
     useEffect(() => {
-        const { width, height, margin } = props.dimensions;
+        if (!size) return;
+        const { margin } = props.dimensions;
+        const {width, height} = size;
         //console.log("width", width)
         const svg = select(svgRef.current)
             .attr("width", width + margin.left + margin.right)
@@ -44,8 +45,9 @@ export const TimelineChart = (props) => {
 
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
+        if (!size) return;
         drawTimeline(timelineData, props.dimensions)
-    }, [props.filteredTimelineData, props.dimensions, input] );
+    }, [props.filteredTimelineData, props.dimensions, size, input] );
 
 //todo: check if still depending on outer scope (like height, width, margin)
     const drawTimeline = (timelineConfig, dimensions) => {
@@ -53,6 +55,7 @@ export const TimelineChart = (props) => {
         const { data, svgRef, xDomain } = timelineConfig;
         const { margin } = dimensions;
         const { width, height } = size;
+        console.log("w&h: ", width, height)
         const svg = select(svgRef.current);
         //todo: change name to be more describing: limit of bar height for rendering labels in different ways
         const labelRenderLimit = 8;
@@ -241,7 +244,7 @@ export const TimelineChart = (props) => {
     }
 
     return (
-        <div className="timeline">
+        <div className="timeline" ref={wrapperRef}>
             <svg ref={svgRef}>
                 <g className="timelineGroup">
 

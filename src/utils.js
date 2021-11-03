@@ -41,9 +41,9 @@ const getDimensions = (domContainerID) => {
     return {margin: margin, width: width, height: height};
 }
 
-const useResize = (ref, initDimensions) => {
-    const [dimensions, setDimensions] = useState(initDimensions);
-    console.log("useResize dimensions: ", dimensions)
+const useResize = (ref) => {
+    const [dimensions, setDimensions] = useState();
+    console.log("1. useResize dimensions: ", dimensions, ref);
     /*const getSizeDebounced = useDebounce( () => {
         if (!ref || !ref.current) return;
 
@@ -57,8 +57,9 @@ const useResize = (ref, initDimensions) => {
 
     useEffect( () => {
         const getSize = () => {
+            console.log("got ref?", ref)
             if (!ref || !ref.current) return;
-
+            console.log("getSize useResize dimensions: ", dimensions)
             const width = ref.current.offsetWidth;
             const height = ref.current.offsetHeight;
             setDimensions({
@@ -70,6 +71,7 @@ const useResize = (ref, initDimensions) => {
         getSize();
         return () => window.removeEventListener("resize", getSize);
     }, [ref] );
+    console.log("2. useResize dimensions: ", dimensions)
 
     return dimensions;
 }

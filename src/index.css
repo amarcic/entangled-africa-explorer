@@ -20,6 +20,10 @@
     background-color: #1c9489 !important;
     color: #fff !important;
 }
+.timeline {
+    width: 100%;
+    height: 100%;
+}
 .highlighted {
     stroke: pink;
     stroke-width: 2;
