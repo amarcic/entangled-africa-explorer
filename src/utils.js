@@ -41,6 +41,26 @@ const getDimensions = (domContainerID) => {
     return {margin: margin, width: width, height: height};
 }
 
+const useResize = (ref) => {
+    const [dimensions, setDimensions] = useState();
+    useEffect( () => {
+        const getSize = useDebounce( () => {
+            if (!ref || !ref.current) return;
+
+            const width = ref.current.offsetWidth;
+            const height = ref.current.offsetHeight;
+            setDimensions({
+                width,
+                height
+            });
+        } ,1000 );
+
+        window.addEventListener("resize", getSize);
+        getSize();
+        return () => window.removeEventListener("resize", getSize);
+    }, [ref] );
+    return dimensions;
+}
 
 //TIMELINE HELPER FUNCTIONS
 
