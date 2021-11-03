@@ -324,5 +324,6 @@ export {
     getTimeRangeOfTimelineData,
     prepareHistogramData,
     binTimespanObjects,
-    getDimensions
+    getDimensions,
+    useResize
 };

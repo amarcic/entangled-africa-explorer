@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent } from "d3";
-import {getTimeRangeOfTimelineData, newGroupByPeriods} from "../../utils";
+import {getTimeRangeOfTimelineData, newGroupByPeriods,useResize} from "../../utils";
 
 export const TimelineChart = (props) => {
     const { t, i18n } = useTranslation();
@@ -12,9 +12,11 @@ export const TimelineChart = (props) => {
     const [input, dispatch] = props.reducer;
 
     const svgRef = useRef();
+    const wrapperRef = useRef();
 
     console.log("dimensions", props.dimensions)
 
+    const size = props.dimensions;//useResize(wrapperRef);
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
     const data = dataUnsorted && new Map([...dataUnsorted.entries()]
@@ -49,7 +51,8 @@ export const TimelineChart = (props) => {
     const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
-        const { width, height, margin } = dimensions;
+        const { margin } = dimensions;
+        const { width, height } = size;
         const svg = select(svgRef.current);
         //todo: change name to be more describing: limit of bar height for rendering labels in different ways
         const labelRenderLimit = 8;
