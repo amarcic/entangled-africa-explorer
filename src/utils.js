@@ -41,10 +41,22 @@ const getDimensions = (domContainerID) => {
     return {margin: margin, width: width, height: height};
 }
 
-const useResize = (ref) => {
-    const [dimensions, setDimensions] = useState();
+const useResize = (ref, initDimensions) => {
+    const [dimensions, setDimensions] = useState(initDimensions);
+    console.log("useResize dimensions: ", dimensions)
+    /*const getSizeDebounced = useDebounce( () => {
+        if (!ref || !ref.current) return;
+
+        const width = ref.current.offsetWidth;
+        const height = ref.current.offsetHeight;
+        setDimensions({
+            width,
+            height
+        });
+    } ,1000 );*/
+
     useEffect( () => {
-        const getSize = useDebounce( () => {
+        const getSize = () => {
             if (!ref || !ref.current) return;
 
             const width = ref.current.offsetWidth;
@@ -53,12 +65,12 @@ const useResize = (ref) => {
                 width,
                 height
             });
-        } ,1000 );
-
+        }
         window.addEventListener("resize", getSize);
         getSize();
         return () => window.removeEventListener("resize", getSize);
     }, [ref] );
+
     return dimensions;
 }
 

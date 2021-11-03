@@ -16,7 +16,7 @@ export const TimelineChart = (props) => {
 
     console.log("dimensions", props.dimensions)
 
-    const size = props.dimensions;//useResize(wrapperRef);
+    const size = useResize(wrapperRef, {height: 80, width: 500});
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
     const data = dataUnsorted && new Map([...dataUnsorted.entries()]
