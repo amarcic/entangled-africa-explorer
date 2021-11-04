@@ -17,13 +17,14 @@ export const Timeline = (props) => {
         .filter( datapoint =>
             datapoint.periodSpans?.[0]!==undefined||datapoint.periodSpans?.length>1);
 
+    /*
     useEffect( () => {
         let currentDimensions = getDimensions("timelineContainer");
         if (currentDimensions&&currentDimensions.width!==dimensions?.width)
             setDimensions(currentDimensions);
         console.log("state dimensions", dimensions)
 
-    }, []);
+    }, []);*/
 
     return (
         <>
@@ -36,13 +37,11 @@ export const Timeline = (props) => {
                 </Grid>
             </Grid>
             <Grid id="timelineContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
-                <Grid item>
-                    <TimelineChart
-                        reducer={[input, dispatch]}
-                        filteredTimelineData={filteredTimelineData}
-                        dimensions={dimensions}
-                    />
-                </Grid>
+                <TimelineChart
+                    reducer={[input, dispatch]}
+                    filteredTimelineData={filteredTimelineData}
+                    //dimensions={dimensions}
+                />
             </Grid>
         </>
     )

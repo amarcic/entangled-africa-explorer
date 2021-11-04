@@ -29,20 +29,6 @@ export const TimelineChart = (props) => {
     console.log("grouped by periods and sorted: ", data)
     //console.log("sorted data: ", dataUnsorted)
 
-    //setting up the svg after first render
-    useEffect(() => {
-        if (!size) return;
-        const { margin } = props.dimensions;
-        const {width, height} = size;
-        //console.log("width", width)
-        const svg = select(svgRef.current)
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
-        svg.select('.timelineGroup')
-            .attr("transform",`translate(${margin.left}, ${margin.top})`);
-
-    }, [props.dimensions]);
-
     //draw timeline everytime filteredTimelineData changes
     useEffect( () => {
         if (!size) return;
@@ -53,9 +39,10 @@ export const TimelineChart = (props) => {
     const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
-        const { margin } = dimensions;
-        const { width, height } = size;
-        console.log("w&h: ", width, height)
+        const margin = {top: 5, right: 20, left: 20, bottom: 30};
+        const width = size.width - margin.left - margin.right,
+            height = size.height - margin.top - margin.bottom;
+
         const svg = select(svgRef.current);
         //todo: change name to be more describing: limit of bar height for rendering labels in different ways
         const labelRenderLimit = 8;
@@ -121,9 +108,11 @@ export const TimelineChart = (props) => {
                     .remove();
             }
         }
-
         //add clip path to svg for later use
-        if (document.getElementById("clip")===null&&height&&width) {
+        if (
+            ((document.getElementById("clip"))===null||document.getElementById("clip").firstChild.attributes.width!==width)
+            &&height&&width) {
+            svg.selectAll("#clip").remove();
             svg.append("defs").append("clipPath")
                 .attr("id","clip")
                 .append("rect")
@@ -245,14 +234,14 @@ export const TimelineChart = (props) => {
 
     return (
         <div className="timeline" ref={wrapperRef}>
-            <svg ref={svgRef}>
+            {size&&(<svg ref={svgRef} width={size.width} height={size.height} id="timelineSVG">
                 <g className="timelineGroup">
 
                 </g>
                 <g className="xAxis"></g>
                 <g className="yAxis"></g>
-                <g className="background" />
-            </svg>
+                <g className="background"/>
+            </svg>)}
         </div>
     )
 };

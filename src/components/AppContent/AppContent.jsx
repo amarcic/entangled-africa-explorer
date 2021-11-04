@@ -23,7 +23,7 @@ const initialInput = {
     objectId: 0,
     regionId: 0,
     regionTitle: null,
-    searchStr: "ton",
+    searchStr: "brosche",
     catalogsCheckedIds: [],
     mode: "objects",
     sitesMode: "",
