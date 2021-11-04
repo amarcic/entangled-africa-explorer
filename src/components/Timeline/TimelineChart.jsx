@@ -13,9 +13,11 @@ export const TimelineChart = (props) => {
 
     const svgRef = useRef();
     const wrapperRef = useRef();
-    console.log("dimensions", props.dimensions)
 
+    //useResize explanation
     const size = useResize(wrapperRef);
+    const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
     const data = dataUnsorted && new Map([...dataUnsorted.entries()]
@@ -26,7 +28,8 @@ export const TimelineChart = (props) => {
     const timelineData = { xDomain, data, svgRef };
 
     //console.log("filteredTimelineData: ", props.filteredTimelineData);
-    console.log("grouped by periods and sorted: ", data)
+    //todo: checks for data need to be written or removing this console.log will cause component not to render
+    console.log("grouped by periods and sorted: ", data);
     //console.log("sorted data: ", dataUnsorted)
 
     //draw timeline everytime filteredTimelineData changes
@@ -39,7 +42,7 @@ export const TimelineChart = (props) => {
     const drawTimeline = (timelineConfig, dimensions) => {
 
         const { data, svgRef, xDomain } = timelineConfig;
-        const margin = {top: 5, right: 20, left: 20, bottom: 30};
+
         const width = size.width - margin.left - margin.right,
             height = size.height - margin.top - margin.bottom;
 
@@ -234,8 +237,16 @@ export const TimelineChart = (props) => {
 
     return (
         <div className="timeline" ref={wrapperRef}>
-            {size&&(<svg ref={svgRef} width={size.width} height={size.height} id="timelineSVG">
-                <g className="timelineGroup">
+            {size&&(<svg
+                        id="timelineSVG"
+                        ref={svgRef}
+                        width={size.width}
+                        height={size.height}
+            >
+                <g
+                    className="timelineGroup"
+                    transform={`translate(${margin.left} ${margin.top})`}
+                >
 
                 </g>
                 <g className="xAxis"></g>
