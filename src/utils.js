@@ -28,7 +28,7 @@ const useDebounce = (value, delay) => {
 }
 
 //get dimensions height and width from an element in the dom
-/*const getDimensions = (domContainerID) => {
+const getDimensions = (domContainerID) => {
     const timelineContainer = document.getElementById(domContainerID);
     if(!timelineContainer) console.log(`DOM element with ID ${domContainerID} not found`, timelineContainer);
     const margin = {top: 5, right: 20, left: 20, bottom: 30};
@@ -39,7 +39,7 @@ const useDebounce = (value, delay) => {
         height = containerHeight - margin.top - margin.bottom;
 
     return {margin: margin, width: width, height: height};
-}*/
+}
 
 const useResize = (ref) => {
     const [dimensions, setDimensions] = useState();
