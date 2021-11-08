@@ -18,7 +18,7 @@ export const ShowNext = (props) => {
 
 
     return (
-        <div style={{display: "flex", width: "100%", height: "35px", minHeight: "35px",}}>
+        <div className={classes.tabsContainer}>
             {labels && <Tabs
                 value={input[area]}
                 onChange={handleChange}

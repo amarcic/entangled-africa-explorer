@@ -20,3 +20,14 @@
     background-color: #1c9489 !important;
     color: #fff !important;
 }
+.timeline {
+    height: 100%;
+    width: 100%;
+}
+.highlighted {
+    stroke: pink;
+    stroke-width: 2;
+}
+#mouse-target {
+    stroke: blue
+}

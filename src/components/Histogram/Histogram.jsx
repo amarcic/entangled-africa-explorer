@@ -12,11 +12,12 @@ export const Histogram = (props) => {
 
     const classes = useStyles();
 
-    //console.log(props.timelineData);
+    const [input, dispatch] = props.reducer;
+    console.log(props.timelineData);
     const preparedData = prepareHistogramData(props.timelineData)?.filter( e => e&&e );
-    //console.log(preparedData);
+    //console.log("data prepared for histogram: ", preparedData);
     const binnedData = binTimespanObjects({timespanObjects: preparedData, approxAmountBins: 20});
-    //console.log(binnedData);
+    console.log("data binned for histogram: ", binnedData);
 
     const svgRef = useRef();
     //const [data, setData] = useState(binnedData);
@@ -27,7 +28,7 @@ export const Histogram = (props) => {
         const containerHeight = parseInt(select("#histogramContainer").style("height")),
             containerWidth = parseInt(select("#histogramContainer").style("width"));
 
-        const margin = {top: 5, right: 20, left: 20, bottom: 30};
+        const margin = {top: 10, right: 20, left: 20, bottom: 30};
 
         const width = containerWidth - margin.left - margin.right,
             height = containerHeight - margin.top - margin.bottom;
@@ -38,8 +39,6 @@ export const Histogram = (props) => {
         //remove previously rendered histogram bars in the case there is no current data from the current search
         if (!binnedData||preparedData.length===0) {
             svg.select(".bars")
-                //.append("text")
-                //.text("hier gibt es nichts zu sehen")
                 .selectAll(".bar").remove()
         } else {
             //maximum value on y axis
@@ -57,12 +56,6 @@ export const Histogram = (props) => {
                 .domain([0,maxYValue])
                 .range([height, 0]);
 
-            /* unused color scale
-            const colorScale = scaleLinear()
-                .domain([0,maxYValue])
-                .range(["#69b3a2","red"]);
-            */
-
             //add x axis to svg and rotate labels
             //todo: labels should explicitly convey the span of years the bin covers, not just the lower threshold
             svg.select(".xAxis")
@@ -76,6 +69,8 @@ export const Histogram = (props) => {
             svg.select(".yAxis")
                 .call(axisLeft(y));
 
+            //color scale;
+            //todo: remove; makes no sense to visualize the same thing in two ways
             const colorScale = scaleQuantize()
                 .domain([0,maxYValue])
                 .range(["#5AE6BA","#4BC8A3","#3EAA8C","#318D75","#25725F"]);
@@ -84,8 +79,12 @@ export const Histogram = (props) => {
             svg.select(".bars")
                 .attr("transform",`translate(${margin.left}, ${margin.top})`)
                 .selectAll("rect").data(binnedData).join(
-                    enter => enter.append("rect")
-                ).attr("class","bar")
+                    enter =>
+                        enter.append("rect")).attr("class", value =>
+                            value.values.some( id =>
+                                input.highlightedObjects.indexOf(id) > -1 )
+                                    ? "bar highlighted"
+                                    : "bar")
                     //.attr("y", value => y(value.values.length))
                     .attr("y", height*-1)
                     .attr("x", value => x(value.lower))
@@ -101,14 +100,19 @@ export const Histogram = (props) => {
                             .data([value])
                             .join("text")
                             .attr("class","tooltip")
-                            .text(`${value.lower}-${value.upper}: ${value.values.length}`)
+                            .text(`${value.lower}-${value.upper}: ${value.values.length} ${t("Item", {count: value.values.length})}`)
                             .attr("text-anchor","middle")
                             .transition()
                             .attr("x", x(value.lower)+x.bandwidth())
-                            .attr("y", y(value.values.length)+3)
-
+                            .attr("y", y(value.values.length)+margin.top);
                     })
                     //.on("mouseleave", () => svg.select(".tooltip").remove())
+                    .on("click", (event, value) => {
+                        dispatch({
+                            type: "UPDATE_INPUT",
+                            payload: {field: "highlightedObjects", value: value.values}
+                        });
+                    } )
                     .transition()
                     .attr("height", value => height - y(value.values.length))
                     .attr("fill", value => colorScale(value.values.length));
