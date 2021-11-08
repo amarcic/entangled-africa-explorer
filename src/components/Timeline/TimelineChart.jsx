@@ -28,8 +28,7 @@ export const TimelineChart = (props) => {
     const timelineData = { xDomain, data, svgRef };
 
     //console.log("filteredTimelineData: ", props.filteredTimelineData);
-    //todo: checks for data need to be written or removing this console.log will cause component not to render
-    console.log("grouped by periods and sorted: ", data);
+    //console.log("grouped by periods and sorted: ", data);
     //console.log("sorted data: ", dataUnsorted)
 
     //draw timeline everytime filteredTimelineData changes
@@ -163,10 +162,9 @@ export const TimelineChart = (props) => {
             enter => enter
                 .append("rect")
                     .attr("class", "bar")
-                    //.attr("fill", "#69b3a2")
         );
 
-        console.log("new and updating: ", selectionEnteringAndUpdating);
+        //console.log("new and updating: ", selectionEnteringAndUpdating);
 
         //position and extend bars according to temporal extent of period
         selectionEnteringAndUpdating
@@ -182,10 +180,6 @@ export const TimelineChart = (props) => {
                             ? "bar highlighted"
                             : "bar")
             .attr("fill", value => colorScale(value.items.length))
-            /*.attr("stroke", value => highlighted.objects.some( id =>
-                value.items.map( item => item.id).indexOf(id) > -1)
-                ? "black"
-                : "red")*/
 
         //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
