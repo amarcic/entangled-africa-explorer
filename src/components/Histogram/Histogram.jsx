@@ -28,7 +28,7 @@ export const Histogram = (props) => {
         const containerHeight = parseInt(select("#histogramContainer").style("height")),
             containerWidth = parseInt(select("#histogramContainer").style("width"));
 
-        const margin = {top: 5, right: 20, left: 20, bottom: 30};
+        const margin = {top: 10, right: 20, left: 20, bottom: 30};
 
         const width = containerWidth - margin.left - margin.right,
             height = containerHeight - margin.top - margin.bottom;
@@ -104,7 +104,7 @@ export const Histogram = (props) => {
                             .attr("text-anchor","middle")
                             .transition()
                             .attr("x", x(value.lower)+x.bandwidth())
-                            .attr("y", y(value.values.length)+3);
+                            .attr("y", y(value.values.length)+margin.top);
                     })
                     //.on("mouseleave", () => svg.select(".tooltip").remove())
                     .on("click", (event, value) => {

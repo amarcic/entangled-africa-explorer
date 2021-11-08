@@ -28,7 +28,7 @@ const useDebounce = (value, delay) => {
 }
 
 //get dimensions height and width from an element in the dom
-const getDimensions = (domContainerID) => {
+/*const getDimensions = (domContainerID) => {
     const timelineContainer = document.getElementById(domContainerID);
     if(!timelineContainer) console.log(`DOM element with ID ${domContainerID} not found`, timelineContainer);
     const margin = {top: 5, right: 20, left: 20, bottom: 30};
@@ -39,8 +39,39 @@ const getDimensions = (domContainerID) => {
         height = containerHeight - margin.top - margin.bottom;
 
     return {margin: margin, width: width, height: height};
-}
+}*/
 
+const useResize = (ref) => {
+    const [dimensions, setDimensions] = useState();
+    /*const getSizeDebounced = useDebounce( () => {
+        if (!ref || !ref.current) return;
+
+        const width = ref.current.offsetWidth;
+        const height = ref.current.offsetHeight;
+        setDimensions({
+            width,
+            height
+        });
+    } ,1000 );*/
+
+    useEffect( () => {
+        const getSize = () => {
+            if (!ref || !ref.current) return;
+            console.log("getSize useResize dimensions: ", dimensions)
+            const width = ref.current.offsetWidth;
+            const height = ref.current.offsetHeight;
+            setDimensions({
+                width,
+                height
+            });
+        }
+        window.addEventListener("resize", getSize);
+        getSize();
+        return () => window.removeEventListener("resize", getSize);
+    }, [ref] );
+
+    return dimensions;
+}
 
 //TIMELINE HELPER FUNCTIONS
 
@@ -501,5 +532,6 @@ export {
     prepareHistogramData,
     binTimespanObjects,
     getDimensions,
-    getNodesAndLinks
+    getNodesAndLinks,
+    useResize
 };
