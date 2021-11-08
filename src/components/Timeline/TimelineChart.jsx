@@ -16,7 +16,7 @@ export const TimelineChart = (props) => {
 
     //useResize explanation
     const size = useResize(wrapperRef);
-    const margin = {top: 5, right: 20, left: 20, bottom: 30};
+    const margin = {top: 10, right: 20, left: 20, bottom: 30};
 
     const xDomain = getTimeRangeOfTimelineData(props.filteredTimelineData,"period");
     const dataUnsorted = newGroupByPeriods(props.filteredTimelineData);
@@ -200,7 +200,7 @@ export const TimelineChart = (props) => {
                         : `${value.items.length} ${t("Item", {count: value.items.length})}`)
                     .attr("text-anchor", "middle")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
-                    .attr("y", value => yScale(value.periodId)+yScale.bandwidth()/*+margin.top*/)
+                    .attr("y", value => yScale(value.periodId)/*+yScale.bandwidth()*/+margin.top)
             });
 
         //remove tooltips when mouse leaves the svg
