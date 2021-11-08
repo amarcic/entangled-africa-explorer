@@ -79,18 +79,20 @@ const useStyles = makeStyles(theme => ({
     //justifyContent: "space-between",
     //alignItems: "center"
     //},
-    tabs: {
+    tabsContainer: {
+        display: "flex",
+        width: "100%",
         height: "35px",
         minHeight: "35px",
+        overflow: "hidden"
+    },
+    tabs: {
         width: "100%",
-        //paddingTop: theme.spacing(0.5),
-        //marginRight: "-5%",
-        //justifyContent:"space-between",
-        //alignItems:"center",
+        overflow: "hidden"
     },
     tab: {
-        height: "35px",
-        minHeight: "35px",
+        height: "30px",
+        minHeight: "30px",
         borderTopRightRadius: "10px",
         borderTopLeftRadius: "10px",
         marginRight: "0.5%",
