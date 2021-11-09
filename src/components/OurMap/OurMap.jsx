@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Circle, GeoJSON, Map, Rectangle, TileLayer } from 'react-leaflet';
+import { Circle, GeoJSON, MapContainer, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers, ReturnPopup } from '..'
 import { useTranslation } from "react-i18next";
@@ -98,7 +98,7 @@ export const OurMap = (props) => {
                 </Grid>
             </Grid>
             <Grid className={classes.dashboardTileContent} item>
-                <Map
+                <MapContainer
                     ref={mapRef}
                     className={`markercluster-map ${localClasses.leafletContainer}`}
                     //center={input.mapCenter}
@@ -204,7 +204,7 @@ export const OurMap = (props) => {
                             </div>
                         )
                     }
-                </Map>
+                </MapContainer>
             </Grid>
         </>
     )
