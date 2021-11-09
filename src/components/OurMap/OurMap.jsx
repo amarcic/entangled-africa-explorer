@@ -55,12 +55,12 @@ export const OurMap = (props) => {
     }
 
     useEffect(() => {
-        mapRef.current.leafletElement.fitBounds(input.mapBounds);
+        mapRef?.current?.fitBounds(input.mapBounds);
     },[input.mapBounds])
 
     useEffect(() => {
         //this is needed to let the map adjust to its changed container size by loading more tiles and panning
-        mapRef.current.leafletElement.invalidateSize();
+        mapRef?.current?.invalidateSize();
     },[input.bigTileArea])
 
 
@@ -99,7 +99,6 @@ export const OurMap = (props) => {
             </Grid>
             <Grid className={classes.dashboardTileContent} item>
                 <MapContainer
-                    ref={mapRef}
                     className={`markercluster-map ${localClasses.leafletContainer}`}
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
@@ -111,6 +110,12 @@ export const OurMap = (props) => {
                             dispatch({type: "DRAW_BBOX", payload: event.latlng});
                         }
                     }}
+                    whenCreated={
+                        mapInstance => {
+                            mapRef.current = mapInstance
+                        }
+                    }
+                    style={{height: "100%"}}
                 >
                     <TileLayer
                         className="map-tiles"
@@ -166,9 +171,10 @@ export const OurMap = (props) => {
                     {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
                     {input.clusterMarkers
                         ? (
-                            <MarkerClusterGroup
-                                disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
-                            >
+                            <div>
+                                {/*<MarkerClusterGroup
+                            disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
+                        >*/}
                                 {<CreateMarkers
                                     data={markers}
                                     selectedMarker={input.selectedMarker}
@@ -183,7 +189,8 @@ export const OurMap = (props) => {
                                     showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                     opacity={0.5}
                                 />}
-                            </MarkerClusterGroup>
+                                {/*</MarkerClusterGroup>*/}
+                            </div>
                         )
                         : (
                             <div>

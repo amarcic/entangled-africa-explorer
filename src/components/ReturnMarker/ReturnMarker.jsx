@@ -9,18 +9,22 @@ export const ReturnMarker = (props) => {
 
     useEffect(() => {
         if (openPopup) {
-            markerRef.current.leafletElement.openPopup();
+            markerRef && markerRef.current.openPopup();
         }
     }, [openPopup]);
 
     if (!(item.coordinates||nestedItem.coordinates)) return null;
     return (
         <Marker
-            ref={markerRef}
             //coordinates need to be reversed because of different standards between geojson and leaflet
             position={nestedItem
                 ? nestedItem.coordinates.split(", ").reverse()
                 : item.coordinates.split(", ").reverse()}
+            whenCreated={
+                markerInstance => {
+                    markerRef.current = markerInstance
+                }
+            }
         >
             {nestedItem
                 ? <ReturnPopup item={item}
