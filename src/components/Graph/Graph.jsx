@@ -33,7 +33,9 @@ export const Graph = (props) => {
         //const { width, height, margin } = dimensions;
 
         const updatedSvg = select(svgRef.current)
-            .attr("viewBox", [-dimensions.width / 2, -dimensions.height / 2, dimensions.width, dimensions.height]);
+            .attr("width", dimensions.width)
+            .attr("height", dimensions.height);
+        //.attr("viewBox", [-dimensions.width, -dimensions.height, dimensions.width, dimensions.height]);
 
         setSvg(updatedSvg);
     }, [dimensions]);
@@ -332,8 +334,8 @@ export const Graph = (props) => {
                     {maximizeTileButton}
                 </Grid>
             </Grid>
-            <Grid id="graphContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
-                <Grid item>
+            <Grid className={classes.dashboardTileContent} item container direction="column" spacing={2}>
+                <Grid item id="graphContainer" style={{height: "100%", width: "100%", overflow: "hidden"}}>
                     <svg ref={svgRef}>
                         <g className="graphGroup">
                             <g className="linkGroup"></g>

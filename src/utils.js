@@ -29,16 +29,15 @@ const useDebounce = (value, delay) => {
 
 //get dimensions height and width from an element in the dom
 const getDimensions = (domContainerID) => {
-    const timelineContainer = document.getElementById(domContainerID);
-    if(!timelineContainer) console.log(`DOM element with ID ${domContainerID} not found`, timelineContainer);
-    const margin = {top: 5, right: 20, left: 20, bottom: 30};
+    const container = document.getElementById(domContainerID);
+    if(!container) console.log(`DOM element with ID ${domContainerID} not found`, container);
 
-    const containerHeight = timelineContainer?.clientHeight,
-        containerWidth = timelineContainer?.clientWidth;
-    const width = containerWidth - margin.left - margin.right,
-        height = containerHeight - margin.top - margin.bottom;
+    const containerHeight = container?.clientHeight,
+        containerWidth = container?.clientWidth;
+    const width = containerWidth,
+        height = containerHeight;
 
-    return {margin: margin, width: width, height: height};
+    return {width: width, height: height};
 }
 
 const useResize = (ref) => {
