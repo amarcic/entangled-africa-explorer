@@ -171,10 +171,9 @@ export const OurMap = (props) => {
                     {/*TODO: find a way to use marker clustering while still being able to open popups inside cluster; double check that the numbers for disableClusteringAtZoom are okay*/}
                     {input.clusterMarkers
                         ? (
-                            <div>
-                                {/*<MarkerClusterGroup
-                            disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
-                        >*/}
+                            <MarkerClusterGroup
+                                disableClusteringAtZoom={input.clusterMarkers ? 20 : 1}
+                            >
                                 {<CreateMarkers
                                     data={markers}
                                     selectedMarker={input.selectedMarker}
@@ -189,8 +188,7 @@ export const OurMap = (props) => {
                                     showRelatedObjects={dataType.handler === true && input.showRelatedObjects}
                                     opacity={0.5}
                                 />}
-                                {/*</MarkerClusterGroup>*/}
-                            </div>
+                            </MarkerClusterGroup>
                         )
                         : (
                             <div>
