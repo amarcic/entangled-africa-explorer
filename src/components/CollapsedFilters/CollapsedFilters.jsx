@@ -2,10 +2,11 @@ import React from "react";
 import { Chip } from "@material-ui/core";
 import { useStyles } from "../../styles";
 import { useTranslation } from "react-i18next";
+import { arachneTypes } from "../../config";
 
 
 export const CollapsedFilters = (props) => {
-    const { arachneTypes, catalogs, input } = props;
+    const { catalogs, input } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -24,7 +25,7 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
                      label={
                          `${t("EntityType", {count: input.arachneTypesCheckedIds.length})}: 
-                         ${arachneTypes.filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
+                         ${arachneTypes(t).filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
                      }
             />}
 

@@ -15,7 +15,7 @@ import {
 import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
 import { useStyles } from '../../styles';
 import Container from "@material-ui/core/Container";
-import { initialInput } from "../../config";
+import { initialInput, arachneTypes, catalogs } from "../../config";
 
 export const AppContent = () => {
     const { t, i18n } = useTranslation();
@@ -158,7 +158,7 @@ export const AppContent = () => {
 
     //todo: change out translation keys for English terms, e.g. "Images" instead of "arachneTypeBilder" – because these
     // keys will be shown as default if no translation exists
-    const arachneTypes = [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
+    /*const arachneTypes = [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
         {"label": t("arachneTypeEinzelobjekte"), "id": "Einzelobjekte"},
         {"label": t("arachneTypeMehrteilige Denkmäler"), "id": "MehrteiligeDenkmaeler"},
         {"label": t("arachneTypeBauwerke"), "id": "Bauwerke"},
@@ -184,7 +184,7 @@ export const AppContent = () => {
     const catalogs = [
         {"label": "All SPP 2143 Arachne data", "id": 123},
         {"label": "AAArC - Fundplätze", "id": 942}
-    ]
+    ]*/
 
 
     const handleRelatedObjects = (id) => {
@@ -443,7 +443,6 @@ export const AppContent = () => {
         */
         <>
             <PageHeader
-                arachneTypes={arachneTypes}
                 catalogs={catalogs}
                 periods={periods}
                 reducer={[input, dispatch]}
