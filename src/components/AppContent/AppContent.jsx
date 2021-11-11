@@ -155,38 +155,7 @@ export const AppContent = () => {
         .catch((error) => {
             console.error(error)
         });*/
-
-    //todo: change out translation keys for English terms, e.g. "Images" instead of "arachneTypeBilder" – because these
-    // keys will be shown as default if no translation exists
-    /*const arachneTypes = [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
-        {"label": t("arachneTypeEinzelobjekte"), "id": "Einzelobjekte"},
-        {"label": t("arachneTypeMehrteilige Denkmäler"), "id": "MehrteiligeDenkmaeler"},
-        {"label": t("arachneTypeBauwerke"), "id": "Bauwerke"},
-        {"label": t("arachneTypeBauwerksteile"), "id": "Bauwerksteile"},
-        {"label": t("arachneTypeBilder"), "id": "Bilder"},
-        {"label": t("arachneTypeBücher"), "id": "Buecher"},
-        {"label": t("arachneTypeBuchseiten"), "id": "Buchseiten"},
-        {"label": t("arachneTypeEinzelmotive"), "id": "Einzelmotive"},
-        {"label": t("arachneTypeGruppierungen"), "id": "Gruppierungen"},
-        {"label": t("arachneTypeInschriften"), "id": "Inschriften"},
-        {"label": t("arachneTypeLiteratur"), "id": "Literatur"},
-        {"label": t("arachneTypeOrte"), "id": "Orte"},
-        {"label": t("arachneTypeReproduktionen"), "id": "Reproduktionen"},
-        {"label": t("arachneTypePersonen"), "id": "Personen"},
-        {"label": t("arachneTypeRezeptionen"), "id": "Rezeptionen"},
-        {"label": t("arachneTypeSammlungen"), "id": "Sammlungen"},
-        {"label": t("arachneTypeSzenen"), "id": "Szenen"},
-        {"label": t("arachneTypeTopographien"), "id": "Topographien"},
-        {"label": t("arachneTypeTypen"), "id": "Typen"},
-        {"label": t("arachneType3D-Modelle"), "id": "dreiDModelle"}
-    ];
-
-    const catalogs = [
-        {"label": "All SPP 2143 Arachne data", "id": 123},
-        {"label": "AAArC - Fundplätze", "id": 942}
-    ]*/
-
-
+    
     const handleRelatedObjects = (id) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
