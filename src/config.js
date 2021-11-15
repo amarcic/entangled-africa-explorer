@@ -1,6 +1,6 @@
 import { group } from "d3-array";
 import {latLngBounds} from "leaflet";
-import { useTranslation } from 'react-i18next';
+//import { useTranslation } from 'react-i18next';
 
 //const { t, i18n } = useTranslation();
 
