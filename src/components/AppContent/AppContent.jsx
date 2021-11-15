@@ -1,10 +1,8 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { latLngBounds } from 'leaflet';
 import { useQuery } from "@apollo/react-hooks";
 import {
-    DashboardTile, DataSources, Graph, Histogram, ImageContents, Layout, MaximizeTileButton, OurMap, PageHeader, ResultsTable,
-    ShowNext, Timeline
+    DashboardTile, DataSources, Graph, Histogram, ImageContents, Layout, MaximizeTileButton, OurMap, PageHeader,
+    ResultsTable, ShowNext, Timeline
 } from "..";
 import { LinearProgress } from "@material-ui/core";
 // Queries
@@ -14,14 +12,10 @@ import {
 } from "./queries.graphql";
 import { inputReducer } from "./inputReducer";
 import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
-import { useStyles } from '../../styles';
 import Container from "@material-ui/core/Container";
-import { initialInput, arachneTypes, catalogs } from "../../config";
+import { catalogs, initialInput } from "../../config";
 
 export const AppContent = () => {
-    const { t, i18n } = useTranslation();
-
-    const classes = useStyles();
 
     // state update logic
     const [input, dispatch] = useReducer(inputReducer, initialInput);
@@ -73,6 +67,7 @@ export const AppContent = () => {
 
 
     //todo: the periods and regions should probably be queried via Hub and not like this
+    //todo: extract either to utils or to config
 
     const [periods, setPeriods] = useState(["Frühnubischer Horizont"]);
 
@@ -225,12 +220,6 @@ export const AppContent = () => {
     }
 
 
-    //const setWidth = () => window.innerWidth
-    //const setOneTwelfthWidth = () => setWidth() / 12
-
-    //window.addEventListener('resize', setOneTwelfthWidth)
-
-
     const renderAreaA = () => {
         const area = "areaA";
 
@@ -350,29 +339,6 @@ export const AppContent = () => {
     }
 
     return (
-        /* Layout schema:
-            F = filters, M = map, A = area A, B = area B; two rows = 100% height, four columns = 100 % width
-
-            Size md/lg:
-            default:      |    big M:        |    big A:        |    big B:        |    with expanded filters: (?)
-            ------------------------------------------------------------------------------------------------------
-            F             |    F             |    F             |    F             |    F  F  F  F
-            M  M  A  A    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |    ...
-            M  M  B  B    |    M  M  M  M    |    A  A  A  A    |    B  B  B  B    |
-                          |    A  A  B  B    |    M  M  B  B    |    M  M  A  A    |
-                          |                  |    M  M          |    M  M          |
-            Size xs:
-            default: (?)  |   with expanded filters: (?)
-            --------------------------------------------
-            F  .  .  .    |    F  F  F  F
-            M  M  M  M    |    F  F  F  F
-            M  M  M  M    |    M  M  M  M
-            A  A  A  A    |    M  M  M  M
-            A  A  A  A    |    A  A  A  A
-            B  B  B  B    |    A  A  A  A
-            B  B  B  B    |    B  B  B  B
-                          |    B  B  B  B
-        */
         <>
             <PageHeader
                 catalogs={catalogs}
