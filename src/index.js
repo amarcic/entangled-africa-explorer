@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AppContent } from './components/';
-import { SettingsContext } from './Contexts';
-import { INIT_SETTINGS } from "./INIT_VALUES";
 import './index.css';
 import './i18n';
 import { useTranslation } from 'react-i18next';
@@ -19,8 +17,6 @@ const App = () => {
 
     const { t, i18n } = useTranslation();
 
-    const [settings, setSettings] = useState(INIT_SETTINGS);
-
     //Apollo GraphQL related
     const cache = new InMemoryCache();
     const link = new HttpLink({
@@ -33,14 +29,14 @@ const App = () => {
     });
 
     return(
-        <SettingsContext.Provider value={settings}>
+        <React.Fragment>
             <CssBaseline/>
             <ApolloProvider client={client}>
                 <MuiThemeProvider theme={theme}>
                     <AppContent/>
                 </MuiThemeProvider>
             </ApolloProvider>
-        </SettingsContext.Provider>
+        </React.Fragment>
     );
 };
 

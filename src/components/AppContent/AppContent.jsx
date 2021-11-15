@@ -22,7 +22,8 @@ export const AppContent = () => {
     const { t, i18n } = useTranslation();
 
     const classes = useStyles();
-    
+
+    // state update logic
     const [input, dispatch] = useReducer(inputReducer, initialInput);
 
     // debounce input.searchStr
