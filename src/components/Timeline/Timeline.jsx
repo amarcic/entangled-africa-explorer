@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
 import { TimelineChart } from "./TimelineChart";
@@ -19,7 +19,7 @@ export const Timeline = (props) => {
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Temporal distribution')}</h3>
+                    <Typography variant="h6" component="h3">{t('Temporal distribution')}</Typography>
                 </Grid>
                 <Grid item xs={1}>
                     {maximizeTileButton}

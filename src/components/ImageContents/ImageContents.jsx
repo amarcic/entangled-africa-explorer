@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { Grid, List, ListItem } from "@material-ui/core";
+import { Grid, List, ListItem, Typography } from "@material-ui/core";
 
 export const ImageContents = (props) => {
     const { contents, maximizeTileButton } = props;
@@ -26,7 +26,7 @@ export const ImageContents = (props) => {
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Image contents')}</h3>
+                    <Typography variant="h6" component="h3">{t('Image contents')}</Typography>
                 </Grid>
                 <Grid item xs={1}>
                     {maximizeTileButton}

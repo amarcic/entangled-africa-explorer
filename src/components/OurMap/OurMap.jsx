@@ -3,7 +3,7 @@ import { Circle, GeoJSON, MapContainer, Rectangle, TileLayer } from 'react-leafl
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers, ReturnPopup } from '..'
 import { useTranslation } from "react-i18next";
-import { FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
+import { FormLabel, Grid, Switch, Tooltip, Typography } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
 import { useStyles } from '../../styles';
 import { makeStyles } from "@material-ui/core/styles";
@@ -68,7 +68,7 @@ export const OurMap = (props) => {
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Map')}</h3>
+                    <Typography variant="h6" component="h3">{t('Map')}</Typography>
                 </Grid>
                 <Grid item xs={4}>
                     <FormLabel>{t('Cluster nearby markers')}
