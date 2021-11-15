@@ -6,11 +6,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useStyles } from '../../styles';
 import { useTranslation } from "react-i18next";
+import { arachneTypes } from "../../config";
 
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { arachneTypes, catalogs, periods, regions } = props;
+    const { catalogs, periods, regions } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -56,7 +57,7 @@ export const Filters = (props) => {
                         !input.showArchaeoSites && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by Arachne entity type</FormLabel>
-                                {arachneTypes && arachneTypes.map(type => {
+                                {arachneTypes && arachneTypes(t).map(type => {
                                     return (type && type.id
                                         && <FormControlLabel
                                             key={type.id}

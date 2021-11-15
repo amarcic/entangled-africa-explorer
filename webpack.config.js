@@ -13,7 +13,7 @@ module.exports = {
         extensions: ['.js', '.jsx']
     },
     devServer: {
-        contentBase: './dist',
+        static: './dist',
         historyApiFallback: true
     },
     module : {

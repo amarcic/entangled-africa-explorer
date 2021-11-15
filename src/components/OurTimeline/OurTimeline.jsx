@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, MenuItem, Select, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { CreateTimelineAxis, CreateTimelineObjects } from '..'
 import * as d3 from "d3";
@@ -30,7 +30,7 @@ export const OurTimeline = (props) => {
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Timeline')}</h3>
+                    <Typography variant="h6" component="h3">{t('Timeline')}</Typography>
                 </Grid>
                 <Grid item>
                     {input.mode === "objects" && <FormControl>

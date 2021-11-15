@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { Circle, GeoJSON, Map, Rectangle, TileLayer } from 'react-leaflet';
+import { Circle, GeoJSON, MapContainer, Rectangle, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers, ReturnPopup } from '..'
 import { useTranslation } from "react-i18next";
-import { FormLabel, Grid, Switch, Tooltip } from "@material-ui/core";
+import { FormLabel, Grid, Switch, Tooltip, Typography } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
 import { useStyles } from '../../styles';
 import { makeStyles } from "@material-ui/core/styles";
@@ -55,12 +55,12 @@ export const OurMap = (props) => {
     }
 
     useEffect(() => {
-        mapRef.current.leafletElement.fitBounds(input.mapBounds);
+        mapRef?.current?.fitBounds(input.mapBounds);
     },[input.mapBounds])
 
     useEffect(() => {
         //this is needed to let the map adjust to its changed container size by loading more tiles and panning
-        mapRef.current.leafletElement.invalidateSize();
+        mapRef?.current?.invalidateSize();
     },[input.bigTileArea])
 
 
@@ -68,7 +68,7 @@ export const OurMap = (props) => {
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Map')}</h3>
+                    <Typography variant="h6" component="h3">{t('Map')}</Typography>
                 </Grid>
                 <Grid item xs={4}>
                     <FormLabel>{t('Cluster nearby markers')}
@@ -98,8 +98,7 @@ export const OurMap = (props) => {
                 </Grid>
             </Grid>
             <Grid className={classes.dashboardTileContent} item>
-                <Map
-                    ref={mapRef}
+                <MapContainer
                     className={`markercluster-map ${localClasses.leafletContainer}`}
                     //center={input.mapCenter}
                     bounds={input.mapBounds}
@@ -111,6 +110,12 @@ export const OurMap = (props) => {
                             dispatch({type: "DRAW_BBOX", payload: event.latlng});
                         }
                     }}
+                    whenCreated={
+                        mapInstance => {
+                            mapRef.current = mapInstance
+                        }
+                    }
+                    style={{height: "100%"}}
                 >
                     <TileLayer
                         className="map-tiles"
@@ -204,7 +209,7 @@ export const OurMap = (props) => {
                             </div>
                         )
                     }
-                </Map>
+                </MapContainer>
             </Grid>
         </>
     )

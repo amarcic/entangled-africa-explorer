@@ -1,6 +1,6 @@
-import { createTheme, makeStyles } from "@material-ui/core/styles";
+import { createTheme, makeStyles, responsiveFontSizes } from "@material-ui/core/styles";
 
-const theme = createTheme({
+let theme = createTheme({
     palette: {
         primary: {
             light: '#ffcccb',
@@ -15,7 +15,14 @@ const theme = createTheme({
             contrastText: '#000',
         },
     },
+    typography: {
+        h6: {
+            textTransform: "uppercase"
+        }
+    }
 });
+
+theme = responsiveFontSizes(theme);
 
 const useStyles = makeStyles(theme => ({
     appBar: {
@@ -91,40 +98,30 @@ const useStyles = makeStyles(theme => ({
         overflow: "hidden"
     },
     tab: {
-        height: "30px",
-        minHeight: "30px",
-        borderTopRightRadius: "10px",
-        borderTopLeftRadius: "10px",
-        marginRight: "0.5%",
-        marginTop: theme.spacing(1),
-        backgroundColor: "rgba(171,134,97,0.08)",
+        height: "30px !important",
+        minHeight: "30px !important",
+        borderTopRightRadius: "10px !important",
+        borderTopLeftRadius: "10px !important",
+        marginRight: "0.5% !important",
+        marginTop: "5px !important",
+        backgroundColor: "rgba(171,134,97,0.08) !important",
     },
     tabSelected: {
-        height: "35px",
-        minHeight: "35px",
-        borderTopRightRadius: "10px",
-        borderTopLeftRadius: "10px",
-        marginRight: "0.5%",
-        marginTop: theme.spacing(0),
-        backgroundColor: "rgba(171,134,97,0.18)",
+        height: "35px !important",
+        minHeight: "35px !important",
+        borderTopRightRadius: "10px !important",
+        borderTopLeftRadius: "10px !important",
+        marginRight: "0.5% !important",
+        marginTop: "0 !important",
+        backgroundColor: "rgba(171,134,97,0.18) !important",
     },
     maximizeTileButton: {
-        backgroundColor: "rgba(171,134,97,0.18)",
+        backgroundColor: "rgba(171,134,97,0.18) !important",
         float: "right",
         height: "30px",
         width: "30px",
     },
 
-    h1: {
-        fontSize: "1.25rem"
-    },
-    h2: {
-        fontSize: "1rem"
-    },
-    h3: {
-        fontSize: "0.8rem",
-        textTransform: "uppercase"
-    },
     paper: {
         marginRight: theme.spacing(2),
     },

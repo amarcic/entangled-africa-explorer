@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Button, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@material-ui/core";
 import { ResultsTableRow } from '..'
 import { useTranslation } from "react-i18next";
 import { useStyles } from '../../styles';
@@ -21,7 +21,7 @@ export const ResultsTable = (props) => {
         <>
             {<Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
                 <Grid item>
-                    <h3 className={classes.h3}>{t('Search results')}</h3>
+                    <Typography variant="h6" component="h3">{t('Search results')}</Typography>
                 </Grid>
                 <Grid item xs={4}>
                     {input.showRelatedObjects && <Button

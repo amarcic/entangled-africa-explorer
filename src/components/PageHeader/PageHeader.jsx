@@ -15,7 +15,7 @@ import SearchIcon from '@material-ui/icons/Search';
 export const PageHeader = (props) => {
 
     const [input, dispatch] = props.reducer;
-    const {arachneTypes, catalogs, periods, regions} = props;
+    const { catalogs, periods, regions} = props;
 
     const { t, i18n } = useTranslation();
 
@@ -84,13 +84,12 @@ export const PageHeader = (props) => {
                 <Toolbar>
                     <Grid container direction="row" className={classes.dashboardHeader}>
                         <Grid item xs={10}>
-                            <Typography variant="h1" className={classes.h1}>Entangled Africa Data Explorer</Typography>
-                            <Typography variant="h2" className={classes.h2}>{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</Typography>
+                            <Typography variant="h4" component="h1">Entangled Africa Data Explorer</Typography>
+                            <Typography variant="h5" component="h2">{t('EntangledAfrica1')}: {t('EntangledAfrica2')}</Typography>
                             <Button onClick={toggleDrawer()}>
                                 <SearchIcon/> Filters <ExpandMoreIcon/>
                             </Button>
                             <CollapsedFilters
-                                arachneTypes={arachneTypes}
                                 catalogs={catalogs}
                                 input={input}
                             />
@@ -148,7 +147,6 @@ export const PageHeader = (props) => {
                     <SearchIcon/> Close filters <ExpandLessIcon/>
                 </Button>
                 <Filters
-                    arachneTypes={arachneTypes}
                     catalogs={catalogs}
                     periods={periods}
                     reducer={[input, dispatch]}

@@ -9,7 +9,7 @@ export const ReturnMarker = (props) => {
 
     useEffect(() => {
         if (openPopup) {
-            markerRef.current.leafletElement.openPopup();
+            markerRef.current.openPopup();
         }
     }, [openPopup]);
 
