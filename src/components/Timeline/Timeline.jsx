@@ -26,10 +26,13 @@ export const Timeline = (props) => {
                 </Grid>
             </Grid>
             <Grid id="timelineContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
+                {input.mode==="objects"&&
                 <TimelineChart
                     reducer={[input, dispatch]}
                     filteredTimelineData={filteredTimelineData}
                 />
+                }
+                {input.mode==="archaeoSites"&&<p>not available in this mode</p>}
             </Grid>
         </>
     )

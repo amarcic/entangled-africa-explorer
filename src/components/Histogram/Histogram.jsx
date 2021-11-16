@@ -131,12 +131,15 @@ export const Histogram = (props) => {
             </Grid>
             <Grid id="histogramContainer" className={classes.dashboardTileContent} item container direction="column" spacing={2}>
                 <Grid item>
+                    {input.mode==="objects"&&
                     <svg ref={svgRef}>
                         <g className="bars">
                             <g className="xAxis"></g>
                             <g className="yAxis"></g>
                         </g>
                     </svg>
+                    }
+                    {input.mode==="archaeoSites"&&<p>not available in this mode</p>}
                 </Grid>
             </Grid>
         </>
