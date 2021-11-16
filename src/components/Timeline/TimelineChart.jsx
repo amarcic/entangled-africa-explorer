@@ -28,7 +28,7 @@ export const TimelineChart = (props) => {
     const timelineData = { xDomain, data, svgRef };
 
     //console.log("filteredTimelineData: ", props.filteredTimelineData);
-    //console.log("grouped by periods and sorted: ", data);
+    console.log("grouped by periods and sorted: ", data);
     //console.log("sorted data: ", dataUnsorted)
 
     //draw timeline everytime filteredTimelineData changes
@@ -76,7 +76,7 @@ export const TimelineChart = (props) => {
         //add x axis to svg
         const xAxis = axisBottom(xScale);
         const xAxisDraw = svg.select(".xAxis")
-            .attr("transform", `translate(0,${height+margin.top})`)
+            .attr("transform", `translate(${margin.left},${height+margin.top})`)
             .call(xAxis);
 
         //todo: application wide color scale should be used; colors are not that great
