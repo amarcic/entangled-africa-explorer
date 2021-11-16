@@ -12,7 +12,7 @@
   "Timeline": "Zeitstrahl",
   "Temporal distribution": "Zeitliche Verteilung",
   "Item": "Objekt",
-  "Item_plural": "Objekte",
+  "Item_other": "Objekte",
 
   "Turn on/off marker clustering": "Gruppieren von Markern",
   "Resize map to show all markers": "Kartenausschnitt für aktuelle Marker anpassen",

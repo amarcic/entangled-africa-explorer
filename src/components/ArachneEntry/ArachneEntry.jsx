@@ -1,49 +1,39 @@
+//detailed table entry that is shown when a results table row is clicked
+//todo: show related objects etc. on opening the row?
+
 import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import React from "react";
-import Button from "@material-ui/core/Button";
+import { useTranslation } from "react-i18next";
 
 export const ArachneEntry = (props) => {
     //itemCoordinates are used if this information is coming from a different field than for most items
     const { item, itemCoordinates } = props;
 
+    const { t, i18n } = useTranslation();
+
     return (
-        <React.Fragment>
+        <>
             <h4>{item.name}</h4>
-            <Button
-                //onClick={() => {handleRelatedObjects(item.identifier)}}
-                //name="showRelatedObjects"
-                //disabled={showRelatedObjects}
-                variant="contained"
-                color="primary"
-                size="small"
-                style={{float: "right"}}
-            >
-                Show related objects
-            </Button>
             <Table size="small">
                 <TableBody>
                     <TableRow>
-                        <TableCell component="th" scope="row">Name:</TableCell>
-                        <TableCell>{item.name}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell component="th" scope="row">Identifier:</TableCell>
+                        <TableCell component="th" scope="row">{t("ArachneEntryIdentifier")}:</TableCell>
                         <TableCell>{item.identifier}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell component="th" scope="row">Localization:</TableCell>
+                        <TableCell component="th" scope="row">{t("ArachneEntryLocalization")}:</TableCell>
                         <TableCell>{item.coordinates || itemCoordinates}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell component="th" scope="row">Dating:</TableCell>
-                        <TableCell>{item.dating && item.dating.toString()}</TableCell>
+                        <TableCell component="th" scope="row">{t("ArachneEntryDating")}:</TableCell>
+                        <TableCell>{item?.datingSets?.map(dS => dS?.datingItems.join("; ")).filter(Boolean).join("; ")}</TableCell>
                     </TableRow>
-                    {/*<TableRow>
-                        <TableCell component="th" scope="row">Period:</TableCell>
-                        <TableCell>{item.temporal && item.temporal.title[0]}</TableCell>
-                    </TableRow>*/}
+                    <TableRow>
+                        <TableCell component="th" scope="row">{t("ArachneEntryPeriod")}:</TableCell>
+                        <TableCell>{item?.temporal?.map(temp => temp.map(t => t?.title).join("–")).filter(Boolean).join("; ")}</TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
-        </React.Fragment>
+        </>
     )
 }
