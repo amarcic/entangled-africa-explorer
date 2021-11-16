@@ -7,8 +7,8 @@
 
   "Catalog": "Catalog",
   "Catalog_other": "Catalogs",
-  "EntityType": "Entity type",
-  "EntityType_other": "Entity types",
+  "EntityType": "iDAI.objects category",
+  "EntityType_other": "iDAI.objects categories",
   "Item": "item",
   "Item_other": "items",
 
@@ -18,5 +18,7 @@
   "ArachneEntryPeriod": "Period",
 
   "Search in": "Search in",
-  "Search term": "Search term"
+  "Search term": "Search term",
+  "Chronontology term": "Period",
+  "Bounding box": "Bounding box"
 }

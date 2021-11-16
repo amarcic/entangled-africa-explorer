@@ -40,8 +40,8 @@
 
   "Catalog": "Katalog",
   "Catalog_other": "Kataloge",
-  "EntityType": "Kategorie",
-  "EntityType_other": "Kategorien",
+  "EntityType": "iDAI.objects-Kategorie",
+  "EntityType_other": "iDAI.objects-Kategorien",
 
   "ArachneEntryIdentifier": "Identifikator",
   "ArachneEntryLocalization": "Lokalisierung",
@@ -49,5 +49,8 @@
   "ArachneEntryPeriod": "Periode",
 
   "Search in": "Suche in",
-  "Search term": "Suchbegriff"
+  "Search term": "Suchbegriff",
+  "Chronontology term": "Periode",
+  "Region": "Region",
+  "Bounding box": "Bounding Box"
 }

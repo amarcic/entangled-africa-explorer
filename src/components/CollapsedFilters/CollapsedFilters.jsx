@@ -14,13 +14,10 @@ export const CollapsedFilters = (props) => {
 
     return (
         <>
-            {/*Chip for mode*/}
-            <Chip label={input.mode === "archaeoSites"
-                ? "Archaeological Sites"
-                : "Objects"}
-            />
+            {/*Chip for mode/search starting point*/}
+            <Chip label={`${t("Searching in")}: ${input.mode === "archaeoSites" ? "iDAI.gazetteer" : "iDAI.objects"}`}/>
 
-            {/*Chip for entity types*/}
+            {/*Chip for iDAI.objects entity types*/}
             {input.arachneTypesCheckedIds.length !== 0
             && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
                      label={
@@ -31,22 +28,22 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for for string query*/}
             {input.searchStr !== ""
-            && <Chip variant="outlined" label={`Search term: ${input.searchStr}`}/>}
+            && <Chip variant="outlined" label={`${t("Search term")}: ${input.searchStr}`}/>}
 
             {/*Chip for filter by period*/}
             {input.chronOntologyTerm !== null
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`Chronontology term: ${input.chronOntologyTerm}`}/>}
+            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`${t("Chronontology term")}: ${input.chronOntologyTerm}`}/>}
 
             {/*Chip for filter by region*/}
             {input.sitesMode === "region" && input.regionTitle !== null
             && <Chip variant="outlined"
-                     label={`Region: ${input.regionTitle}`}
+                     label={`${t("Region")}: ${input.regionTitle}`}
             />}
 
             {/*Chip for filter by coordinates*/}
             {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))
             && <Chip variant="outlined"
-                     label={`Bounding box: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}
+                     label={`${t("Bounding box")}: [${input.boundingBoxCorner1}], [${input.boundingBoxCorner2}]`}
             />}
 
             {/*Chip for filter by catalogs*/}
