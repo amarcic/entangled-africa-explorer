@@ -39,7 +39,15 @@
   "arachneType3D-Modelle": "3D-Modelle",
 
   "Catalog": "Katalog",
-  "Catalog_plural": "Kataloge",
+  "Catalog_other": "Kataloge",
   "EntityType": "Kategorie",
-  "EntityType_plural": "Kategorien"
+  "EntityType_other": "Kategorien",
+
+  "ArachneEntryIdentifier": "Identifikator",
+  "ArachneEntryLocalization": "Lokalisierung",
+  "ArachneEntryDating": "Datierung",
+  "ArachneEntryPeriod": "Periode",
+
+  "Search in": "Suche in",
+  "Search term": "Suchbegriff"
 }

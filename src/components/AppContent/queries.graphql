@@ -1,4 +1,4 @@
-query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String, $entityTypes: [RelatedType]) {
+query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String, $entityTypes: [RelatedType], $lang: Languages) {
     entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, period: $periodTerm,
         entityTypes: $entityTypes) {
         identifier
@@ -9,16 +9,14 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
             coordinates
             polygon
         }
-        dating
-        datingSpan
-        onDating
+        datingSpan #todo: use the other datingSpan where this one is used?
         datingSets {
             datingText
             datingItems
             datingSpan
             periodIds
         }
-        temporal {
+        temporal (language: $lang) {
             title
             identifier
             types
@@ -37,7 +35,7 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
     }
 }
 
-query searchObjectContext($arachneId: ID!) {
+query searchObjectContext($arachneId: ID!, $lang: Languages) {
     entity(id: $arachneId) {
         identifier
         name
@@ -47,16 +45,14 @@ query searchObjectContext($arachneId: ID!) {
             coordinates
             polygon
         }
-        dating
         datingSpan
-        onDating
         datingSets {
             datingText
             datingItems
             datingSpan
             periodIds
         }
-        temporal {
+        temporal (language: $lang) {
             title
             begin
             end

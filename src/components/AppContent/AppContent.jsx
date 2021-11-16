@@ -14,8 +14,10 @@ import { inputReducer } from "./inputReducer";
 import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
 import Container from "@material-ui/core/Container";
 import { catalogs, initialInput } from "../../config";
+import { useTranslation } from "react-i18next";
 
 export const AppContent = () => {
+    const { t, i18n } = useTranslation();
 
     // state update logic
     const [input, dispatch] = useReducer(inputReducer, initialInput);
@@ -30,8 +32,8 @@ export const AppContent = () => {
 
     // Queries
     const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_OBJECT_CONTEXT, input.mode === "objects"
-        ? {variables: {arachneId: input.objectId}}
-        : {variables: {arachneId: 0}});
+        ? {variables: {arachneId: input.objectId}, lang: t("current language code")}
+        : {variables: {arachneId: 0}, lang: t("current language code")});
 
     const {data: dataObjects, loading: loadingObjects, error: errorObjects} =
         useQuery(GET_OBJECTS, input.mode === "objects"
@@ -43,7 +45,8 @@ export const AppContent = () => {
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
                     periodTerm: input.chronOntologyTerm,
-                    entityTypes: input.arachneTypesCheckedIds
+                    entityTypes: input.arachneTypesCheckedIds,
+                    lang: t("current language code")
                 }
             }
             : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: "", entityTypes: []}});
