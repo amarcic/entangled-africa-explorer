@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Circle, GeoJSON, MapContainer, Rectangle, TileLayer } from 'react-leaflet';
+import { Circle, GeoJSON, MapContainer, Rectangle, TileLayer, useMapEvent, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { CreateMarkers, ReturnPopup } from '..'
 import { useTranslation } from "react-i18next";
@@ -64,6 +64,16 @@ export const OurMap = (props) => {
     },[input.bigTileArea])
 
 
+    const MapOnClickListener = () => {
+        const map = useMapEvent('click', (event) => {
+            console.log("map click");
+            if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
+                dispatch({type: "DRAW_BBOX", payload: event.latlng});
+            }
+        })
+        return null;
+    }
+
     return (
         <>
             <Grid className={classes.dashboardTileHeader} item container direction="row" spacing={2}>
@@ -105,11 +115,6 @@ export const OurMap = (props) => {
                     zoom={input.zoomLevel}
                     minZoom={1}
                     zoomSnap={0.5}
-                    onClick={(event) => {
-                        if (input.drawBBox && (!(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) || !(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2)))) {
-                            dispatch({type: "DRAW_BBOX", payload: event.latlng});
-                        }
-                    }}
                     whenCreated={
                         mapInstance => {
                             mapRef.current = mapInstance
@@ -123,6 +128,9 @@ export const OurMap = (props) => {
                         url={osmTiles}
                         noWrap={true}
                     />
+
+                    {/* needed for registering boundary box clicks on MapContainer */}
+                    <MapOnClickListener/>
 
                     {/* Circles and Rectangles used for drawing bounding box */}
                     {(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1))
