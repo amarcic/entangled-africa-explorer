@@ -15,11 +15,11 @@ export const CollapsedFilters = (props) => {
     return (
         <>
             {/*Chip for mode/search starting point*/}
-            <Chip label={`${t("Searching in")}: ${input.mode === "archaeoSites" ? "iDAI.gazetteer" : "iDAI.objects"}`}/>
+            <Chip label={`${t("Searching in")}: ${input.mode === "objects" ? "iDAI.objects" : "iDAI.gazetteer"}`}/>
 
             {/*Chip for iDAI.objects entity types*/}
             {input.arachneTypesCheckedIds.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
+            && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
                          `${t("EntityType", {count: input.arachneTypesCheckedIds.length})}: 
                          ${arachneTypes(t).filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
@@ -32,12 +32,13 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for filter by period*/}
             {input.chronOntologyTerm !== null
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"} label={`${t("Chronontology term")}: ${input.chronOntologyTerm}`}/>}
+            && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")} label={`${t("Chronontology term")}: ${input.chronOntologyTerm}`}/>}
 
             {/*Chip for filter by region*/}
-            {input.sitesMode === "region" && input.regionTitle !== null
+            {input.gazetteerRegionId !== null
             && <Chip variant="outlined"
-                     label={`${t("Region")}: ${input.regionTitle}`}
+                     label={`${t("Region")}: ${input.gazetteerRegionId}`} //todo: get correct label for selected region(s?)
+                     disabled={input.mode === "objects"}
             />}
 
             {/*Chip for filter by coordinates*/}
@@ -48,7 +49,7 @@ export const CollapsedFilters = (props) => {
 
             {/*Chip for filter by catalogs*/}
             {input.catalogsCheckedIds.length !== 0
-            && <Chip variant="outlined" disabled={input.mode === "archaeoSites"}
+            && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
                          `${t("Catalog", {count: input.catalogsCheckedIds.length})}: 
                          ${catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")}`

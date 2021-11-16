@@ -35,9 +35,9 @@ export const ResultsTable = (props) => {
                 </Grid>
                 <Grid item xs={3}>
                     {input.showRelatedObjects && mapDataContext.entity.related && `${mapDataContext.entity.related.length} results (related objects)`}
-                    {input.showSearchResults && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
-                    {input.showArchaeoSites && mapDataSitesByRegion.sitesByRegion && input.sitesMode === "region" && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
-                    {input.showArchaeoSites && mapDataArchaeoSites.archaeologicalSites && input.sitesMode !== "region" && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
+                    {input.mode === "objects" && mapDataObjects.entitiesMultiFilter && `${mapDataObjects.entitiesMultiFilter.length} results (objects)`}
+                    {input.mode === "sitesByRegion" && mapDataSitesByRegion.sitesByRegion && `${mapDataSitesByRegion.sitesByRegion.length} results (archaeological sites, by region)`}
+                    {input.mode === "sites" && mapDataArchaeoSites.archaeologicalSites && `${mapDataArchaeoSites.archaeologicalSites.length} results (archaeological sites)`}
                 </Grid>
                 <Grid item xs={1}>
                     {maximizeTileButton}
@@ -157,7 +157,7 @@ export const ResultsTable = (props) => {
                                 {renderingConditionSitesByRegion && mapDataSitesByRegion.sitesByRegion.map((item, index) => {
                                         return (item
                                             && <ResultsTableRow
-                                                mode={"archaeoSites"}
+                                                mode={"sites"}
                                                 item={item}
                                                 key={index}
                                                 index={index}
@@ -171,7 +171,7 @@ export const ResultsTable = (props) => {
                                 {renderingConditionSites && mapDataArchaeoSites.archaeologicalSites.map((item, index) => {
                                         return (item
                                             && <ResultsTableRow
-                                                mode={"archaeoSites"}
+                                                mode={"sites"}
                                                 item={item}
                                                 key={index}
                                                 index={index}

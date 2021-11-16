@@ -37,7 +37,7 @@ export const ResultsTableRow = (props) => {
                 <TableCell>
                     <Tooltip title="View original entry in iDAI.world" arrow placement="right">
                         <a href={
-                            mode==="archaeoSites"
+                            (mode === "sites" || mode === "sitesByRegion")
                                 ? `https://gazetteer.dainst.org/place/${item.identifier}`
                                 : `https://arachne.dainst.org/entity/${item.identifier}`
                         } target="_blank" rel="noreferrer">
@@ -50,7 +50,7 @@ export const ResultsTableRow = (props) => {
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box margin={1}>
-                            {mode==="archaeoSites"
+                            {(mode === "sites" || mode === "sitesByRegion")
                                 ? <GazetteerEntry
                                     item={item}
                                     itemCoordinates={itemCoordinates}

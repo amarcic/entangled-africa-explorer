@@ -18,7 +18,7 @@ export const Filters = (props) => {
     const classes = useStyles();
 
     const updateBBoxValue = (event) => {
-        dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
+        dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sites"}});
         // only create bbox if entered values have valid format (floats with at least one decimal place)
         if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
             dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
@@ -38,25 +38,23 @@ export const Filters = (props) => {
                             <FormGroup>
                                 <FormLabel component="legend">Search mode</FormLabel>
                                 <RadioGroup
-                                    name="mapMode"
+                                    name="searchMode"
                                     value={input.mode}
                                     onChange={(event, newValue) => {
                                         dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: newValue}})
-                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showArchaeoSites"}})
-                                        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
                                         dispatch({type: "UPDATE_INPUT", payload: {field: "selectedMarker", value: undefined}}) // Is this a good place to clear selectedMarker?
                                     }}
                                 >
-                                    <FormControlLabel value="archaeoSites" control={<Radio />} label="Archaeological Sites"/>
+                                    <FormControlLabel value="sites" checked={(input.mode === "sites" || input.mode === "sitesByRegion")} control={<Radio />} label="Archaeological Sites"/>
                                     <FormControlLabel value="objects" control={<Radio />} label="Objects"/>
                                 </RadioGroup>
                             </FormGroup>
                         </Grid>}
 
                     {/*checkboxes for filter by entity type; only active in object search mode*/
-                        !input.showArchaeoSites && <Grid item>
+                        input.mode === "objects" && <Grid item>
                             <FormGroup>
-                                <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by Arachne entity type</FormLabel>
+                                <FormLabel component="legend" >Filter by Arachne entity type</FormLabel>
                                 {arachneTypes && arachneTypes(t).map(type => {
                                     return (type && type.id
                                         && <FormControlLabel
@@ -74,7 +72,6 @@ export const Filters = (props) => {
                                                     }}
                                                     name={String(type.id)}
                                                     key={type.id}
-                                                    disabled={input.showArchaeoSites}
                                                 />
                                             }
                                             label={type.label}
@@ -113,9 +110,9 @@ export const Filters = (props) => {
                         </Grid>}
 
                     {/*dropdown for filter by period; only active in object search mode*/
-                        !input.showArchaeoSites && <Grid item>
+                        input.mode === "objects" && <Grid item>
                             <FormGroup>
-                                <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by time</FormLabel>
+                                <FormLabel component="legend">Filter by period</FormLabel>
                                 <Autocomplete
                                     name="chronOntologyTerm"
                                     value={input.chronOntologyTerm}
@@ -127,36 +124,35 @@ export const Filters = (props) => {
                                         <TextField {...params} label="iDAI.chronontology term" variant="outlined" />
                                     }
                                     autoSelect={true}
-                                    disabled={input.showArchaeoSites}
                                     size="small"
                                 />
                             </FormGroup>
                         </Grid>}
 
                     {/*dropdown for filter by region; only active in site search mode*/
-                        input.showArchaeoSites && <Grid item>
+                        (input.mode === "sites" || input.mode === "sitesByRegion") && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend">Filter by region</FormLabel>
                                 <Autocomplete
-                                    name="regionId"
-                                    //value={input.regionTitle}
+                                    //todo: this Autocomplete should have a value to retain the selected region(s?) --> right now they disappear when filters are closed or modes are switched
+                                    name="region"
                                     options={regions}
                                     getOptionLabel={(option) => option.title}
                                     getOptionSelected={(option, value) => {
                                         return (option.id === value.id)
                                     }}
                                     onChange={(event, newValue) => {
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "region"}});
                                         newValue === null
-                                            ? (dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: 0}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "regionTitle", value: null}}))
-                                            : (dispatch({type: "UPDATE_INPUT", payload: {field: "regionId", value: newValue.id}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "regionTitle", value: newValue.title}}));
+                                            ? (dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sites"}}),
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionId", value: null}}),
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionTitle", value: null}}))
+                                            : (dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sitesByRegion"}}),
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionId", value: newValue.id}}),
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionTitle", value: newValue.title}}));
                                     }}
                                     renderInput={(params) => <TextField {...params} label="Filter by region" variant="outlined" />}
                                     autoSelect={true}
-                                    disabled={input.sitesMode==="bbox"}
+                                    disabled={(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)}
                                     size="small"
                                 />
                             </FormGroup>
@@ -171,8 +167,10 @@ export const Filters = (props) => {
                                             name="drawBBox"
                                             checked={input.drawBBox}
                                             color="primary"
-                                            onChange={() => dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})}
-                                            disabled={input.sitesMode==="region"}
+                                            onChange={() => {
+                                                dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})
+                                            }}
+                                            disabled={input.gazetteerRegionId!==null}
                                         />
                                     </Tooltip>
                                 </FormLabel>
@@ -184,23 +182,12 @@ export const Filters = (props) => {
                                     value={input.boundingBoxCorner1}
                                     placeholder="North, East decimal degrees"
                                     label="North, East decimal degrees"
-                                    /*onChange={(event) => {
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
-                                        // only create bbox if entered values have valid format (floats with at least one decimal place)
-                                        if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
-                                            dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
-                                        }
-                                        else {
-                                            dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
-                                        }
-                                    }}*/
                                     onChange={updateBBoxValue}
                                     InputProps={{
                                         endAdornment: (
                                             input.boundingBoxCorner1.length!==0
                                             &&<IconButton
                                                 onClick={() => {
-                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
                                                     dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner1", value: []}})}
                                                 }
                                             >
@@ -208,7 +195,7 @@ export const Filters = (props) => {
                                             </IconButton>
                                         )
                                     }}
-                                    disabled={input.sitesMode==="region"}
+                                    disabled={input.mode==="sitesByRegion"}
                                 />
                                 <TextField
                                     type="text"
@@ -218,23 +205,12 @@ export const Filters = (props) => {
                                     value={input.boundingBoxCorner2}
                                     placeholder="South, West decimal degrees"
                                     label="South, West decimal degrees"
-                                    /*onChange={(event) => {
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: "bbox"}});
-                                        // only create bbox if entered values have valid format (floats with at least one decimal place)
-                                        if(/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(event.currentTarget.value)) {
-                                            dispatch({type: "MANUAL_BBOX", payload: {field: event.currentTarget.name, valueString: event.currentTarget.value}})
-                                        }
-                                        else {
-                                            dispatch({type: "UPDATE_INPUT", payload: {field: event.currentTarget.name, value: event.currentTarget.value}})
-                                        }
-                                    }}*/
                                     onChange={updateBBoxValue}
                                     InputProps={{
                                         endAdornment: (
                                             input.boundingBoxCorner2.length!==0
                                             &&<IconButton
                                                 onClick={() => {
-                                                    dispatch({type: "UPDATE_INPUT", payload: {field: "sitesMode", value: ""}});
                                                     dispatch({type: "UPDATE_INPUT", payload: {field: "boundingBoxCorner2", value: []}})
                                                 }}
                                             >
@@ -242,15 +218,15 @@ export const Filters = (props) => {
                                             </IconButton>
                                         )
                                     }}
-                                    disabled={input.sitesMode==="region"}
+                                    disabled={input.mode==="sitesByRegion"}
                                 />
                             </FormGroup>
                         </Grid>}
 
                     {/*checkboxes for filter by catalogs; only active in object search mode*/
-                        !input.showArchaeoSites && <Grid item>
+                        input.mode === "objects" && <Grid item>
                             <FormGroup>
-                                <FormLabel component="legend" disabled={input.showArchaeoSites}>Filter by catalogs</FormLabel>
+                                <FormLabel component="legend">Filter by catalogs</FormLabel>
                                 {catalogs && catalogs.map(catalog => {
                                     return (catalog
                                         && <FormControlLabel
@@ -268,7 +244,6 @@ export const Filters = (props) => {
                                                     }}
                                                     name={String(catalog.id)}
                                                     key={catalog.id}
-                                                    disabled={input.showArchaeoSites}
                                                 />
                                             }
                                             label={catalog.label}

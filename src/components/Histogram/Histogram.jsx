@@ -139,7 +139,7 @@ export const Histogram = (props) => {
                         </g>
                     </svg>
                     }
-                    {input.mode==="archaeoSites"&&<p>not available in this mode</p>}
+                    {(input.mode === "sites" || input.mode === "sitesByRegion")&&<p>not available in this mode</p>}
                 </Grid>
             </Grid>
         </>

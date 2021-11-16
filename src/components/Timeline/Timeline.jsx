@@ -32,7 +32,7 @@ export const Timeline = (props) => {
                     filteredTimelineData={filteredTimelineData}
                 />
                 }
-                {input.mode==="archaeoSites"&&<p>not available in this mode</p>}
+                {(input.mode === "sites" || input.mode === "sitesByRegion")&&<p>not available in this mode</p>}
             </Grid>
         </>
     )

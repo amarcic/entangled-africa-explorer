@@ -51,7 +51,7 @@ export const AppContent = () => {
             }
             : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: "", entityTypes: []}});
 
-    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "archaeoSites"
+    const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "sites"
         ? {
             variables: {
                 searchTerm: debouncedSearchStr,
@@ -64,15 +64,15 @@ export const AppContent = () => {
         //: {variables: {searchTerm: "", bbox: []}});
         : {variables: {searchTerm: "''", bbox: []}});
 
-    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.sitesMode === "region"
-        ? {variables: {searchTerm: debouncedSearchStr, idOfRegion: input.regionId}}
+    const {data: dataSitesByRegion, loading: loadingSitesByRegion, error: errorSitesByRegion} = useQuery(GET_SITES_BY_REGION, input.mode === "sitesByRegion"
+        ? {variables: {searchTerm: debouncedSearchStr, idOfRegion: input.selectedRegionId}}
         : {variables: {searchTerm: "", idOfRegion: 0}});
 
 
     //todo: the periods and regions should probably be queried via Hub and not like this
     //todo: extract either to utils or to config
 
-    const [periods, setPeriods] = useState(["Frühnubischer Horizont"]);
+    const [periods, setPeriods] = useState(["some period", "some other period"]);
 
     //todo: error... this does not seem to be the correct URL
     /*fetch("https://chronontology.dainst.org/data/period/?fq=resource.provenance:%22SPP2143%22&q=*&from=0")
@@ -95,7 +95,7 @@ export const AppContent = () => {
         });*/
 
 
-    const [regions, setRegions] = useState([]);
+    const [regions, setRegions] = useState([{id: 123, title: "some region"}, {id: 456, title: "some other region"}]);
 
     /*fetch("https://gazetteer.dainst.org/search.json?q=parent%3A2042601%20OR%20parent%3A2293101&fq=&limit=1000&type=&pretty=true")
         .then(response => response.json())
@@ -115,7 +115,6 @@ export const AppContent = () => {
 
     const handleRelatedObjects = (id) => {
         dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
-        dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showSearchResults"}})
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
         console.log("handleRelatedObjects!");
     };
@@ -135,39 +134,39 @@ export const AppContent = () => {
     }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.mode === "objects" && input.showSearchResults && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, input.showSearchResults, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
+    }, [dataObjects, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
 
     useEffect( () => {
-        if (dataArchaeoSites && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode!=="region" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
+        if (dataArchaeoSites && input.mode === "sites" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataArchaeoSites(dataArchaeoSites);
             console.log("rerender dataArchaeoSites!");
             console.log("rerender dataArchaeoSites --> dataArchaeoSites: ", dataArchaeoSites);
             console.log("rerender dataArchaeoSites --> input:", input);
         }
-    }, [dataArchaeoSites, input.showArchaeoSites, debouncedSearchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.sitesMode, input.mode]);
+    }, [dataArchaeoSites, debouncedSearchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.showArchaeoSites && input.mode === "archaeoSites" && input.sitesMode==="region" && (debouncedSearchStr || input.regionId)) {
+        if (dataSitesByRegion && input.mode === "sitesByRegion" && (debouncedSearchStr || input.gazetteerRegionId)) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, input.showArchaeoSites, debouncedSearchStr, input.regionId, input.sitesMode, input.mode]);
+    }, [dataSitesByRegion, debouncedSearchStr, input.gazetteerRegionId, input.mode]);
 
 
     /* Conditions used to determine whether to render certain data (objects, related objects, sites, sites by region) */
     /* TODO: better names? use a function to check this instead? */
     const renderingConditionObjects =
         // this mode is selected
-        input.showSearchResults
+        input.mode === "objects"
         // at least one relevant input not empty
         && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
             || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
@@ -184,7 +183,7 @@ export const AppContent = () => {
 
     const renderingConditionSites =
         // this mode is selected
-        input.showArchaeoSites && input.sitesMode!=="region"
+        input.mode === "sites"
         // at least one relevant input not empty
         && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
@@ -192,9 +191,9 @@ export const AppContent = () => {
 
     const renderingConditionSitesByRegion =
         // this mode is selected
-        input.showArchaeoSites && input.sitesMode==="region"
+        input.mode === "sitesByRegion"
         // at least one relevant input not empty
-        && (debouncedSearchStr || input.regionId)
+        && (debouncedSearchStr || input.gazetteerRegionId)
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 
