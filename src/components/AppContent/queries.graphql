@@ -1,5 +1,5 @@
-query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerm: String, $entityTypes: [RelatedType], $lang: Languages) {
-    entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, period: $periodTerm,
+query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerms: [String], $entityTypes: [RelatedType], $lang: Languages) {
+    entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, periods: $periodTerms,
         entityTypes: $entityTypes) {
         identifier
         name
@@ -22,11 +22,13 @@ query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $p
             types
             begin
             end
+            datingText
             senses(typeOfSense: political) {
                 title
                 identifier
                 begin
                 end
+                datingText
             }
         }
         type

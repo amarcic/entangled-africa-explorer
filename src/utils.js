@@ -87,6 +87,7 @@ const timelineAdapter = ( object ) => {
         let periodStuff = {
             periodName: period.title,
             periodType: period.type,
+            periodSpanText: period.datingText,
             periodSpan: period.begin||period.end
                 ? [period.begin, period.end!=="present"? period.end : currentYear] 
                 : undefined
@@ -109,7 +110,8 @@ const timelineAdapter = ( object ) => {
                 timespan: datingSet.datingSpan,
                 periodIds: datingSet.periodIds,
                 periodNames: datingSet.periodIds?.map( periodId => periodData[periodId].periodName ),
-                periodSpans: datingSet.periodIds?.map( periodId => periodData[periodId].periodSpan )
+                periodSpans: datingSet.periodIds?.map( periodId => periodData[periodId].periodSpan ),
+                periodSpanTexts: datingSet.periodIds?.map( periodId => periodData[periodId].periodSpanText )
                 //object.temporal?.flat().find( period => period.identifier === datingSet.periodIds?.[0] )?.title
             }
 
@@ -168,6 +170,7 @@ const newGroupByPeriods = ( timelineObject ) => {
             //span and name are rewritten every time; check if they can diverge (because span is taken from sense if not found)
             periodSpan: obj.periodSpans?.[index],
             periodName: obj.periodNames?.[index],
+            periodSpanText: obj.periodSpanTexts?.[index],
             periodId: periodId,
             items: [currentItem, ...previousItems]
         });

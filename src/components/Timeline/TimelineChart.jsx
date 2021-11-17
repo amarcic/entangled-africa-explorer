@@ -196,8 +196,8 @@ export const TimelineChart = (props) => {
                     .join("text")
                     .attr("class", "tooltip")
                     .text( value => yScale.bandwidth() <= labelRenderLimit
-                        ? `${value.periodName}: ${value.items.length} ${t("Item", {count: value.items.length})}`
-                        : `${value.items.length} ${t("Item", {count: value.items.length})}`)
+                        ? `${value.periodName}${value.periodSpanText?", " + value.periodSpanText:""}: ${value.items.length} ${t("Item", {count: value.items.length})}`
+                        : `${value.periodSpanText?value.periodSpanText+": ":""} ${value.items.length} ${t("Item", {count: value.items.length})}`)
                     .attr("text-anchor", "middle")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("y", value => yScale(value.periodId)/*+yScale.bandwidth()*/+margin.top)
