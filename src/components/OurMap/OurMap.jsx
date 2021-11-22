@@ -127,6 +127,7 @@ export const OurMap = (props) => {
                         attribution={osmAttr}
                         url={osmTiles}
                         noWrap={true}
+                        bounds={[[-90,-180], [90,180]]}
                     />
 
                     {/* needed for registering boundary box clicks on MapContainer */}
