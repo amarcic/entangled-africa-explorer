@@ -114,17 +114,23 @@ export const Filters = (props) => {
                             <FormGroup>
                                 <FormLabel component="legend">Filter by period</FormLabel>
                                 <Autocomplete
-                                    name="chronOntologyTerm"
-                                    value={input.chronOntologyTerm}
+                                    multiple
+                                    name="chronOntologyTerms"
+                                    value={input.chronOntologyTerms}
                                     options={periods}
+                                    getOptionLabel={(option) => option}
+                                    getOptionSelected={(option, value) => {
+                                        return (option === value)
+                                    }}
                                     onChange={(event, newValue) =>
-                                        dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerm", value: newValue}})
+                                        dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerms", value: newValue}})
                                     }
                                     renderInput={(params) =>
                                         <TextField {...params} label="iDAI.chronontology term" variant="outlined" />
                                     }
                                     autoSelect={true}
                                     size="small"
+                                    variant="outlined"
                                 />
                             </FormGroup>
                         </Grid>}
@@ -136,24 +142,24 @@ export const Filters = (props) => {
                                 <Autocomplete
                                     //todo: this Autocomplete should have a value to retain the selected region(s?) --> right now they disappear when filters are closed or modes are switched
                                     name="region"
+                                    value={input.gazetteerRegion}
                                     options={regions}
-                                    getOptionLabel={(option) => option.title}
+                                    getOptionLabel={(option) => option.label}
                                     getOptionSelected={(option, value) => {
                                         return (option.id === value.id)
                                     }}
                                     onChange={(event, newValue) => {
                                         newValue === null
                                             ? (dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sites"}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionId", value: null}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionTitle", value: null}}))
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegion", value: {id: null, label: ""}}}))
                                             : (dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sitesByRegion"}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionId", value: newValue.id}}),
-                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegionTitle", value: newValue.title}}));
+                                                dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegion", value: newValue}}));
                                     }}
                                     renderInput={(params) => <TextField {...params} label="Filter by region" variant="outlined" />}
                                     autoSelect={true}
                                     disabled={(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)}
                                     size="small"
+                                    style={{ width: 300 }} //?
                                 />
                             </FormGroup>
                         </Grid>}
@@ -170,7 +176,7 @@ export const Filters = (props) => {
                                             onChange={() => {
                                                 dispatch({type: "TOGGLE_STATE", payload: {toggledField: "drawBBox"}})
                                             }}
-                                            disabled={input.gazetteerRegionId!==null}
+                                            disabled={input.gazetteerRegion.id!==null}
                                         />
                                     </Tooltip>
                                 </FormLabel>

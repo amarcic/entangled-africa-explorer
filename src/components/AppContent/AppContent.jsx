@@ -32,7 +32,7 @@ export const AppContent = () => {
 
     // Queries
     const {data: dataContext, loading: loadingContext, error: errorContext} = useQuery(GET_OBJECT_CONTEXT, input.mode === "objects"
-        ? {variables: {arachneId: input.objectId}, lang: t("current language code")}
+        ? {variables: {arachneId: input.selectedObjectId}, lang: t("current language code")}
         : {variables: {arachneId: 0}, lang: t("current language code")});
 
     const {data: dataObjects, loading: loadingObjects, error: errorObjects} =
@@ -44,12 +44,12 @@ export const AppContent = () => {
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
-                    periodTerm: [input.chronOntologyTerm],
+                    periodTerms: input.chronOntologyTerms,
                     entityTypes: input.arachneTypesCheckedIds,
                     lang: t("current language code")
                 }
             }
-            : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerm: "", entityTypes: []}});
+            : {variables: {searchTerm: "", catalogIds: [], bbox: [], periodTerms: [], entityTypes: []}});
 
     const {data: dataArchaeoSites, loading: loadingArchaeoSites, error: errorArchaeoSites} = useQuery(GET_ARCHAEOLOGICAL_SITES, input.mode === "sites"
         ? {
@@ -95,7 +95,7 @@ export const AppContent = () => {
         });*/
 
 
-    const [regions, setRegions] = useState([{id: 123, title: "some region"}, {id: 456, title: "some other region"}]);
+    const [regions, setRegions] = useState([{id: 123, label: "some region"}, {id: 456, label: "some other region"}]);
 
     /*fetch("https://gazetteer.dainst.org/search.json?q=parent%3A2042601%20OR%20parent%3A2293101&fq=&limit=1000&type=&pretty=true")
         .then(response => response.json())
@@ -114,7 +114,7 @@ export const AppContent = () => {
         });*/
 
     const handleRelatedObjects = (id) => {
-        dispatch({type: "UPDATE_INPUT", payload: {field: "objectId", value: id ? Number(id) : input.objectId}});
+        dispatch({type: "UPDATE_INPUT", payload: {field: "selectedObjectId", value: id ? Number(id) : input.selectedObjectId}});
         dispatch({type: "TOGGLE_STATE", payload: {toggledField: "showRelatedObjects"}})
         console.log("handleRelatedObjects!");
     };
@@ -134,14 +134,14 @@ export const AppContent = () => {
     }, [dataContext, input.showRelatedObjects, input.mode]);
 
     useEffect( () => {
-        if (dataObjects && input.mode === "objects" && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
+        if (dataObjects && input.mode === "objects" && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerms
             ||(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
             setMapDataObjects(dataObjects);
             console.log("rerender dataObjects!");
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerm, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
+    }, [dataObjects, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerms, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
 
     useEffect( () => {
         if (dataArchaeoSites && input.mode === "sites" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {
@@ -153,13 +153,13 @@ export const AppContent = () => {
     }, [dataArchaeoSites, debouncedSearchStr, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode]);
 
     useEffect( () => {
-        if (dataSitesByRegion && input.mode === "sitesByRegion" && (debouncedSearchStr || input.gazetteerRegionId)) {
+        if (dataSitesByRegion && input.mode === "sitesByRegion" && (debouncedSearchStr || input.gazetteerRegion.id)) {
             setMapDataSitesByRegion(dataSitesByRegion);
             console.log("rerender dataSitesByRegion!");
             console.log("rerender dataSitesByRegion --> dataSitesByRegion: ", dataSitesByRegion);
             console.log("rerender dataSitesByRegion --> input:", input);
         }
-    }, [dataSitesByRegion, debouncedSearchStr, input.gazetteerRegionId, input.mode]);
+    }, [dataSitesByRegion, debouncedSearchStr, input.gazetteerRegion.id, input.mode]);
 
 
     /* Conditions used to determine whether to render certain data (objects, related objects, sites, sites by region) */
@@ -168,7 +168,7 @@ export const AppContent = () => {
         // this mode is selected
         input.mode === "objects"
         // at least one relevant input not empty
-        && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerm
+        && (debouncedSearchStr || input.catalogsCheckedIds.length!==0 || input.chronOntologyTerms
             || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))
         // query result not empty
         && mapDataObjects && mapDataObjects.entitiesMultiFilter;
@@ -177,7 +177,7 @@ export const AppContent = () => {
         // this mode is selected
         input.showRelatedObjects
         // relevant input not empty
-        && input.objectId
+        && input.selectedObjectId
         // query result not empty
         && mapDataContext && mapDataContext.entity;
 
@@ -193,7 +193,7 @@ export const AppContent = () => {
         // this mode is selected
         input.mode === "sitesByRegion"
         // at least one relevant input not empty
-        && (debouncedSearchStr || input.gazetteerRegionId)
+        && (debouncedSearchStr || input.gazetteerRegion.id)
         // query result not empty
         && mapDataSitesByRegion && mapDataSitesByRegion.sitesByRegion;
 

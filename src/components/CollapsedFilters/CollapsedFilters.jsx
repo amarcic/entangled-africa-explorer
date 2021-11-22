@@ -31,13 +31,13 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined" label={`${t("Search term")}: ${input.searchStr}`}/>}
 
             {/*Chip for filter by period*/}
-            {input.chronOntologyTerm !== null
-            && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")} label={`${t("Chronontology term")}: ${input.chronOntologyTerm}`}/>}
+            {input.chronOntologyTerms.length !== 0
+            && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")} label={`${t("Chronontology term", {count: input.chronOntologyTerms.length})}: ${input.chronOntologyTerms.join(", ")}`}/>}
 
             {/*Chip for filter by region*/}
-            {input.gazetteerRegionId !== null
+            {input.gazetteerRegion.id !== null
             && <Chip variant="outlined"
-                     label={`${t("Region")}: ${input.gazetteerRegionId}`} //todo: get correct label for selected region(s?)
+                     label={`${t("Region")}: ${input.gazetteerRegion.label}`}
                      disabled={input.mode === "objects"}
             />}
 
