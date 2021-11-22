@@ -15,6 +15,7 @@ const initialInput = {
     boundingBoxCorner1: [],
     boundingBoxCorner2: [],
     drawBBox: false,
+    focusAfrica: true,
 
     //for searching related objects or regions
     showRelatedObjects: false,

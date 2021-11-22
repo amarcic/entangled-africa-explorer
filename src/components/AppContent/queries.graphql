@@ -1,6 +1,6 @@
-query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerms: [String], $entityTypes: [RelatedType], $lang: Languages) {
+query searchObjects($searchTerm: String, $catalogIds: [Int], $bbox: [String], $periodTerms: [String], $entityTypes: [RelatedType], $focusAfrica: Boolean, $lang: Languages) {
     entitiesMultiFilter(searchString: $searchTerm, catalogIds: $catalogIds, coordinates: $bbox, periods: $periodTerms,
-        entityTypes: $entityTypes) {
+        entityTypes: $entityTypes, focusAfrica: $focusAfrica) {
         identifier
         name
         spatial {
