@@ -46,6 +46,7 @@ export const AppContent = () => {
                         : [],
                     periodTerms: input.chronOntologyTerms,
                     entityTypes: input.arachneTypesCheckedIds,
+                    focusAfrica: input.focusAfrica,
                     lang: t("current language code")
                 }
             }
