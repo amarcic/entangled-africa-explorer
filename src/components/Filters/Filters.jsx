@@ -233,29 +233,48 @@ export const Filters = (props) => {
                         input.mode === "objects" && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend">Filter by catalogs</FormLabel>
-                                {catalogs && catalogs.map(catalog => {
-                                    return (catalog
-                                        && <FormControlLabel
-                                            key={catalog.id}
-                                            control={
-                                                <Checkbox
-                                                    checked={input.catalogsCheckedIds.includes(catalog.id)}
-                                                    onChange={() => {
-                                                        dispatch({
-                                                            type: input.catalogsCheckedIds.includes(catalog.id)
-                                                                ? "UNCHECK_ITEM"
-                                                                : "CHECK_ITEM",
-                                                            payload: {field: "catalogsCheckedIds", toggledItem: catalog.id}
-                                                        });
-                                                    }}
-                                                    name={String(catalog.id)}
-                                                    key={catalog.id}
-                                                />
-                                            }
-                                            label={catalog.label}
+                                {/*todo: format so it is clear that there is one checkbox that controls the others */}
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={input.catalogsCheckedIds.length === catalogs.length}
+                                            onChange={() => {
+                                                input.catalogsCheckedIds.length === catalogs.length
+                                                    ? dispatch({type: "UPDATE_INPUT",
+                                                        payload: {field: "catalogsCheckedIds", value: []}})
+                                                    : dispatch({type: "UPDATE_INPUT",
+                                                        payload: {field: "catalogsCheckedIds", value: catalogs.map(catalog => catalog.id)}
+                                                    })
+                                            }}
+                                            name="All catalogs"
                                         />
-                                    )
-                                })}
+                                    }
+                                    label={t("All catalogs")}
+                                />
+                                    {catalogs && catalogs.map(catalog => {
+                                        return (catalog
+                                            &&
+                                            <FormControlLabel
+                                                key={catalog.id}
+                                                control={
+                                                    <Checkbox
+                                                        checked={input.catalogsCheckedIds.includes(catalog.id)}
+                                                        onChange={() => {
+                                                            dispatch({
+                                                                type: input.catalogsCheckedIds.includes(catalog.id)
+                                                                    ? "UNCHECK_ITEM"
+                                                                    : "CHECK_ITEM",
+                                                                payload: {field: "catalogsCheckedIds", toggledItem: catalog.id}
+                                                            });
+                                                        }}
+                                                        name={String(catalog.id)}
+                                                        key={catalog.id}
+                                                    />
+                                                }
+                                                label={catalog.label}
+                                            />
+                                        )
+                                    })}
                             </FormGroup>
                         </Grid>}
                 </Grid>

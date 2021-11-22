@@ -65,8 +65,15 @@ const arachneTypes = (t) => [ //todo: welche davon sollen angeboten werden? eini
 ];
 
 const catalogs = [
-    {"label": "All SPP 2143 Arachne data", "id": 123},
-    {"label": "AAArC - Fundplätze", "id": 942}
+    //{"label": "All SPP 2143 Arachne data", "id": 0}, //no such catalog yet
+    //{"label": "AAArC - Fundplätze", "id": 942}, //incomplete example catalog
+
+    //todo: gewünschte Titel ggf. mit Projekten oder Bonn absprechen
+    {"label": "Necked Axes (P01)", "id": 1071}, //not public yet
+    {"label": "The Lake Chad Region as a Crossroad (P04)", "id": 1073}, //not public yet
+    {"label": "Cultivated Landscapes (P05)", "id": 954},
+    {"label": "Routes of Interaction (P07)", "id": 987},
+    //{"label": " (P11)", "id": }, //no catalog yet
 ]
 
 export {
