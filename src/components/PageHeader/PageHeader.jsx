@@ -15,7 +15,7 @@ import SearchIcon from '@material-ui/icons/Search';
 export const PageHeader = (props) => {
 
     const [input, dispatch] = props.reducer;
-    const { catalogs, periods, regions} = props;
+    const { periods, regions} = props;
 
     const { t, i18n } = useTranslation();
 
@@ -90,7 +90,6 @@ export const PageHeader = (props) => {
                                 <SearchIcon/> Filters <ExpandMoreIcon/>
                             </Button>
                             <CollapsedFilters
-                                catalogs={catalogs}
                                 input={input}
                             />
                         </Grid>
@@ -147,7 +146,6 @@ export const PageHeader = (props) => {
                     <SearchIcon/> Close filters <ExpandLessIcon/>
                 </Button>
                 <Filters
-                    catalogs={catalogs}
                     periods={periods}
                     reducer={[input, dispatch]}
                     regions={regions}

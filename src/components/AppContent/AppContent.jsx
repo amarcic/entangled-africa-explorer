@@ -13,7 +13,7 @@ import {
 import { inputReducer } from "./inputReducer";
 import { timelineAdapter, timelineMapper, useDebounce } from "../../utils";
 import Container from "@material-ui/core/Container";
-import { catalogs, initialInput } from "../../config";
+import { initialInput } from "../../config";
 import { useTranslation } from "react-i18next";
 
 export const AppContent = () => {
@@ -345,7 +345,6 @@ export const AppContent = () => {
     return (
         <>
             <PageHeader
-                catalogs={catalogs}
                 periods={periods}
                 reducer={[input, dispatch]}
                 regions={regions}

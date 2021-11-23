@@ -2,11 +2,11 @@ import React from "react";
 import { Chip } from "@material-ui/core";
 import { useStyles } from "../../styles";
 import { useTranslation } from "react-i18next";
-import { arachneTypes } from "../../config";
+import { arachneTypes, catalogs } from "../../config";
 
 
 export const CollapsedFilters = (props) => {
-    const { catalogs, input } = props;
+    const { input } = props;
 
     const { t, i18n } = useTranslation();
 

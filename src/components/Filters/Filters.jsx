@@ -1,18 +1,18 @@
 import React from 'react';
 import {
-    Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, Radio,
-    RadioGroup, Switch, TextField, Tooltip
+    Checkbox, Divider, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, Radio, RadioGroup,
+    Switch, TextField, Tooltip
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useStyles } from '../../styles';
 import { useTranslation } from "react-i18next";
-import { arachneTypes } from "../../config";
+import { arachneTypes, catalogs } from "../../config";
 
 
 export const Filters = (props) => {
     const [input, dispatch] = props.reducer;
-    const { catalogs, periods, regions } = props;
+    const { periods, regions } = props;
 
     const { t, i18n } = useTranslation();
 
@@ -248,56 +248,54 @@ export const Filters = (props) => {
                         input.mode === "objects" && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend">Filter by catalogs</FormLabel>
-                                <FormControl
-                                    //if there are non-public catalogs, tell users this by displaying the FormHelperText specified below
-                                    error={input.catalogsCheckedIds.map(catalog => !catalog.public)}
-                                >
-                                    <FormHelperText>{t("Some catalogs are not yet publicly accessible")}</FormHelperText>
-                                    {/*todo: format so it is clear that there is one checkbox that controls the others */}
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={input.catalogsCheckedIds.length === catalogs.length} //if all are selected
-                                                onChange={() => {
-                                                    input.catalogsCheckedIds.length === catalogs.length //if all are selected
-                                                        ? dispatch({type: "UPDATE_INPUT",
-                                                            payload: {field: "catalogsCheckedIds", value: []}})
-                                                        : dispatch({type: "UPDATE_INPUT",
-                                                            payload: {field: "catalogsCheckedIds", value: catalogs.map(catalog => catalog.public && catalog.id)}
-                                                        })
-                                                }}
-                                                name="All catalogs"
-                                            />
-                                        }
-                                        label={t("All catalogs")}
-                                    />
-                                    <Divider/>
-                                    {catalogs && catalogs.map(catalog => {
-                                        return (catalog
-                                            &&
-                                            <FormControlLabel
-                                                key={catalog.id}
-                                                control={
-                                                    <Checkbox
-                                                        checked={input.catalogsCheckedIds.includes(catalog.id)}
-                                                        disabled={!catalog.public}
-                                                        onChange={() => {
-                                                            dispatch({
-                                                                type: input.catalogsCheckedIds.includes(catalog.id)
-                                                                    ? "UNCHECK_ITEM"
-                                                                    : "CHECK_ITEM",
-                                                                payload: {field: "catalogsCheckedIds", toggledItem: catalog.id}
-                                                            });
-                                                        }}
-                                                        name={String(catalog.id)}
-                                                        key={catalog.id}
-                                                    />
-                                                }
-                                                label={catalog.label}
-                                            />
-                                        )
-                                    })}
-                                </FormControl>
+                                {//if there are non-public catalogs, tell users this by displaying the FormHelperText specified below
+                                    catalogs.map(catalog => catalog.public).includes(false)
+                                    && <FormHelperText error>{t("Some catalogs are not yet publicly accessible")}</FormHelperText>
+                                }
+                                {/*todo: format so it is clear that there is one checkbox that controls the others */}
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={input.catalogsCheckedIds.length === catalogs.filter(catalog => catalog.public).length} //if all public catalogs are selected
+                                            onChange={() => {
+                                                input.catalogsCheckedIds.length === catalogs.filter(catalog => catalog.public).length //if all public catalogs are selected
+                                                    ? dispatch({type: "UPDATE_INPUT",
+                                                        payload: {field: "catalogsCheckedIds", value: []}})
+                                                    : dispatch({type: "UPDATE_INPUT",
+                                                        payload: {field: "catalogsCheckedIds", value: catalogs.filter(catalog => catalog.public).map(catalog => catalog.id)}
+                                                    })
+                                            }}
+                                            name="All catalogs"
+                                        />
+                                    }
+                                    label={t("All catalogs")}
+                                />
+                                <Divider/>
+                                {catalogs && catalogs.map(catalog => {
+                                    return (catalog
+                                        &&
+                                        <FormControlLabel
+                                            key={catalog.id}
+                                            control={
+                                                <Checkbox
+                                                    checked={input.catalogsCheckedIds.includes(catalog.id)}
+                                                    disabled={!catalog.public}
+                                                    onChange={() => {
+                                                        dispatch({
+                                                            type: input.catalogsCheckedIds.includes(catalog.id)
+                                                                ? "UNCHECK_ITEM"
+                                                                : "CHECK_ITEM",
+                                                            payload: {field: "catalogsCheckedIds", toggledItem: catalog.id}
+                                                        });
+                                                    }}
+                                                    name={String(catalog.id)}
+                                                    key={catalog.id}
+                                                />
+                                            }
+                                            label={catalog.label}
+                                        />
+                                    )
+                                })}
                             </FormGroup>
                         </Grid>}
                 </Grid>
