@@ -22,7 +22,9 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
                          `${t("EntityType", {count: input.arachneTypesCheckedIds.length})}: 
-                         ${arachneTypes(t).filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
+                         ${input.arachneTypesCheckedIds.length === arachneTypes(t).length //if all are selected
+                             ? t("All")
+                             : arachneTypes(t).filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
                      }
             />}
 
@@ -52,7 +54,9 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
                          `${t("Catalog", {count: input.catalogsCheckedIds.length})}: 
-                         ${catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")}`
+                         ${input.arachneTypesCheckedIds.length === arachneTypes(t).length //if all are selected
+                             ? t("All")
+                             : catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")}`
                      }
             />}
         </>

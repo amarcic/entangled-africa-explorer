@@ -54,5 +54,8 @@
   "Chronontology term": "Periode",
   "Chronontology term_other": "Perioden",
   "Region": "Region",
-  "Bounding box": "Bounding Box"
+  "Bounding box": "Bounding Box",
+
+  "All": "Alle",
+  "Some catalogs are not yet publicly accessible": "Einige Kataloge sind noch nicht öffentlich zugänglich"
 }

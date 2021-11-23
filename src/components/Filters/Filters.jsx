@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-    Checkbox, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, Radio, RadioGroup, Switch, TextField, Tooltip
+    Checkbox, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, Radio,
+    RadioGroup, Switch, TextField, Tooltip
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
@@ -51,33 +52,51 @@ export const Filters = (props) => {
                             </FormGroup>
                         </Grid>}
 
-                    {/*checkboxes for filter by entity type; only active in object search mode*/
+                    {/*checkboxes for filter by iDAI.objects category; only active in object search mode*/
                         input.mode === "objects" && <Grid item>
                             <FormGroup>
-                                <FormLabel component="legend" >Filter by Arachne entity type</FormLabel>
-                                {arachneTypes && arachneTypes(t).map(type => {
-                                    return (type && type.id
-                                        && <FormControlLabel
-                                            key={type.id}
+                                <FormLabel component="legend" >Filter by iDAI.objects category</FormLabel>
+                                <Autocomplete
+                                    multiple
+                                    value={input.arachneTypesCheckedIds}
+                                    options={arachneTypes(t)}
+                                    getOptionLabel={(option) => option.label}
+                                    getOptionSelected={(option, value) => option.id === value}
+                                    onChange={(event, newValues) => {
+                                        dispatch({
+                                            type: "UPDATE_INPUT",
+                                            payload: {field: "arachneTypesCheckedIds",
+                                                //todo: is this good? newValues is something like ["1", "2", {id: "3", label: "label for 3"}] and was throwing an error otherwise
+                                                value: newValues.map(newValue => newValue.id || newValue)}
+                                        })
+                                    }}
+                                    renderOption={(option, { selected }) => (
+                                        /*<>
+                                            <Checkbox
+                                                checked={selected}
+                                            />
+                                            {option.label}
+                                        </>*/
+                                        <FormControlLabel
                                             control={
                                                 <Checkbox
-                                                    checked={input.arachneTypesCheckedIds.includes(type.id)}
-                                                    onChange={() => {
-                                                        dispatch({
-                                                            type: input.arachneTypesCheckedIds.includes(type.id)
-                                                                ? "UNCHECK_ITEM"
-                                                                : "CHECK_ITEM",
-                                                            payload: {field: "arachneTypesCheckedIds", toggledItem: type.id}
-                                                        });
-                                                    }}
-                                                    name={String(type.id)}
-                                                    key={type.id}
+                                                    checked={selected}
                                                 />
                                             }
-                                            label={type.label}
+                                            label={option.label}
                                         />
-                                    )
-                                })}
+                                    )}
+                                    //using this the selected values' labels are displayed, but not in Chip format...
+                                    /*renderTags={(value) => (
+                                        arachneTypes(t).filter((type) => value.includes(type.id)).map(type => type.label))
+                                    }*/
+                                    renderInput={(params) => (
+                                        <TextField {...params} variant="outlined" label="iDAI.objects category" />
+                                    )}
+                                    disableCloseOnSelect
+                                    size="small"
+                                    style={{ width: 300 }} //?
+                                />
                             </FormGroup>
                         </Grid>}
 
@@ -119,18 +138,17 @@ export const Filters = (props) => {
                                     value={input.chronOntologyTerms}
                                     options={periods}
                                     getOptionLabel={(option) => option}
-                                    getOptionSelected={(option, value) => {
-                                        return (option === value)
-                                    }}
+                                    getOptionSelected={(option, value) => option === value}
                                     onChange={(event, newValue) =>
                                         dispatch({type: "UPDATE_INPUT", payload: {field: "chronOntologyTerms", value: newValue}})
                                     }
                                     renderInput={(params) =>
                                         <TextField {...params} label="iDAI.chronontology term" variant="outlined" />
                                     }
-                                    autoSelect={true}
+                                    autoSelect
                                     size="small"
                                     variant="outlined"
+                                    style={{ width: 300 }} //?
                                 />
                             </FormGroup>
                         </Grid>}
@@ -140,14 +158,11 @@ export const Filters = (props) => {
                             <FormGroup>
                                 <FormLabel component="legend">Filter by region</FormLabel>
                                 <Autocomplete
-                                    //todo: this Autocomplete should have a value to retain the selected region(s?) --> right now they disappear when filters are closed or modes are switched
                                     name="region"
                                     value={input.gazetteerRegion}
                                     options={regions}
                                     getOptionLabel={(option) => option.label}
-                                    getOptionSelected={(option, value) => {
-                                        return (option.id === value.id)
-                                    }}
+                                    getOptionSelected={(option, value) => option.id === value}
                                     onChange={(event, newValue) => {
                                         newValue === null
                                             ? (dispatch({type: "UPDATE_INPUT", payload: {field: "mode", value: "sites"}}),
@@ -156,7 +171,7 @@ export const Filters = (props) => {
                                                 dispatch({type: "UPDATE_INPUT", payload: {field: "gazetteerRegion", value: newValue}}));
                                     }}
                                     renderInput={(params) => <TextField {...params} label="Filter by region" variant="outlined" />}
-                                    autoSelect={true}
+                                    autoSelect
                                     disabled={(input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0)}
                                     size="small"
                                     style={{ width: 300 }} //?
@@ -233,24 +248,30 @@ export const Filters = (props) => {
                         input.mode === "objects" && <Grid item>
                             <FormGroup>
                                 <FormLabel component="legend">Filter by catalogs</FormLabel>
-                                {/*todo: format so it is clear that there is one checkbox that controls the others */}
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={input.catalogsCheckedIds.length === catalogs.length}
-                                            onChange={() => {
-                                                input.catalogsCheckedIds.length === catalogs.length
-                                                    ? dispatch({type: "UPDATE_INPUT",
-                                                        payload: {field: "catalogsCheckedIds", value: []}})
-                                                    : dispatch({type: "UPDATE_INPUT",
-                                                        payload: {field: "catalogsCheckedIds", value: catalogs.map(catalog => catalog.id)}
-                                                    })
-                                            }}
-                                            name="All catalogs"
-                                        />
-                                    }
-                                    label={t("All catalogs")}
-                                />
+                                <FormControl
+                                    //if there are non-public catalogs, tell users this by displaying the FormHelperText specified below
+                                    error={input.catalogsCheckedIds.map(catalog => !catalog.public)}
+                                >
+                                    <FormHelperText>{t("Some catalogs are not yet publicly accessible")}</FormHelperText>
+                                    {/*todo: format so it is clear that there is one checkbox that controls the others */}
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={input.catalogsCheckedIds.length === catalogs.length} //if all are selected
+                                                onChange={() => {
+                                                    input.catalogsCheckedIds.length === catalogs.length //if all are selected
+                                                        ? dispatch({type: "UPDATE_INPUT",
+                                                            payload: {field: "catalogsCheckedIds", value: []}})
+                                                        : dispatch({type: "UPDATE_INPUT",
+                                                            payload: {field: "catalogsCheckedIds", value: catalogs.map(catalog => catalog.public && catalog.id)}
+                                                        })
+                                                }}
+                                                name="All catalogs"
+                                            />
+                                        }
+                                        label={t("All catalogs")}
+                                    />
+                                    <Divider/>
                                     {catalogs && catalogs.map(catalog => {
                                         return (catalog
                                             &&
@@ -259,6 +280,7 @@ export const Filters = (props) => {
                                                 control={
                                                     <Checkbox
                                                         checked={input.catalogsCheckedIds.includes(catalog.id)}
+                                                        disabled={!catalog.public}
                                                         onChange={() => {
                                                             dispatch({
                                                                 type: input.catalogsCheckedIds.includes(catalog.id)
@@ -275,6 +297,7 @@ export const Filters = (props) => {
                                             />
                                         )
                                     })}
+                                </FormControl>
                             </FormGroup>
                         </Grid>}
                 </Grid>

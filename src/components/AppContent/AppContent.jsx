@@ -39,7 +39,8 @@ export const AppContent = () => {
         useQuery(GET_OBJECTS, input.mode === "objects"
             ? {
                 variables: {
-                    searchTerm: debouncedSearchStr, catalogIds: input.catalogsCheckedIds,
+                    searchTerm: debouncedSearchStr,
+                    catalogIds: input.catalogsCheckedIds,
                     // only send coordinates if entered values have valid format (floats with at least one decimal place)
                     bbox: (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner1)) && (/-?\d{1,2}\.\d+,-?\d{1,3}\.\d+/.test(input.boundingBoxCorner2))
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
@@ -73,7 +74,7 @@ export const AppContent = () => {
     //todo: the periods and regions should probably be queried via Hub and not like this
     //todo: extract either to utils or to config
 
-    const [periods, setPeriods] = useState(["some period", "some other period"]);
+    const [periods, setPeriods] = useState(["Holocene", "Holozän"]);
 
     //todo: error... this does not seem to be the correct URL
     /*fetch("https://chronontology.dainst.org/data/period/?fq=resource.provenance:%22SPP2143%22&q=*&from=0")

@@ -7,7 +7,7 @@ import {latLngBounds} from "leaflet";
 const initialInput = {
     //search parameters / filters
     mode: "objects", //possible values: "objects", "sites", "sitesByRegion"
-    searchStr: "brosche",
+    searchStr: "",
     arachneTypesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
     catalogsCheckedIds: [],
     gazetteerRegion: {id: null, label: ""},
@@ -69,10 +69,10 @@ const catalogs = [
     //{"label": "AAArC - Fundplätze", "id": 942}, //incomplete example catalog
 
     //todo: gewünschte Titel ggf. mit Projekten oder Bonn absprechen
-    {"label": "Necked Axes (P01)", "id": 1071}, //not public yet
-    {"label": "The Lake Chad Region as a Crossroad (P04)", "id": 1073}, //not public yet
-    {"label": "Cultivated Landscapes (P05)", "id": 954},
-    {"label": "Routes of Interaction (P07)", "id": 987},
+    {"label": "Necked Axes (P01)", "id": 1071, "public": false}, //not public yet
+    {"label": "The Lake Chad Region as a Crossroad (P04)", "id": 1073, "public": false}, //not public yet
+    {"label": "Cultivated Landscapes (P05)", "id": 954, "public": true},
+    {"label": "Routes of Interaction (P07)", "id": 987, "public": false}, //not public yet
     //{"label": " (P11)", "id": }, //no catalog yet
 ]
 
