@@ -46,7 +46,7 @@ export const AppContent = () => {
                         ? input.boundingBoxCorner1.concat(input.boundingBoxCorner2)
                         : [],
                     periodTerms: input.chronOntologyTerms,
-                    entityTypes: input.arachneTypesCheckedIds,
+                    entityTypes: input.arachneCategoriesCheckedIds,
                     focusAfrica: input.focusAfrica,
                     lang: t("current language code")
                 }
@@ -143,7 +143,7 @@ export const AppContent = () => {
             console.log("rerender dataObjects --> dataObjects: ", dataObjects);
             console.log("rerender dataObjects --> input:", input);
         }
-    }, [dataObjects, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerms, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneTypesCheckedIds]);
+    }, [dataObjects, debouncedSearchStr, input.catalogsCheckedIds, input.chronOntologyTerms, input.boundingBoxCorner1, input.boundingBoxCorner2, input.mode, input.arachneCategoriesCheckedIds]);
 
     useEffect( () => {
         if (dataArchaeoSites && input.mode === "sites" && (debouncedSearchStr || (input.boundingBoxCorner1.length!==0 && input.boundingBoxCorner2.length!==0))) {

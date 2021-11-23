@@ -8,7 +8,7 @@ const initialInput = {
     //search parameters / filters
     mode: "objects", //possible values: "objects", "sites", "sitesByRegion"
     searchStr: "",
-    arachneTypesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
+    arachneCategoriesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
     catalogsCheckedIds: [],
     gazetteerRegion: {id: null, label: ""},
     chronOntologyTerms: [],
@@ -39,29 +39,29 @@ const initialInput = {
     bigTileArea: "",
 };
 
-//todo: change out translation keys for English terms, e.g. "Images" instead of "arachneTypeBilder" – because these
+//todo: change out translation keys for English terms, e.g. "Images" instead of "arachneCategoryBilder" – because these
 // keys will be shown as default if no translation exists
-const arachneTypes = (t) => [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
-    {"label": t("arachneTypeEinzelobjekte"), "id": "Einzelobjekte"},
-    {"label": t("arachneTypeMehrteilige Denkmäler"), "id": "MehrteiligeDenkmaeler"},
-    {"label": t("arachneTypeBauwerke"), "id": "Bauwerke"},
-    {"label": t("arachneTypeBauwerksteile"), "id": "Bauwerksteile"},
-    {"label": t("arachneTypeBilder"), "id": "Bilder"},
-    {"label": t("arachneTypeBücher"), "id": "Buecher"},
-    {"label": t("arachneTypeBuchseiten"), "id": "Buchseiten"},
-    {"label": t("arachneTypeEinzelmotive"), "id": "Einzelmotive"},
-    {"label": t("arachneTypeGruppierungen"), "id": "Gruppierungen"},
-    {"label": t("arachneTypeInschriften"), "id": "Inschriften"},
-    {"label": t("arachneTypeLiteratur"), "id": "Literatur"},
-    {"label": t("arachneTypeOrte"), "id": "Orte"},
-    {"label": t("arachneTypeReproduktionen"), "id": "Reproduktionen"},
-    {"label": t("arachneTypePersonen"), "id": "Personen"},
-    {"label": t("arachneTypeRezeptionen"), "id": "Rezeptionen"},
-    {"label": t("arachneTypeSammlungen"), "id": "Sammlungen"},
-    {"label": t("arachneTypeSzenen"), "id": "Szenen"},
-    {"label": t("arachneTypeTopographien"), "id": "Topographien"},
-    {"label": t("arachneTypeTypen"), "id": "Typen"},
-    {"label": t("arachneType3D-Modelle"), "id": "dreiDModelle"}
+const arachneCategories = (t) => [ //todo: welche davon sollen angeboten werden? einige gibt es gar nicht für SPP/Afrika nehme ich an.
+    {"label": t("arachneCategoryEinzelobjekte"), "id": "Einzelobjekte"},
+    {"label": t("arachneCategoryMehrteilige Denkmäler"), "id": "MehrteiligeDenkmaeler"},
+    {"label": t("arachneCategoryBauwerke"), "id": "Bauwerke"},
+    {"label": t("arachneCategoryBauwerksteile"), "id": "Bauwerksteile"},
+    {"label": t("arachneCategoryBilder"), "id": "Bilder"},
+    {"label": t("arachneCategoryBücher"), "id": "Buecher"},
+    {"label": t("arachneCategoryBuchseiten"), "id": "Buchseiten"},
+    {"label": t("arachneCategoryEinzelmotive"), "id": "Einzelmotive"},
+    {"label": t("arachneCategoryGruppierungen"), "id": "Gruppierungen"},
+    {"label": t("arachneCategoryInschriften"), "id": "Inschriften"},
+    {"label": t("arachneCategoryLiteratur"), "id": "Literatur"},
+    {"label": t("arachneCategoryOrte"), "id": "Orte"},
+    {"label": t("arachneCategoryReproduktionen"), "id": "Reproduktionen"},
+    {"label": t("arachneCategoryPersonen"), "id": "Personen"},
+    {"label": t("arachneCategoryRezeptionen"), "id": "Rezeptionen"},
+    {"label": t("arachneCategorySammlungen"), "id": "Sammlungen"},
+    {"label": t("arachneCategorySzenen"), "id": "Szenen"},
+    {"label": t("arachneCategoryTopographien"), "id": "Topographien"},
+    {"label": t("arachneCategoryTypen"), "id": "Typen"},
+    {"label": t("arachneCategory3D-Modelle"), "id": "dreiDModelle"}
 ];
 
 const catalogs = [
@@ -78,6 +78,6 @@ const catalogs = [
 
 export {
     initialInput,
-    arachneTypes,
+    arachneCategories,
     catalogs
 };

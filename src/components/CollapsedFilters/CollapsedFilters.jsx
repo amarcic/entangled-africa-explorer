@@ -2,7 +2,7 @@ import React from "react";
 import { Chip } from "@material-ui/core";
 import { useStyles } from "../../styles";
 import { useTranslation } from "react-i18next";
-import { arachneTypes, catalogs } from "../../config";
+import { arachneCategories, catalogs } from "../../config";
 
 
 export const CollapsedFilters = (props) => {
@@ -18,13 +18,13 @@ export const CollapsedFilters = (props) => {
             <Chip label={`${t("Searching in")}: ${input.mode === "objects" ? "iDAI.objects" : "iDAI.gazetteer"}`}/>
 
             {/*Chip for iDAI.objects entity types*/}
-            {input.arachneTypesCheckedIds.length !== 0
+            {input.arachneCategoriesCheckedIds.length !== 0
             && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
-                         `${t("EntityType", {count: input.arachneTypesCheckedIds.length})}: 
-                         ${input.arachneTypesCheckedIds.length === arachneTypes(t).length //if all are selected
+                         `${t("EntityType", {count: input.arachneCategoriesCheckedIds.length})}: 
+                         ${input.arachneCategoriesCheckedIds.length === arachneCategories(t).length //if all iDAI.objects categories are selected
                              ? t("All")
-                             : arachneTypes(t).filter((type) => input.arachneTypesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
+                             : arachneCategories(t).filter((type) => input.arachneCategoriesCheckedIds.includes(type.id)).map(type => type.label).join(", ")}`
                      }
             />}
 
@@ -54,7 +54,7 @@ export const CollapsedFilters = (props) => {
             && <Chip variant="outlined" disabled={(input.mode === "sites" || input.mode === "sitesByRegion")}
                      label={
                          `${t("Catalog", {count: input.catalogsCheckedIds.length})}: 
-                         ${input.arachneTypesCheckedIds.length === arachneTypes(t).length //if all are selected
+                         ${input.catalogsCheckedIds.length === catalogs.length //if all catalogs are selected (whether all are public is not taken into account)
                              ? t("All")
                              : catalogs.filter((catalog) => input.catalogsCheckedIds.includes(catalog.id)).map(catalog => catalog.label).join(", ")}`
                      }

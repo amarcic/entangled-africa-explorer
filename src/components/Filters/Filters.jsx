@@ -7,7 +7,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ClearIcon from "@material-ui/icons/Clear";
 import { useStyles } from '../../styles';
 import { useTranslation } from "react-i18next";
-import { arachneTypes, catalogs } from "../../config";
+import { arachneCategories, catalogs } from "../../config";
 
 
 export const Filters = (props) => {
@@ -58,14 +58,14 @@ export const Filters = (props) => {
                                 <FormLabel component="legend" >Filter by iDAI.objects category</FormLabel>
                                 <Autocomplete
                                     multiple
-                                    value={input.arachneTypesCheckedIds}
-                                    options={arachneTypes(t)}
+                                    value={input.arachneCategoriesCheckedIds}
+                                    options={arachneCategories(t)}
                                     getOptionLabel={(option) => option.label}
                                     getOptionSelected={(option, value) => option.id === value}
                                     onChange={(event, newValues) => {
                                         dispatch({
                                             type: "UPDATE_INPUT",
-                                            payload: {field: "arachneTypesCheckedIds",
+                                            payload: {field: "arachneCategoriesCheckedIds",
                                                 //todo: is this good? newValues is something like ["1", "2", {id: "3", label: "label for 3"}] and was throwing an error otherwise
                                                 value: newValues.map(newValue => newValue.id || newValue)}
                                         })
@@ -88,7 +88,7 @@ export const Filters = (props) => {
                                     )}
                                     //using this the selected values' labels are displayed, but not in Chip format...
                                     /*renderTags={(value) => (
-                                        arachneTypes(t).filter((type) => value.includes(type.id)).map(type => type.label))
+                                        arachneCategories(t).filter((category) => value.includes(category.id)).map(category => category.label))
                                     }*/
                                     renderInput={(params) => (
                                         <TextField {...params} variant="outlined" label="iDAI.objects category" />
