@@ -11,7 +11,7 @@ const initialInput = {
     arachneCategoriesCheckedIds: ["Bilder", "Einzelobjekte", "Topographien"],
     catalogsCheckedIds: [],
     gazetteerRegion: {id: null, label: ""},
-    chronOntologyTerms: [],
+    chronOntologyTerms: ["Holozän"],
     boundingBoxCorner1: [],
     boundingBoxCorner2: [],
     drawBBox: false,

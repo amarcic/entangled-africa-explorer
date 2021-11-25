@@ -60,7 +60,7 @@ export const Filters = (props) => {
                                     multiple
                                     value={input.arachneCategoriesCheckedIds}
                                     options={arachneCategories(t)}
-                                    getOptionLabel={(option) => option.label}
+                                    getOptionLabel={(option) => option}
                                     getOptionSelected={(option, value) => option.id === value}
                                     onChange={(event, newValues) => {
                                         dispatch({
@@ -90,9 +90,9 @@ export const Filters = (props) => {
                                     /*renderTags={(value) => (
                                         arachneCategories(t).filter((category) => value.includes(category.id)).map(category => category.label))
                                     }*/
-                                    renderInput={(params) => (
+                                    renderInput={(params) =>
                                         <TextField {...params} variant="outlined" label="iDAI.objects category" />
-                                    )}
+                                    }
                                     disableCloseOnSelect
                                     size="small"
                                     style={{ width: 300 }} //?
