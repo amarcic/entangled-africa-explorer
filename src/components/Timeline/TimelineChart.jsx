@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useStyles } from "../../styles";
-import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent } from "d3";
+import { select, scaleBand, axisBottom, scaleLinear, scaleQuantize, zoom, extent, pointer } from "d3";
 import {getTimeRangeOfTimelineData, newGroupByPeriods,useResize} from "../../utils";
 
 export const TimelineChart = (props) => {
@@ -184,6 +184,7 @@ export const TimelineChart = (props) => {
         //display tooltip when mouse enters bar on chart
         selectionEnteringAndUpdating
             .on("mouseenter", (event, value) => {
+                const position = pointer(event);
                 select(event.currentTarget)
                     .attr("id", "mouse-target")
                     .on("mouseleave", () => {
@@ -198,7 +199,7 @@ export const TimelineChart = (props) => {
                     .text( value => yScale.bandwidth() <= labelRenderLimit
                         ? `${value.periodName}${value.periodSpanText?", " + value.periodSpanText:""}: ${value.items.length} ${t("Item", {count: value.items.length})}`
                         : `${value.periodSpanText?value.periodSpanText+": ":""} ${value.items.length} ${t("Item", {count: value.items.length})}`)
-                    .attr("text-anchor", "middle")
+                    .attr("text-anchor", () => position[0]<width/2 ? "start" : "end")
                     .attr("x", value => xScale(value.periodSpan?.[0]))
                     .attr("y", value => yScale(value.periodId)/*+yScale.bandwidth()*/+margin.top)
             });
